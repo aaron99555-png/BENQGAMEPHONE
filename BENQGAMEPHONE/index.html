@@ -1,0 +1,598 @@
+﻿<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <!-- 關鍵：禁止縮放，確保 APP 質感 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>明基材料工安防護具挑戰</title>
+    
+    <style>
+        body { 
+            font-family: "Microsoft JhengHei", "Heiti TC", sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            background-color: #f1f5f9;
+            /* 關鍵：防止手機下拉刷新導致頁面跳動 */
+            overscroll-behavior: none;
+        }
+        .loading-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            background: #ffffff; z-index: 9999; text-align: center;
+        }
+        .loading-spinner {
+            border: 4px solid #f3f3f3; border-top: 4px solid #9333ea; border-radius: 50%;
+            width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 20px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(168, 85, 247, 0.3); border-radius: 4px; }
+    </style>
+
+    <script>
+        function handleScriptError(e) {
+            alert("⚠️ 網路資源載入失敗！請檢查網路連線。");
+        }
+    </script>
+    
+    <script src="https://cdn.tailwindcss.com" onerror="handleScriptError(this)"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js" onerror="handleScriptError(this)"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" onerror="handleScriptError(this)"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js" onerror="handleScriptError(this)"></script>
+
+    <script>
+        window.onload = function() {
+            if (typeof tailwind !== 'undefined') {
+                tailwind.config = {
+                    theme: {
+                        extend: {
+                            animation: {
+                                'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                                'shake': 'shake 0.5s ease-in-out',
+                                'fade-in': 'fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+                            },
+                            keyframes: {
+                                shake: {
+                                    '0%, 100%': { transform: 'translateX(0)' },
+                                    '25%': { transform: 'translateX(-5px)' },
+                                    '75%': { transform: 'translateX(5px)' },
+                                },
+                                fadeIn: {
+                                    'from': { opacity: '0', transform: 'translateY(10px)' },
+                                    'to': { opacity: '1', transform: 'translateY(0)' },
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-100 h-[100dvh] overflow-hidden flex flex-col">
+    
+    <div id="root" class="h-full flex flex-col">
+        <div class="loading-screen">
+            <div class="loading-spinner"></div>
+            <h2 class="text-gray-600 text-xl font-bold">載入中...</h2>
+        </div>
+    </div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // --- Icon Components (Compressed) ---
+        const IconBase = ({ size = 24, className = "", children, ...props }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} {...props}>{children}</svg>);
+        const CheckCircle = (p) => <IconBase {...p}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></IconBase>;
+        const XCircle = (p) => <IconBase {...p}><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></IconBase>;
+        const RotateCcw = (p) => <IconBase {...p}><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></IconBase>;
+        const ArrowRight = (p) => <IconBase {...p}><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></IconBase>;
+        const Construction = (p) => <IconBase {...p}><rect x="2" y="6" width="20" height="8" rx="1"></rect><path d="M17 14v7"></path><path d="M7 14v7"></path><path d="M17 3v3"></path><path d="M7 3v3"></path><path d="M10 14 2.3 6.3"></path><path d="m14 6 7.7 7.7"></path><path d="m8 6 8 8"></path></IconBase>;
+        const Timer = (p) => <IconBase {...p}><line x1="10" y1="2" x2="14" y2="2"></line><line x1="12" y1="14" x2="15.51" y2="11.51"></line><circle cx="12" cy="14" r="8"></circle></IconBase>;
+        const Lightbulb = (p) => <IconBase {...p}><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-1 1.5-2 1.5-3.5A6 6 0 0 0 6 8c0 1 .5 2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"></path><path d="M9 18h6"></path><path d="M10 22h4"></path></IconBase>;
+        const ShieldAlert = (p) => <IconBase {...p}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></IconBase>;
+        const Hammer = (p) => <IconBase {...p}><path d="m15 12-8.5 8.5c-.83.83-2.17.83-3 0 0 0 0 0 0 0a2.12 2.12 0 0 1 0-3L12 9"></path><path d="M17.64 15 22 10.64"></path><path d="m20.91 11.7-1.25-1.25c-.6-.6-.93-1.4-.93-2.25V7.86c0-.55-.45-1-1-1H16.5c-.55 0-1 .45-1 1v.36c0 .84-.33 1.65-.93 2.25L13.36 11.7a2.5 2.5 0 0 0 0 3.54l1.25 1.25a2.5 2.5 0 0 0 3.54 0z"></path><path d="m3.5 3.5 6 6"></path><path d="m2 2 2 2"></path></IconBase>;
+        const AlertTriangle = (p) => <IconBase {...p}><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></IconBase>;
+        const Info = (p) => <IconBase {...p}><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></IconBase>;
+        const Trophy = (p) => <IconBase {...p}><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M9 14.66V17a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-2.34l-3.14-3.14a3 3 0 0 1-.72-1.54l-.52-2.28"></path><path d="M19.42 4.94A2 2 0 0 0 18 4H6a2 2 0 0 0-1.42.94L2 9.07a2.12 2.12 0 0 0 .59 2.14l8.28 7.37a2 2 0 0 0 2.26 0l8.28-7.37a2.12 2.12 0 0 0 .59-2.14z"></path></IconBase>;
+        const Save = (p) => <IconBase {...p}><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></IconBase>;
+        const ListOrdered = (p) => <IconBase {...p}><line x1="10" y1="6" x2="21" y2="6"></line><line x1="10" y1="12" x2="21" y2="12"></line><line x1="10" y1="18" x2="21" y2="18"></line><path d="M4 6h1v4"></path><path d="M4 10h2"></path><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"></path></IconBase>;
+        const Play = (p) => <IconBase {...p}><polygon points="5 3 19 12 5 21 5 3"></polygon></IconBase>;
+        const History = (p) => <IconBase {...p}><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path><path d="M12 7v5l4 2"></path></IconBase>;
+        const Building2 = (p) => <IconBase {...p}><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"></path><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"></path><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"></path><path d="M10 6h4"></path><path d="M10 10h4"></path><path d="M10 14h4"></path><path d="M10 18h4"></path></IconBase>;
+        const UserCheck = (p) => <IconBase {...p}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><polyline points="16 11 18 13 22 9"></polyline></IconBase>;
+
+        // --- Custom PPE Icons (SVG) ---
+        const IconHelmet = () => <svg viewBox="0 0 64 64" className="w-full h-full" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 36c0-14 10-26 28-26s28 12 28 26v4H4v-4z" fill="#FBBF24" stroke="#D97706" /><path d="M32 10v4M4 36h56M12 36c0-4 2-8 6-8h28c4 0 6 4 6 8" stroke="#D97706" strokeLinecap="round"/><path d="M28 14h8" stroke="#D97706" strokeWidth="3"/></svg>;
+        const IconGoggles = () => <svg viewBox="0 0 64 64" className="w-full h-full" fill="none"><path d="M12 28c0-6 4-10 10-10h6c2 0 4 2 4 4s2 4 4 4 4-2 4-4 2-4 4-4h6c6 0 10 4 10 10v6c0 6-4 10-10 10h-6c-2 0-4-2-4-4s-2-4-4-4-4 2-4 4-2 4-4 4h-6c-6 0-10-4-10-10v-6z" fill="#BFDBFE" stroke="#2563EB" strokeWidth="3"/><path d="M4 30h8M52 30h8" stroke="#1F2937" strokeWidth="3" strokeLinecap="round"/></svg>;
+        const IconWeldingMask = () => <svg viewBox="0 0 64 64" className="w-full h-full" fill="none"><rect x="14" y="8" width="36" height="48" rx="8" fill="#1F2937" stroke="#000" strokeWidth="2"/><rect x="20" y="20" width="24" height="12" rx="2" fill="#111827" stroke="#F59E0B" strokeWidth="2"/><path d="M22 26h20" stroke="#F59E0B" strokeWidth="1" opacity="0.5"/></svg>;
+        const IconFaceShield = () => <svg viewBox="0 0 64 64" className="w-full h-full" fill="none"><path d="M16 12h32v4H16z" fill="#374151" stroke="#000" strokeWidth="2"/><path d="M16 16v32c0 8 8 12 16 12s16-4 16-12V16H16z" fill="#A7F3D0" stroke="#059669" strokeWidth="2" fillOpacity="0.6"/><path d="M24 24l16 16" stroke="#059669" strokeWidth="1" opacity="0.5"/></svg>;
+        const IconEarmuffs = () => <svg viewBox="0 0 64 64" className="w-full h-full" fill="none"><path d="M12 18a4 4 0 0 1 4-4h32a4 4 0 0 1 4 4v20" stroke="#374151" strokeWidth="3" strokeLinecap="round"/><rect x="6" y="24" width="12" height="24" rx="6" fill="#F97316" stroke="#C2410C" strokeWidth="2"/><rect x="46" y="24" width="12" height="24" rx="6" fill="#F97316" stroke="#C2410C" strokeWidth="2"/><path d="M10 30h4M50 30h4" stroke="#FFF" strokeOpacity="0.5"/></svg>;
+        const IconGasMask = () => <svg viewBox="0 0 64 64" className="w-full h-full" fill="none"><path d="M16 16h32v24c0 10-8 16-16 16s-16-6-16-16V16z" fill="#374151" stroke="#111827" strokeWidth="2"/><circle cx="22" cy="28" r="6" fill="#111827" stroke="#6B7280" strokeWidth="2"/><circle cx="42" cy="28" r="6" fill="#111827" stroke="#6B7280" strokeWidth="2"/><rect x="26" y="40" width="12" height="12" rx="2" fill="#4B5563" stroke="#9CA3AF" strokeWidth="2"/></svg>;
+        const IconN95 = () => <svg viewBox="0 0 64 64" className="w-full h-full" fill="none"><path d="M14 20c0-2 18-6 18-6s18 4 18 6c0 10-4 26-18 26s-18-16-18-26z" fill="#F9FAFB" stroke="#9CA3AF" strokeWidth="2"/><path d="M8 24h6M50 24h6" stroke="#FCA5A5" strokeWidth="2"/><circle cx="24" cy="28" r="2" fill="#D1D5DB"/></svg>;
+        const IconHarness = () => <svg viewBox="0 0 64 64" className="w-full h-full" fill="none"><path d="M16 8v48M48 8v48" stroke="#EF4444" strokeWidth="4"/><path d="M16 20h32M16 40h32" stroke="#EF4444" strokeWidth="4"/><path d="M16 12l32 40M48 12L16 52" stroke="#B91C1C" strokeWidth="3"/></svg>;
+        const IconVest = () => <svg viewBox="0 0 64 64" className="w-full h-full" fill="none"><path d="M12 12h12l8 16 8-16h12v40H12V12z" fill="#A3E635" stroke="#4D7C0F" strokeWidth="2"/><path d="M12 36h40M12 44h40" stroke="#E5E7EB" strokeWidth="4"/><path d="M22 12v40M42 12v40" stroke="#E5E7EB" strokeWidth="4"/></svg>;
+        const IconApron = () => <svg viewBox="0 0 64 64" className="w-full h-full" fill="none"><path d="M22 8h20v8H22z" stroke="#1D4ED8" strokeWidth="2"/><path d="M18 16h28l4 8v32H14V24l4-8z" fill="#2563EB" stroke="#1E40AF" strokeWidth="2"/><path d="M24 30h16" stroke="#60A5FA" strokeWidth="2" opacity="0.5"/></svg>;
+        const IconGlove = ({ color, type }) => <svg viewBox="0 0 64 64" className="w-full h-full" fill="none"><path d="M20 54V30a4 4 0 0 1 8 0v-4a4 4 0 0 1 8 0v-2a4 4 0 0 1 8 0v4a4 4 0 0 1 8 0v26H20z" fill={color} stroke="#4B5563" strokeWidth="2"/><path d="M20 50h32" stroke="#000" strokeOpacity="0.1"/>{type === 'dot' && <circle cx="32" cy="40" r="1" fill="#000" opacity="0.2"/>}{type === 'line' && <path d="M28 36v10" stroke="#000" opacity="0.1"/>}</svg>;
+        const IconBoot = ({ color, sole }) => <svg viewBox="0 0 64 64" className="w-full h-full" fill="none"><path d="M18 12h16v24h14c4 0 6 4 6 8v8H14V16c0-2 2-4 4-4z" fill={color} stroke="#1F2937" strokeWidth="2"/><path d="M14 52h40v4H14z" fill={sole} stroke="#000" strokeWidth="1"/><path d="M18 16h16" stroke="#FFF" strokeOpacity="0.2"/></svg>;
+
+        const EQUIPMENT_LIST = [
+          { id: 'helmet', name: '工業安全帽', Component: IconHelmet, category: 'head', color: 'bg-yellow-400' },
+          { id: 'goggles', name: '安全護目鏡', Component: IconGoggles, category: 'eyes', color: 'bg-blue-200' },
+          { id: 'mask_welding', name: '焊接面罩', Component: IconWeldingMask, category: 'eyes', color: 'bg-gray-800' },
+          { id: 'shield_face', name: '防護面罩', Component: IconFaceShield, category: 'eyes', color: 'bg-emerald-200' },
+          { id: 'earmuffs', name: '防音耳罩', Component: IconEarmuffs, category: 'ears', color: 'bg-orange-400' },
+          { id: 'mask_gas', name: '防毒面具', Component: IconGasMask, category: 'face', color: 'bg-gray-700' },
+          { id: 'mask_dust', name: 'N95口罩', Component: IconN95, category: 'face', color: 'bg-white' },
+          { id: 'harness', name: '高空安全帶', Component: IconHarness, category: 'body_acc', color: 'bg-red-500' },
+          { id: 'vest', name: '反光背心', Component: IconVest, category: 'body', color: 'bg-lime-400' },
+          { id: 'apron', name: '防護圍裙', Component: IconApron, category: 'body_outer', color: 'bg-blue-700' },
+          { id: 'gloves_cotton', name: '棉紗手套', Component: () => <IconGlove color="#E5E7EB" type="dot"/>, category: 'hands', color: 'bg-gray-200' },
+          { id: 'gloves_rubber', name: '耐化學手套', Component: () => <IconGlove color="#A855F7" type="line"/>, category: 'hands', color: 'bg-purple-500' },
+          { id: 'gloves_insulation', name: '絕緣手套', Component: () => <IconGlove color="#EA580C" />, category: 'hands', color: 'bg-orange-600' },
+          { id: 'gloves_cut', name: '防切割手套', Component: () => <IconGlove color="#94A3B8" type="line"/>, category: 'hands', color: 'bg-slate-400' },
+          { id: 'gloves_leather', name: '皮革手套', Component: () => <IconGlove color="#B45309" />, category: 'hands', color: 'bg-amber-700' },
+          { id: 'safety_shoes', name: '鋼頭安全鞋', Component: () => <IconBoot color="#1F2937" sole="#000"/>, category: 'feet', color: 'bg-slate-800' },
+          { id: 'boots_rubber', name: '防護雨鞋', Component: () => <IconBoot color="#CA8A04" sole="#854D0E"/>, category: 'feet', color: 'bg-yellow-600' },
+        ];
+
+        const SCENARIOS = [
+          { id: 1, title: '高空鷹架作業', description: '在 5 公尺高的鷹架上維護外牆，上方偶爾有落石。', required: ['helmet', 'harness', 'safety_shoes'], hint: '【墜落危害】高處作業須配戴安全帶，並保護頭部與腳部。' },
+          { id: 2, title: '調膠室溶劑調配', description: '室內充滿有機溶劑氣味，液體具腐蝕性且容易噴濺。', required: ['mask_gas', 'goggles', 'gloves_rubber', 'apron'], hint: '【化學危害】需防止吸入毒氣，並保護眼、身、手不被腐蝕。' },
+          { id: 3, title: '發電機房巡檢', description: '機房內發電機運轉中，噪音高達 95 分貝。', required: ['earmuffs', 'safety_shoes', 'helmet'], hint: '【噪音危害】保護聽力是首要任務，同時注意頭部與腳部安全。' },
+          { id: 4, title: '手持砂輪機研磨', description: '研磨金屬零件，有大量火花與金屬粉塵飛散。', required: ['goggles', 'mask_dust', 'gloves_cotton', 'earmuffs'], hint: '【粉塵/火花】防護眼、肺、手，且研磨噪音大需戴耳罩。' },
+          { id: 5, title: '夜間道路搶修', description: '夜間在車流量大的馬路進行坑洞修補。', required: ['helmet', 'vest', 'safety_shoes'], hint: '【被撞危害】最重要的是高可視度反光背心。' },
+          { id: 6, title: '配電盤活線作業', description: '檢修 220V 未斷電的配電盤設備。', required: ['helmet', 'gloves_insulation', 'safety_shoes', 'shield_face'], hint: '【感電危害】絕緣手套與面罩防止電弧灼傷是關鍵。' },
+          { id: 7, title: '鋼構電銲作業', description: '焊接鋼材，產生強烈紫外線強光、高溫與金屬噴濺。', required: ['mask_welding', 'gloves_leather', 'apron', 'safety_shoes'], hint: '【光害/高溫】需焊接面罩擋強光，皮革手套與圍裙防高溫噴濺。' },
+          { id: 8, title: '割草機除草', description: '使用背負式割草機，地面碎石容易飛濺。', required: ['shield_face', 'boots_rubber', 'apron', 'gloves_cotton'], hint: '【飛落物危害】碎石易傷臉與腿，需面罩與長筒雨鞋/圍裙。' },
+          { id: 9, title: '廢棄玻璃清理', description: '清理含有大量碎玻璃與尖銳鐵片的廢棄物。', required: ['gloves_cut', 'safety_shoes', 'helmet'], hint: '【切割危害】首重手部防切割與足部防穿刺。' },
+          { id: 10, title: '強酸地板清洗', description: '地面積水且使用強酸清潔劑，極度濕滑。', required: ['boots_rubber', 'gloves_rubber', 'goggles', 'mask_gas'], hint: '【化學/跌倒】需防滑防水雨鞋，與完整的抗酸防護。' },
+          { id: 11, title: '鑽床/車床操作', description: '操作高速旋轉的機具進行金屬鑽孔與加工。', required: ['goggles', 'safety_shoes'], forbidden: ['hands'], hint: '【捲夾危害】旋轉機具「絕對禁止」戴手套，以免被捲入！' },
+          { id: 12, title: '高溫熔煉爐作業', description: '在鑄造廠高溫熔爐旁作業，有熱輻射與金屬液噴濺風險。', required: ['helmet', 'shield_face', 'gloves_leather', 'apron', 'safety_shoes'], hint: '【高溫危害】全身需耐高溫防護：皮革手套、圍裙、面罩。' },
+          { id: 13, title: '破碎機打石作業', description: '使用大型氣動破碎機拆除混泥土，噪音極大且粉塵多。', required: ['earmuffs', 'mask_dust', 'goggles', 'helmet', 'safety_shoes', 'gloves_cotton'], hint: '【噪音/粉塵】高分貝噪音需耳罩，並防護粉塵與飛石。' },
+          { id: 14, title: '輸送帶維修 (運轉中)', description: '在運轉中的輸送帶旁進行目視檢查 (不可接觸)。', required: ['helmet', 'safety_shoes', 'goggles'], forbidden: ['hands'], hint: '【捲夾危害】靠近運轉中機械，嚴禁戴手套或寬鬆衣物以免捲入。' },
+          { id: 15, title: '化學槽車卸料 (酸液)', description: '連接管線卸收高腐蝕性酸液，接口處可能噴濺。', required: ['shield_face', 'mask_gas', 'apron', 'gloves_rubber', 'boots_rubber'], hint: '【噴濺危害】最高規格化學防護：面罩+防毒+橡膠手套+圍裙+雨鞋。' },
+          { id: 16, title: '堆高機駕駛', description: '駕駛堆高機在倉庫間搬運貨物，需注意頭頂貨物與周遭人員。', required: ['helmet', 'vest', 'safety_shoes'], hint: '【被撞/物體飛落】駕駛需戴安全帽防護落物，穿背心提升能見度。' },
+          { id: 17, title: '金屬切割操作', description: '使用切割機進行金屬切斷，有鐵屑飛濺與極大噪音。', required: ['helmet', 'earmuffs', 'shield_face', 'gloves_cut', 'safety_shoes'], hint: '【切割/噪音】需防切割手套、面罩擋鐵屑，以及耳罩防噪音。' },
+          { id: 18, title: '粉塵作業', description: '粒子添加作業，空氣中懸浮大量細微粉塵。', required: ['mask_dust', 'goggles', 'helmet', 'safety_shoes'], hint: '【粉塵危害】高濃度粉塵環境，N95等級以上口罩與護目鏡是必須的。' },
+          { id: 19, title: '液態氮分裝操作', description: '分裝零下 196 度液態氮，極低溫液體可能噴濺。', required: ['shield_face', 'gloves_leather', 'apron', 'safety_shoes'], hint: '【低溫危害】防止凍傷與噴濺，需面罩與厚絕緣手套（如皮革）。' },
+          { id: 20, title: '局限空間氣體偵測', description: '進入通風不良的地下道前，需先確認氣體狀況。', required: ['helmet', 'mask_gas', 'safety_shoes', 'harness'], hint: '【缺氧/中毒】雖是偵測，但需預設有危害：佩戴呼吸防護與救援用安全帶。' }
+        ];
+
+        const TOTAL_ROUNDS = 10;
+
+        function SafetyGearGame() {
+          const [currentScenario, setCurrentScenario] = useState(null);
+          const [wornItems, setWornItems] = useState([]);
+          const [gameState, setGameState] = useState('start'); 
+          const [message, setMessage] = useState('');
+          const [failDetails, setFailDetails] = useState(null);
+          const [score, setScore] = useState(0);
+          const [hintVisible, setHintVisible] = useState(false);
+          const [totalSeconds, setTotalSeconds] = useState(0);
+          const [isActive, setIsActive] = useState(false);
+          
+          const [round, setRound] = useState(1);
+          const [usedScenarioIds, setUsedScenarioIds] = useState([]);
+          const [employeeId, setEmployeeId] = useState('');
+          const [rankings, setRankings] = useState([]);
+          const [hasSaved, setHasSaved] = useState(false);
+          const [isBlinking, setIsBlinking] = useState(false);
+
+          useEffect(() => {
+            const savedRankings = localStorage.getItem('ppe_game_rankings_v3');
+            if (savedRankings) {
+              setRankings(JSON.parse(savedRankings));
+            }
+          }, []);
+
+          useEffect(() => {
+            let interval = null;
+            if (isActive) {
+              interval = setInterval(() => {
+                setTotalSeconds(s => s + 1);
+              }, 1000);
+            }
+            return () => clearInterval(interval);
+          }, [isActive]);
+
+          useEffect(() => {
+            const blinkInterval = setInterval(() => {
+              setIsBlinking(true);
+              setTimeout(() => setIsBlinking(false), 200);
+            }, 4000);
+            return () => clearInterval(blinkInterval);
+          }, []);
+
+          const startGame = () => {
+            setScore(0);
+            setTotalSeconds(0);
+            setRound(1);
+            setUsedScenarioIds([]);
+            setHasSaved(false);
+            setEmployeeId('');
+            pickNextLevel([]);
+          };
+
+          const pickNextLevel = (currentUsedIds) => {
+            const availableScenarios = SCENARIOS.filter(s => !currentUsedIds.includes(s.id));
+            if (availableScenarios.length === 0) {
+              setGameState('leaderboard');
+              setIsActive(false);
+              return;
+            }
+            const randomIndex = Math.floor(Math.random() * availableScenarios.length);
+            const nextScenario = availableScenarios[randomIndex];
+            setCurrentScenario(nextScenario);
+            setUsedScenarioIds([...currentUsedIds, nextScenario.id]);
+            setWornItems([]);
+            setGameState('playing');
+            setMessage('');
+            setFailDetails(null);
+            setHintVisible(false);
+            setIsActive(true); 
+          };
+
+          const nextRound = () => {
+            if (round >= TOTAL_ROUNDS) {
+              setGameState('leaderboard');
+              setIsActive(false); 
+            } else {
+              setRound(r => r + 1);
+              pickNextLevel(usedScenarioIds);
+            }
+          };
+
+          const toggleItem = (item) => {
+            if (gameState !== 'playing') return;
+            setWornItems(prev => {
+              const isWorn = prev.find(i => i.id === item.id);
+              if (isWorn) {
+                return prev.filter(i => i.id !== item.id);
+              } else {
+                let newItems = prev.filter(i => i.category !== item.category);
+                return [...newItems, item];
+              }
+            });
+          };
+
+          const showHint = () => {
+            if (!hintVisible && gameState === 'playing') {
+              setHintVisible(true);
+              setScore(s => Math.max(0, s - 20));
+            }
+          };
+
+          const checkAnswer = () => {
+            if (!currentScenario) return;
+            setIsActive(false); 
+
+            const requiredIds = currentScenario.required.sort();
+            const wornIds = wornItems.map(i => i.id);
+            const missingItems = requiredIds.filter(id => !wornIds.includes(id));
+            const extraItems = wornIds.filter(id => !requiredIds.includes(id));
+            const requiredNames = requiredIds.map(id => EQUIPMENT_LIST.find(i => i.id === id)?.name);
+            const missingNames = missingItems.map(id => EQUIPMENT_LIST.find(i => i.id === id)?.name);
+
+            const isEntanglementHazard = currentScenario.forbidden && currentScenario.forbidden.includes('hands');
+            const hasGloves = wornItems.some(i => i.category === 'hands');
+            
+            let isSuccess = false;
+            let failMsg = '';
+
+            if (isEntanglementHazard && hasGloves) {
+                isSuccess = false;
+                failMsg = '捲夾危害：旋轉機具嚴禁戴手套！';
+                setFailDetails({ type: 'forbidden', text: '旋轉機具禁止戴手套，因為會被捲入機械中造成嚴重傷害。', correctList: requiredNames });
+            } else if (missingItems.length === 0 && extraItems.length === 0) {
+                isSuccess = true;
+            } else {
+                isSuccess = false;
+                failMsg = '防護不完整或錯誤！';
+                setFailDetails({ type: 'incorrect', missing: missingNames, correctList: requiredNames });
+            }
+
+            if (isSuccess) {
+              setGameState('success');
+              setScore(s => s + 100);
+              setMessage(`完美防護！`);
+            } else {
+              setGameState('failure');
+              setMessage(failMsg);
+            }
+          };
+
+          const saveScore = () => {
+            if (!employeeId.trim()) return;
+            const newRecord = {
+              name: employeeId.trim(),
+              score: score,
+              time: totalSeconds,
+              date: new Date().toLocaleDateString()
+            };
+            const newRankings = [...rankings, newRecord]
+              .sort((a, b) => b.score - a.score || a.time - b.time)
+              .slice(0, 50); 
+            localStorage.setItem('ppe_game_rankings_v3', JSON.stringify(newRankings));
+            setRankings(newRankings);
+            setHasSaved(true);
+          };
+
+          const WorkerFigure = () => {
+            const getItemByCat = (cat) => wornItems.find(i => i.category === cat);
+            const head = getItemByCat('head');
+            const eyes = getItemByCat('eyes'); 
+            const face = getItemByCat('face');
+            const ears = getItemByCat('ears');
+            const body = getItemByCat('body');
+            const bodyAcc = getItemByCat('body_acc');
+            const bodyOuter = getItemByCat('body_outer');
+            const hands = getItemByCat('hands');
+            const feet = getItemByCat('feet');
+
+            const breatheClass = gameState === 'playing' ? 'animate-pulse-slow' : '';
+            const successClass = gameState === 'success' ? 'animate-bounce' : '';
+            const failClass = gameState === 'failure' ? 'animate-shake' : '';
+
+            return (
+              <div className={`relative w-full h-[32vh] lg:h-[28rem] rounded-2xl flex flex-col items-center justify-end overflow-hidden
+                ${gameState === 'success' ? 'bg-green-100/50' : gameState === 'failure' ? 'bg-red-50/50' : 'bg-transparent'} transition-all`}>
+                
+                <div className={`relative flex flex-col items-center transform transition-transform duration-500 origin-bottom scale-[0.8] lg:scale-100 ${successClass} ${failClass} z-10 -mb-2`}>
+                  
+                  {/* 阿基獅頭部 (更新版) */}
+                  <div className={`relative z-30 flex flex-col items-center w-40 h-40 -mb-4 ${breatheClass}`}>
+                    
+                    {/* 鬃毛 (最底層) - 棕色圓形 */}
+                    <div className="absolute top-0 left-0 w-full h-full z-0 scale-110">
+                       <svg viewBox="0 0 100 100" className="w-full h-full overflow-visible">
+                          <circle cx="50" cy="50" r="48" fill="#C27803" stroke="#92400E" strokeWidth="2" />
+                       </svg>
+                    </div>
+
+                    {ears && (
+                      <div className="absolute top-8 w-full flex justify-between px-2 z-20 pointer-events-none">
+                         <div className={`w-5 h-10 ${ears.color} rounded-lg border-2 border-gray-700 shadow-sm -ml-4`}></div>
+                         <div className={`w-5 h-10 ${ears.color} rounded-lg border-2 border-gray-700 shadow-sm -mr-4`}></div>
+                         <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-44 h-12 border-t-4 border-gray-700 rounded-full"></div>
+                      </div>
+                    )}
+
+                    <div className="relative w-28 h-32 z-10 top-2">
+                       <svg viewBox="0 0 100 120" className="w-full h-full overflow-visible">
+                          {/* 耳朵 */}
+                          <circle cx="20" cy="10" r="12" fill="#FCD34D" stroke="#C27803" strokeWidth="2" />
+                          <circle cx="20" cy="10" r="6" fill="#C27803" opacity="0.6" />
+                          <circle cx="80" cy="10" r="12" fill="#FCD34D" stroke="#C27803" strokeWidth="2" />
+                          <circle cx="80" cy="10" r="6" fill="#C27803" opacity="0.6" />
+
+                          {/* 臉型 (倒蛋形) */}
+                          <path d="M 15 40 Q 15 5 50 5 Q 85 5 85 40 L 85 70 Q 85 105 50 105 Q 15 105 15 70 Z" fill="#FCD34D" stroke="#C27803" strokeWidth="2" />
+                          
+                          {/* 眼睛 (笑眼 - 倒U) */}
+                          <path d="M 30 45 Q 38 35 46 45" stroke="#1F2937" strokeWidth="4" fill="none" strokeLinecap="round" />
+                          <path d="M 54 45 Q 62 35 70 45" stroke="#1F2937" strokeWidth="4" fill="none" strokeLinecap="round" />
+
+                          {/* 吻部線條 */}
+                          <path d="M 20 60 Q 50 55 80 60" stroke="#C27803" strokeWidth="1" fill="none" opacity="0.3" />
+
+                          {/* 鼻子 (大黑鼻 + 高光) */}
+                          <path d="M 35 60 Q 50 50 65 60 Q 70 70 50 75 Q 30 70 35 60" fill="#000" />
+                          <ellipse cx="45" cy="58" rx="6" ry="3" fill="white" opacity="0.9" transform="rotate(-15 45 58)"/>
+                          <path d="M 50 75 L 50 85" stroke="#000" strokeWidth="1.5" />
+
+                          {/* 嘴巴 (大笑 - 開口) */}
+                          <path d="M 30 85 Q 50 105 70 85 Q 50 85 30 85" fill="#7F1D1D" />
+                          <path d="M 40 95 Q 50 90 60 95" fill="#F472B6" /> 
+                       </svg>
+
+                       {/* 裝備層 */}
+                       {eyes && (
+                         <div className="absolute top-8 left-1/2 -translate-x-1/2 z-50">
+                            {eyes.id === 'goggles' && <div className={`w-32 h-14 ${eyes.color} opacity-80 border-4 border-gray-600 rounded-xl backdrop-blur-sm shadow-md`}></div>}
+                            {eyes.id === 'mask_welding' && <div className="w-36 h-40 -mt-12 bg-gray-800 rounded-3xl border-2 border-gray-600 flex items-center justify-center shadow-lg"><div className="w-24 h-12 bg-black border-2 border-yellow-500 rounded"></div></div>}
+                            {eyes.id === 'shield_face' && <div className={`w-36 h-40 -mt-10 ${eyes.color} opacity-60 border-t-4 border-gray-500 rounded-3xl backdrop-blur-sm shadow-sm`}></div>}
+                         </div>
+                       )}
+                       {face && (
+                         <div className={`absolute bottom-[-10px] left-1/2 -translate-x-1/2 w-28 h-20 ${face.color} rounded-b-[2rem] rounded-t-lg border border-gray-400 z-40 flex items-center justify-center shadow-sm`}>
+                            {face.id === 'mask_gas' && <div className="flex gap-2"><div className="w-8 h-8 bg-gray-800 rounded-full border-2 border-gray-500"></div><div className="w-8 h-8 bg-gray-800 rounded-full border-2 border-gray-500"></div></div>}
+                            {face.id === 'mask_dust' && <div className="w-12 h-10 bg-white rounded-full border border-gray-200 opacity-50"></div>}
+                         </div>
+                       )}
+                       {head && (
+                         <div className={`absolute -top-16 left-1/2 -translate-x-1/2 w-44 h-24 ${head.color} rounded-t-full border-b-4 border-gray-700 shadow-md z-50 flex items-center justify-center`}>
+                            <div className="w-32 h-2 bg-black/10 rounded-full mt-14"></div>
+                            <div className="absolute top-4 w-full text-center text-[10px] font-bold text-black/30">SAFETY FIRST</div>
+                         </div>
+                       )}
+                    </div>
+                  </div>
+
+                  {/* 身體 (Purple) */}
+                  <div className="relative z-20 -mt-2">
+                    <div className={`absolute -left-8 top-6 w-10 h-32 bg-[#FCD34D] rounded-full origin-top transform rotate-12 border-2 border-[#C27803] flex flex-col justify-end items-center z-0 transition-transform ${gameState === 'success' ? '-rotate-[140deg] -translate-x-4' : ''}`}></div>
+                    <div className={`absolute -right-8 top-6 w-10 h-32 bg-[#FCD34D] rounded-full origin-top transform -rotate-12 border-2 border-[#C27803] flex flex-col justify-end items-center z-0 transition-transform ${gameState === 'success' ? 'rotate-[140deg] translate-x-4' : ''}`}></div>
+
+                    <div className="w-40 h-44 bg-purple-800 rounded-[2rem] relative z-10 border-2 border-purple-900 overflow-hidden flex items-center justify-center shadow-inner">
+                       <div className="w-1 h-full bg-black/20"></div>
+                       <div className="absolute top-10 left-10 opacity-40 text-white"><Building2 size={20}/></div>
+                       {body && <div className={`absolute inset-0 w-full h-full ${body.color} flex flex-col items-center`}><div className="w-full h-full border-x-8 border-orange-500/50"></div></div>}
+                       {bodyOuter && <div className={`absolute inset-0 top-4 mx-2 h-full ${bodyOuter.color} rounded-b-lg border-2 border-white/20 shadow-lg`}><div className="absolute -top-4 left-1/2 -translate-x-1/2 w-20 h-4 bg-inherit border-x-2 border-t-2 border-white/20"></div></div>}
+                       {bodyAcc && <div className="absolute inset-0 w-full h-full pointer-events-none"><div className="absolute top-10 left-0 w-full h-3 bg-red-600 shadow-sm"></div><div className="absolute top-0 left-8 w-3 h-full bg-red-600 shadow-sm"></div><div className="absolute top-0 right-8 w-3 h-full bg-red-600 shadow-sm"></div></div>}
+                    </div>
+
+                    {hands && (
+                      <>
+                        <div className={`absolute -left-10 top-32 w-14 h-16 ${hands.color} rounded-xl border-2 border-gray-600 shadow-sm z-20 transform rotate-12 ${gameState === 'success' ? 'top-[-50px] -left-[90px]' : ''}`}></div>
+                        <div className={`absolute -right-10 top-32 w-14 h-16 ${hands.color} rounded-xl border-2 border-gray-600 shadow-sm z-20 transform -rotate-12 ${gameState === 'success' ? 'top-[-50px] -right-[90px]' : ''}`}></div>
+                      </>
+                    )}
+                  </div>
+
+                  {/* 腿部 */}
+                  <div className="flex gap-1 -mt-4 z-10">
+                    <div className="w-16 h-32 bg-slate-800 rounded-b-lg border-2 border-slate-900 relative flex justify-center shadow-lg">
+                       {feet ? <div className={`absolute -bottom-2 w-18 h-12 ${feet.color} rounded-lg border-b-4 border-black z-20`}></div> : <div className="absolute -bottom-2 w-18 h-10 bg-black rounded-lg z-20"></div>}
+                    </div>
+                    <div className="w-16 h-32 bg-slate-800 rounded-b-lg border-2 border-slate-900 relative flex justify-center shadow-lg">
+                       {feet ? <div className={`absolute -bottom-2 w-18 h-12 ${feet.color} rounded-lg border-b-4 border-black z-20`}></div> : <div className="absolute -bottom-2 w-18 h-10 bg-black rounded-lg z-20"></div>}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          };
+
+          // --- 主畫面渲染 ---
+          if (gameState === 'start' || gameState === 'leaderboard') {
+            return (
+              <div className="h-full w-full flex flex-col items-center justify-center p-6 relative">
+                {/* 歡迎/排行榜畫面 (保持簡單居中) */}
+                <div className="max-w-md w-full bg-white/90 backdrop-blur-xl rounded-3xl shadow-xl p-8 border border-white/50 relative z-10 flex flex-col items-center text-center max-h-full overflow-hidden">
+                   
+                   <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-100 text-purple-800 rounded-full text-xs font-bold mb-4 shadow-sm border border-purple-200">
+                      <Building2 size={14} /> BenQ Materials
+                   </div>
+                   <h1 className="text-3xl font-black text-slate-900 mb-2">工安防護具挑戰</h1>
+                   <p className="text-slate-500 text-sm mb-6">跟著阿基獅一起守護工安！</p>
+
+                   {gameState === 'leaderboard' ? (
+                     <div className="w-full flex-1 overflow-hidden flex flex-col">
+                        <div className="bg-slate-50 rounded-xl p-4 mb-4 border border-slate-100 flex justify-between items-center">
+                           <div>
+                             <div className="text-xs text-slate-400">總得分</div>
+                             <div className="text-2xl font-black text-purple-600">{score}</div>
+                           </div>
+                           <div className="text-right">
+                             <div className="text-xs text-slate-400">總耗時</div>
+                             <div className="text-2xl font-black text-orange-500">{totalSeconds}s</div>
+                           </div>
+                        </div>
+
+                        {!hasSaved ? (
+                           <div className="flex gap-2 mb-4">
+                             <input type="text" placeholder="輸入工號" className="flex-1 px-4 py-3 rounded-xl border-2 border-slate-200 font-bold outline-none focus:border-purple-500" value={employeeId} onChange={(e) => setEmployeeId(e.target.value)} maxLength={10} />
+                             <button onClick={saveScore} disabled={!employeeId.trim()} className="bg-slate-800 text-white px-4 rounded-xl font-bold disabled:opacity-50"><Save size={20}/></button>
+                           </div>
+                        ) : (
+                           <div className="text-green-600 font-bold mb-4 flex justify-center gap-2"><CheckCircle/> 成績已儲存</div>
+                        )}
+
+                        <div className="flex-1 overflow-y-auto custom-scrollbar border-t border-slate-100 pt-2 text-left">
+                           <div className="text-xs font-bold text-slate-400 mb-2">英雄榜 (TOP 50)</div>
+                           {rankings.length === 0 ? <div className="text-center text-slate-400 py-4 text-sm">暫無紀錄</div> : 
+                             rankings.map((r, i) => (
+                               <div key={i} className="flex justify-between py-2 border-b border-slate-50 text-sm">
+                                 <span className="font-bold w-6 text-slate-400">{i+1}</span>
+                                 <span className="flex-1 text-slate-700">{r.name}</span>
+                                 <span className="font-mono text-purple-600 font-bold">{r.score}</span>
+                               </div>
+                             ))
+                           }
+                        </div>
+                        
+                        <button onClick={startGame} className="w-full mt-4 bg-purple-600 text-white py-3 rounded-xl font-bold shadow-lg flex justify-center gap-2 items-center active:scale-95 transition-transform"><RotateCcw size={18}/> 再次挑戰</button>
+                     </div>
+                   ) : (
+                     <button onClick={startGame} className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 rounded-2xl font-black text-xl shadow-lg shadow-purple-500/30 flex justify-center gap-2 items-center active:scale-95 transition-transform">
+                       <Play size={24} fill="currentColor" /> 開始挑戰
+                     </button>
+                   )}
+                </div>
+              </div>
+            );
+          }
+
+          // --- 手機版主要佈局 ---
+          return (
+            <div className="h-full flex flex-col overflow-hidden">
+                {/* 1. 上半部 (固定區域)：Header + 題目 + 阿基獅 */}
+                <div className="flex-none bg-white shadow-sm z-20 pb-2">
+                    {/* Header */}
+                    <div className="flex justify-between items-center p-3 border-b border-slate-100">
+                        <div className="flex items-center gap-2">
+                            <span className="bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-xs font-bold">Q{round}/{TOTAL_ROUNDS}</span>
+                            <h1 className="font-bold text-slate-800 text-sm truncate max-w-[120px]">{currentScenario?.title}</h1>
+                        </div>
+                        <div className="flex gap-3 text-sm">
+                            <div className="font-mono font-bold text-orange-500 flex gap-1 items-center"><History size={14}/> {totalSeconds}s</div>
+                            <div className="font-black text-purple-600">{score}</div>
+                        </div>
+                    </div>
+
+                    {/* 提示欄 */}
+                    <div className="px-4 py-2 flex items-center justify-between bg-slate-50">
+                        <div className="text-xs text-slate-500">請為阿基獅選擇裝備</div>
+                        {!hintVisible ? (
+                            <button onClick={showHint} className="flex items-center gap-1 text-xs font-bold text-amber-600 bg-amber-100 px-2 py-1 rounded-lg border border-amber-200 active:scale-95"><Lightbulb size={12}/> 提示 (-20)</button>
+                        ) : (
+                            <div className="text-xs font-bold text-amber-600 flex-1 ml-2 truncate">{currentScenario?.hint}</div>
+                        )}
+                    </div>
+
+                    {/* 阿基獅顯示區 (高度固定，避免跑版) */}
+                    <div className="w-full flex justify-center bg-gradient-to-b from-slate-50 to-slate-100 py-2 border-b border-slate-200">
+                        <div className="scale-75 origin-top -mb-16">
+                            <WorkerFigure />
+                        </div>
+                    </div>
+                </div>
+
+                {/* 2. 下半部 (滾動區域)：裝備列表 */}
+                <div className="flex-1 overflow-y-auto bg-slate-100 p-4 pb-24 custom-scrollbar">
+                    <div className="grid grid-cols-3 gap-3">
+                        {EQUIPMENT_LIST.map((item) => {
+                            const isWorn = wornItems.find(i => i.id === item.id);
+                            const Icon = item.Component;
+                            return (
+                                <button key={item.id} onClick={() => toggleItem(item)} disabled={gameState !== 'playing'}
+                                    className={`relative flex flex-col items-center p-2 rounded-xl border-2 transition-all active:scale-95
+                                    ${isWorn ? 'bg-purple-50 border-purple-500 shadow-sm' : 'bg-white border-slate-200'}`}
+                                >
+                                    {isWorn && <div className="absolute top-1 right-1 text-purple-500"><CheckCircle size={14}/></div>}
+                                    <div className="w-10 h-10 mb-1"><Icon /></div>
+                                    <div className="text-[10px] font-bold text-slate-600 text-center leading-tight">{item.name}</div>
+                                </button>
+                            )
+                        })}
+                    </div>
+                </div>
+
+                {/* 3. 底部浮動按鈕 */}
+                <div className="fixed bottom-0 left-0 w-full bg-white p-4 border-t border-slate-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-30">
+                    <div className="max-w-md mx-auto flex gap-3">
+                        <button onClick={() => setWornItems([])} className="p-3 rounded-xl bg-slate-100 text-slate-500 border border-slate-300 active:scale-95"><RotateCcw size={20}/></button>
+                        {gameState === 'playing' ? (
+                            <button onClick={checkAnswer} className="flex-1 bg-purple-600 text-white font-bold rounded-xl py-3 shadow-lg shadow-purple-200 active:scale-95 transition-transform flex justify-center items-center gap-2">
+                                確認裝備 <CheckCircle size={18}/>
+                            </button>
+                        ) : (
+                            <button onClick={nextRound} className="flex-1 bg-blue-600 text-white font-bold rounded-xl py-3 shadow-lg shadow-blue-200 active:scale-95 transition-transform flex justify-center items-center gap-2">
+                                {round >= TOTAL_ROUNDS ? '查看結果' : '下一題'} <ArrowRight size={18}/>
+                            </button>
+                        )}
+                    </div>
+                </div>
+
+                {/* 結果彈窗 (Overlay) */}
+                {message && gameState !== 'playing' && gameState !== 'leaderboard' && (
+                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white/95 backdrop-blur shadow-2xl border-2 border-slate-100 rounded-2xl p-6 w-4/5 text-center z-50 animate-fade-in">
+                        <div className={`text-xl font-black mb-2 ${gameState === 'success' ? 'text-green-500' : 'text-red-500'}`}>
+                            {gameState === 'success' ? '答對了！' : '哎呀...'}
+                        </div>
+                        <p className="text-sm text-slate-600 font-bold mb-4">{message}</p>
+                        {/* 這裡不需要按鈕，因為底部已經變成了「下一題」 */}
+                    </div>
+                )}
+            </div>
+          );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<SafetyGearGame />);
+    </script>
+</body>
+</html>
