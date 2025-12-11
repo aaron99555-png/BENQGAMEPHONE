@@ -345,7 +345,8 @@
             const failClass = gameState === 'failure' ? '' : ''; 
 
             return (
-              <div className={`relative w-full h-full rounded-2xl flex flex-col items-center justify-end overflow-hidden shrink-0
+              // NOTE: Removed overflow-hidden from the container to prevent cutting off
+              <div className={`relative w-full h-full rounded-2xl flex flex-col items-center justify-end shrink-0
                 ${gameState === 'success' ? 'bg-green-100/50' : gameState === 'failure' ? 'bg-red-50/50' : 'bg-transparent'} transition-all`}>
                 
                 <div className={`relative flex flex-col items-center transform transition-transform duration-500 origin-bottom z-10 -mb-2 ${className} ${successClass} ${failClass}`}>
@@ -531,7 +532,7 @@
                     </div>
 
                     {/* Content Row: Question Left, Lion Right */}
-                    <div className="flex w-full h-[28vh] border-b border-slate-200">
+                    <div className="flex w-full h-[35vh] border-b border-slate-200">
                         {/* Left: Question Area */}
                         <div className="w-7/12 p-3 bg-slate-50 flex flex-col justify-center border-r border-slate-100">
                              {/* Title & Hint Row */}
@@ -547,7 +548,8 @@
                         </div>
 
                         {/* Right: Character Area */}
-                        <div className="w-5/12 relative bg-gradient-to-b from-white to-slate-100 flex justify-center items-end overflow-hidden pb-6">
+                        {/* NOTE: Removed overflow-hidden and increased bottom padding to pb-8 to lift the character up */}
+                        <div className="w-5/12 relative bg-gradient-to-b from-white to-slate-100 flex justify-center items-end pb-8">
                              {/* Adjust scale to fit in this 1/2 width container */}
                              <WorkerFigure className="scale-[0.45] sm:scale-75" />
                         </div>
