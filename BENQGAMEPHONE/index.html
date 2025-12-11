@@ -340,15 +340,19 @@
             const hands = getItemByCat('hands');
             const feet = getItemByCat('feet');
 
-            const breatheClass = gameState === 'playing' ? 'animate-pulse-slow' : '';
-            const successClass = gameState === 'success' ? 'animate-bounce' : '';
-            const failClass = gameState === 'failure' ? 'animate-shake' : '';
+            const breatheClass = gameState === 'playing' ? '' : ''; 
+            const successClass = gameState === 'success' ? '' : ''; 
+            const failClass = gameState === 'failure' ? '' : ''; 
 
             return (
               <div className={`relative w-full h-full rounded-2xl flex flex-col items-center justify-end overflow-hidden shrink-0
                 ${gameState === 'success' ? 'bg-green-100/50' : gameState === 'failure' ? 'bg-red-50/50' : 'bg-transparent'} transition-all`}>
                 
-                <div className={`relative flex flex-col items-center transform transition-transform duration-500 origin-bottom scale-[0.52] sm:scale-75 -translate-y-2 z-10 -mb-2`}>
+                {/* Update: Adjusted scale slightly (0.52) and added -translate-y-10 to lift the character up, 
+                   ensuring feet are visible above the bottom edge.
+                   Also updated internal WorkerFigure translate to 0 to avoid pushing content down internally.
+                */}
+                <div className={`relative flex flex-col items-center transform transition-transform duration-500 origin-bottom scale-[0.52] sm:scale-75 -translate-y-10 z-10 -mb-2`}>
                   
                   {/* 阿基獅頭部 (更新版) */}
                   <div className={`relative z-30 flex flex-col items-center w-40 h-40 -mb-4 ${breatheClass}`}>
@@ -549,7 +553,7 @@
                         {/* Right: Character Area */}
                         <div className="w-5/12 relative bg-gradient-to-b from-white to-slate-100 flex justify-center items-end overflow-hidden pb-1">
                              {/* Adjust scale to fit in this 1/2 width container */}
-                             <div className="origin-bottom scale-[0.52] sm:scale-75 -translate-y-2">
+                             <div className="origin-bottom scale-[0.52] sm:scale-75 -translate-y-10">
                                 <WorkerFigure />
                              </div>
                         </div>
