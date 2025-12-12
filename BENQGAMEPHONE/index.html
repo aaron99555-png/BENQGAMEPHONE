@@ -198,11 +198,8 @@
           const [round, setRound] = useState(1);
           const [usedScenarioIds, setUsedScenarioIds] = useState([]);
           
-          // User Info States
-          const [factoryCode, setFactoryCode] = useState('');
-          const [deptCode, setDeptCode] = useState('');
+          // User Info States - Modified
           const [employeeId, setEmployeeId] = useState('');
-          const [userName, setUserName] = useState('');
           
           const [isBlinking, setIsBlinking] = useState(false);
 
@@ -471,46 +468,26 @@
                     <div className="p-8 pt-2 space-y-4">
                         {gameState === 'result' ? (
                              <div className="w-full flex-1 overflow-hidden flex flex-col">
-                                <div className="bg-slate-50 rounded-xl p-4 mb-4 border border-slate-100 flex justify-between items-center">
-                                   <div>
-                                     <div className="text-xs text-slate-400">總得分</div>
-                                     <div className="text-2xl font-black text-benq">{score}</div>
+                                <div className="bg-slate-50 rounded-xl p-4 mb-4 border border-slate-100">
+                                   <div className="flex justify-between items-center mb-4 border-b border-slate-200 pb-4">
+                                       <div>
+                                         <div className="text-xs text-slate-400">總得分</div>
+                                         <div className="text-2xl font-black text-benq">{score}</div>
+                                       </div>
+                                       <div className="text-right">
+                                         <div className="text-xs text-slate-400">總耗時</div>
+                                         <div className="text-2xl font-black text-orange-500">{totalSeconds}s</div>
+                                       </div>
                                    </div>
-                                   <div className="text-right">
-                                     <div className="text-xs text-slate-400">總耗時</div>
-                                     <div className="text-2xl font-black text-orange-500">{totalSeconds}s</div>
+                                   <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-sm flex items-center justify-between">
+                                        <div className="text-sm font-bold text-slate-500 flex items-center gap-2"><UserCheck size={16}/> 參賽者工號</div>
+                                        <div className="text-lg font-black text-slate-700">{employeeId || "未輸入"}</div>
                                    </div>
-                                </div>
-
-                                <div className="bg-white border border-slate-200 rounded-xl p-4 text-left mb-6 shadow-sm space-y-3">
-                                    <h3 className="font-bold text-slate-700 mb-2 flex items-center gap-2"><User size={16}/> 請填寫挑戰者資訊</h3>
-                                    
-                                    <div className="relative group">
-                                        <div className="absolute left-4 top-3.5 text-slate-400 group-focus-within:text-benq transition-colors"><MapPin size={18} /></div>
-                                        <input type="text" placeholder="廠區代碼" className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 outline-none focus:border-benq transition-colors bg-slate-50 focus:bg-white text-sm" value={factoryCode} onChange={(e) => setFactoryCode(e.target.value)} />
-                                    </div>
-                                    <div className="relative group">
-                                       <div className="absolute left-4 top-3.5 text-slate-400 group-focus-within:text-benq transition-colors"><Briefcase size={18} /></div>
-                                       <input type="text" placeholder="部門代碼" className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 outline-none focus:border-benq transition-colors bg-slate-50 focus:bg-white text-sm" value={deptCode} onChange={(e) => setDeptCode(e.target.value)} />
-                                    </div>
-                                    <div className="relative group">
-                                        <div className="absolute left-4 top-3.5 text-slate-400 group-focus-within:text-benq transition-colors"><UserCheck size={18} /></div>
-                                        <input type="text" placeholder="工號" className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 outline-none focus:border-benq transition-colors bg-slate-50 focus:bg-white text-sm" value={employeeId} onChange={(e) => setEmployeeId(e.target.value)} />
-                                    </div>
-                                    <div className="relative group">
-                                        <div className="absolute left-4 top-3.5 text-slate-400 group-focus-within:text-benq transition-colors"><User size={18} /></div>
-                                        <input type="text" placeholder="姓名" className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 outline-none focus:border-benq transition-colors bg-slate-50 focus:bg-white text-sm" value={userName} onChange={(e) => setUserName(e.target.value)} />
-                                    </div>
                                 </div>
 
                                 <div className="text-center mb-6">
                                     <p className="text-benq font-bold mb-2 animate-bounce">📸 請截圖此畫面</p>
-                                    <a href={(!factoryCode || !deptCode || !employeeId || !userName) ? null : "https://forms.gle/4z1WqZMZEVMeXUgMA"} 
-                                       target="_blank" 
-                                       className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold shadow-lg transition-all w-full justify-center
-                                       ${(!factoryCode || !deptCode || !employeeId || !userName) 
-                                            ? 'bg-slate-300 text-slate-500 cursor-not-allowed shadow-none' 
-                                            : 'bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:shadow-xl active:scale-95'}`}>
+                                    <a href="https://forms.gle/4z1WqZMZEVMeXUgMA" target="_blank" className="inline-flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all active:scale-95 w-full justify-center">
                                         <Upload size={20}/> 上傳成績截圖
                                     </a>
                                 </div>
@@ -519,8 +496,20 @@
                              </div>
                         ) : (
                             <div className="space-y-4">
-                                <p className="text-center text-slate-500 mb-6">準備好了嗎？完成 10 題工安情境挑戰，測試你的防護具知識！</p>
-                                <button onClick={startGame} className="w-full bg-benq hover:bg-purple-800 text-white py-4 rounded-2xl font-bold shadow-lg shadow-purple-200 active:scale-95 transition-all flex items-center justify-center gap-2 mt-4">
+                                <p className="text-center text-slate-500 mb-2">準備好了嗎？輸入工號開始挑戰！</p>
+                                
+                                <div className="relative group">
+                                    <div className="absolute left-4 top-3.5 text-slate-400 group-focus-within:text-benq transition-colors"><UserCheck size={20} /></div>
+                                    <input 
+                                        type="text" 
+                                        placeholder="請輸入工號" 
+                                        className="w-full pl-12 pr-4 py-3 rounded-xl border-2 border-slate-200 font-bold outline-none focus:border-benq transition-colors bg-slate-50 focus:bg-white text-lg text-center" 
+                                        value={employeeId} 
+                                        onChange={(e) => setEmployeeId(e.target.value)} 
+                                    />
+                                </div>
+
+                                <button onClick={startGame} disabled={!employeeId} className="w-full bg-benq hover:bg-purple-800 text-white py-4 rounded-2xl font-bold shadow-lg shadow-purple-200 active:scale-95 transition-all flex items-center justify-center gap-2 mt-4 disabled:opacity-50 disabled:cursor-not-allowed">
                                     開始挑戰 <ArrowRight size={20} />
                                 </button>
                             </div>
