@@ -195,7 +195,8 @@
           const [failDetails, setFailDetails] = useState(null);
           const [score, setScore] = useState(0);
           const [hintVisible, setHintVisible] = useState(false);
-          const [totalSeconds, setTotalSeconds] = useState(0);
+          // Changed: Rename totalSeconds to timeMs for milliseconds tracking
+          const [timeMs, setTimeMs] = useState(0);
           const [isActive, setIsActive] = useState(false);
           
           const [round, setRound] = useState(1);
@@ -206,12 +207,16 @@
           
           const [isBlinking, setIsBlinking] = useState(false);
 
+          // Helper to format time
+          const formatTime = (ms) => (ms / 1000).toFixed(3);
+
           useEffect(() => {
             let interval = null;
             if (isActive) {
+              const startTime = Date.now() - timeMs;
               interval = setInterval(() => {
-                setTotalSeconds(s => s + 1);
-              }, 1000);
+                setTimeMs(Date.now() - startTime);
+              }, 10); // Update every 10ms
             }
             return () => clearInterval(interval);
           }, [isActive]);
@@ -226,7 +231,7 @@
 
           const startGame = () => {
             setScore(0);
-            setTotalSeconds(0);
+            setTimeMs(0);
             setRound(1);
             setUsedScenarioIds([]);
             pickNextLevel([]);
@@ -479,7 +484,7 @@
                                        </div>
                                        <div className="text-right">
                                          <div className="text-xs text-slate-400">總耗時</div>
-                                         <div className="text-2xl font-black text-orange-500">{totalSeconds}s</div>
+                                         <div className="text-2xl font-black text-orange-500">{formatTime(timeMs)}s</div>
                                        </div>
                                    </div>
                                    <div className="bg-white p-3 rounded-lg border border-slate-200 shadow-sm flex items-center justify-between">
@@ -546,7 +551,7 @@
                     <div className="flex justify-between items-center px-4 py-2 border-b border-slate-100 bg-white">
                         <div className="flex items-center gap-2">
                             <span className="bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-xs font-bold">Q{round}/{TOTAL_ROUNDS}</span>
-                            <div className="font-mono font-bold text-orange-500 flex gap-1 items-center text-xs"><History size={12}/> {totalSeconds}s</div>
+                            <div className="font-mono font-bold text-orange-500 flex gap-1 items-center text-xs"><History size={12}/> {formatTime(timeMs)}s</div>
                         </div>
                         <div className="font-black text-benq text-lg">{score}</div>
                     </div>
