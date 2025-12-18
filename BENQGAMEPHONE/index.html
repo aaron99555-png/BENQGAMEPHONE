@@ -2,7 +2,6 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <!-- 關鍵：禁止縮放，確保 APP 質感 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>BenQ Materials Safety Gear Challenge</title>
     
@@ -12,7 +11,6 @@
             margin: 0; 
             padding: 0; 
             background-color: #f8fafc;
-            /* 關鍵：防止手機下拉刷新導致頁面跳動 */
             overscroll-behavior: none;
         }
         .loading-screen {
@@ -21,7 +19,7 @@
             background: #ffffff; z-index: 9999; text-align: center;
         }
         .loading-spinner {
-            border: 4px solid #f3f3f3; border-top: 4px solid #652d90; border-radius: 50%; /* BenQ Purple */
+            border: 4px solid #f3f3f3; border-top: 4px solid #652d90; border-radius: 50%;
             width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 20px;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -30,7 +28,6 @@
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(101, 45, 144, 0.3); border-radius: 4px; }
 
-        /* 背景裝飾動畫 */
         .bg-gradient-animate {
             background: linear-gradient(-45deg, #652d90, #4a1d6e, #8e56b8, #652d90);
             background-size: 400% 400%;
@@ -62,7 +59,7 @@
                         extend: {
                             colors: {
                                 benq: {
-                                    DEFAULT: '#652d90', // BenQ Purple
+                                    DEFAULT: '#652d90',
                                     hover: '#502379',
                                     light: '#8e56b8',
                                     dark: '#4a1d6e',
@@ -111,24 +108,17 @@
         // --- Icon Components ---
         const IconBase = ({ size = 24, className = "", children, ...props }) => (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} {...props}>{children}</svg>);
         const CheckCircle = (p) => <IconBase {...p}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></IconBase>;
-        const XCircle = (p) => <IconBase {...p}><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></IconBase>;
         const RotateCcw = (p) => <IconBase {...p}><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></IconBase>;
         const ArrowRight = (p) => <IconBase {...p}><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></IconBase>;
-        const Construction = (p) => <IconBase {...p}><rect x="2" y="6" width="20" height="8" rx="1"></rect><path d="M17 14v7"></path><path d="M7 14v7"></path><path d="M17 3v3"></path><path d="M7 3v3"></path><path d="M10 14 2.3 6.3"></path><path d="m14 6 7.7 7.7"></path><path d="m8 6 8 8"></path></IconBase>;
-        const Timer = (p) => <IconBase {...p}><line x1="10" y1="2" x2="14" y2="2"></line><line x1="12" y1="14" x2="15.51" y2="11.51"></line><circle cx="12" cy="14" r="8"></circle></IconBase>;
         const Lightbulb = (p) => <IconBase {...p}><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-1 1.5-2 1.5-3.5A6 6 0 0 0 6 8c0 1 .5 2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"></path><path d="M9 18h6"></path><path d="M10 22h4"></path></IconBase>;
-        const ShieldAlert = (p) => <IconBase {...p}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></IconBase>;
         const AlertTriangle = (p) => <IconBase {...p}><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></IconBase>;
         const History = (p) => <IconBase {...p}><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path><path d="M12 7v5l4 2"></path></IconBase>;
         const Building2 = (p) => <IconBase {...p}><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"></path><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"></path><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"></path><path d="M10 6h4"></path><path d="M10 10h4"></path><path d="M10 14h4"></path><path d="M10 18h4"></path></IconBase>;
         const UserCheck = (p) => <IconBase {...p}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><polyline points="16 11 18 13 22 9"></polyline></IconBase>;
         const Upload = (p) => <IconBase {...p}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></IconBase>;
-        const User = (p) => <IconBase {...p}><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></IconBase>;
-        const Briefcase = (p) => <IconBase {...p}><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></IconBase>;
-        const MapPin = (p) => <IconBase {...p}><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></IconBase>;
         const Trophy = (p) => <IconBase {...p}><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M9 14.66V17a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-2.34l-3.14-3.14a3 3 0 0 1-.72-1.54l-.52-2.28"></path><path d="M19.42 4.94A2 2 0 0 0 18 4H6a2 2 0 0 0-1.42.94L2 9.07a2.12 2.12 0 0 0 .59 2.14l8.28 7.37a2 2 0 0 0 2.26 0l8.28-7.37a2.12 2.12 0 0 0 .59-2.14z"></path></IconBase>;
 
-        // ... [PPE Icons and SCENARIOS omitted for brevity] ...
+        // --- PPE Icons ---
         const IconHelmet = () => <svg viewBox="0 0 64 64" className="w-full h-full" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 36c0-14 10-26 28-26s28 12 28 26v4H4v-4z" fill="#FBBF24" stroke="#D97706" /><path d="M32 10v4M4 36h56M12 36c0-4 2-8 6-8h28c4 0 6 4 6 8" stroke="#D97706" strokeLinecap="round"/><path d="M28 14h8" stroke="#D97706" strokeWidth="3"/></svg>;
         const IconGoggles = () => <svg viewBox="0 0 64 64" className="w-full h-full" fill="none"><path d="M12 28c0-6 4-10 10-10h6c2 0 4 2 4 4s2 4 4 4 4-2 4-4 2-4 4-4h6c6 0 10 4 10 10v6c0 6-4 10-10 10h-6c-2 0-4-2-4-4s-2-4-4-4-4 2-4 4-2 4-4 4h-6c-6 0-10-4-10-10v-6z" fill="#BFDBFE" stroke="#2563EB" strokeWidth="3"/><path d="M4 30h8M52 30h8" stroke="#1F2937" strokeWidth="3" strokeLinecap="round"/></svg>;
         const IconWeldingMask = () => <svg viewBox="0 0 64 64" className="w-full h-full" fill="none"><rect x="14" y="8" width="36" height="48" rx="8" fill="#1F2937" stroke="#000" strokeWidth="2"/><rect x="20" y="20" width="24" height="12" rx="2" fill="#111827" stroke="#F59E0B" strokeWidth="2"/><path d="M22 26h20" stroke="#F59E0B" strokeWidth="1" opacity="0.5"/></svg>;
@@ -139,6 +129,9 @@
         const IconHarness = () => <svg viewBox="0 0 64 64" className="w-full h-full" fill="none"><path d="M16 8v48M48 8v48" stroke="#EF4444" strokeWidth="4"/><path d="M16 20h32M16 40h32" stroke="#EF4444" strokeWidth="4"/><path d="M16 12l32 40M48 12L16 52" stroke="#B91C1C" strokeWidth="3"/></svg>;
         const IconVest = () => <svg viewBox="0 0 64 64" className="w-full h-full" fill="none"><path d="M12 12h12l8 16 8-16h12v40H12V12z" fill="#A3E635" stroke="#4D7C0F" strokeWidth="2"/><path d="M12 36h40M12 44h40" stroke="#E5E7EB" strokeWidth="4"/><path d="M22 12v40M42 12v40" stroke="#E5E7EB" strokeWidth="4"/></svg>;
         const IconApron = () => <svg viewBox="0 0 64 64" className="w-full h-full" fill="none"><path d="M22 8h20v8H22z" stroke="#1D4ED8" strokeWidth="2"/><path d="M18 16h28l4 8v32H14V24l4-8z" fill="#2563EB" stroke="#1E40AF" strokeWidth="2"/><path d="M24 30h16" stroke="#60A5FA" strokeWidth="2" opacity="0.5"/></svg>;
+        const IconSuit = () => <svg viewBox="0 0 64 64" className="w-full h-full" fill="none"><path d="M20 4h24l4 12v44H16V16L20 4z" fill="#F8FAFC" stroke="#64748B" strokeWidth="2"/><path d="M32 4v56M16 32h32" stroke="#CBD5E1" strokeWidth="2"/><path d="M24 12h16" stroke="#94A3B8" strokeWidth="2"/></svg>;
+        const IconSleeves = () => <svg viewBox="0 0 64 64" className="w-full h-full" fill="none"><rect x="12" y="20" width="16" height="32" rx="4" fill="#60A5FA" stroke="#2563EB" strokeWidth="2"/><rect x="36" y="20" width="16" height="32" rx="4" fill="#60A5FA" stroke="#2563EB" strokeWidth="2"/><path d="M12 24h16M36 24h16" stroke="#93C5FD" strokeWidth="2"/></svg>;
+        
         const IconGlove = ({ color, type }) => <svg viewBox="0 0 64 64" className="w-full h-full" fill="none"><path d="M20 54V30a4 4 0 0 1 8 0v-4a4 4 0 0 1 8 0v-2a4 4 0 0 1 8 0v4a4 4 0 0 1 8 0v26H20z" fill={color} stroke="#4B5563" strokeWidth="2"/><path d="M20 50h32" stroke="#000" strokeOpacity="0.1"/>{type === 'dot' && <circle cx="32" cy="40" r="1" fill="#000" opacity="0.2"/>}{type === 'line' && <path d="M28 36v10" stroke="#000" opacity="0.1"/>}</svg>;
         const IconBoot = ({ color, sole }) => <svg viewBox="0 0 64 64" className="w-full h-full" fill="none"><path d="M18 12h16v24h14c4 0 6 4 6 8v8H14V16c0-2 2-4 4-4z" fill={color} stroke="#1F2937" strokeWidth="2"/><path d="M14 52h40v4H14z" fill={sole} stroke="#000" strokeWidth="1"/><path d="M18 16h16" stroke="#FFF" strokeOpacity="0.2"/></svg>;
 
@@ -153,36 +146,48 @@
           { id: 'harness', name: '高空安全帶', Component: IconHarness, category: 'body_acc', color: 'bg-red-500' },
           { id: 'vest', name: '反光背心', Component: IconVest, category: 'body', color: 'bg-lime-400' },
           { id: 'apron', name: '防護圍裙', Component: IconApron, category: 'body_outer', color: 'bg-blue-700' },
+          { id: 'suit_protection', name: '防護衣', Component: IconSuit, category: 'body_full', color: 'bg-white' },
+          { id: 'sleeves_sun', name: '防曬袖套', Component: IconSleeves, category: 'arms', color: 'bg-blue-300' },
           { id: 'gloves_cotton', name: '棉紗手套', Component: () => <IconGlove color="#E5E7EB" type="dot"/>, category: 'hands', color: 'bg-gray-200' },
           { id: 'gloves_rubber', name: '耐化學手套', Component: () => <IconGlove color="#A855F7" type="line"/>, category: 'hands', color: 'bg-purple-500' },
           { id: 'gloves_insulation', name: '絕緣手套', Component: () => <IconGlove color="#EA580C" />, category: 'hands', color: 'bg-orange-600' },
           { id: 'gloves_cut', name: '防切割手套', Component: () => <IconGlove color="#94A3B8" type="line"/>, category: 'hands', color: 'bg-slate-400' },
           { id: 'gloves_leather', name: '皮革手套', Component: () => <IconGlove color="#B45309" />, category: 'hands', color: 'bg-amber-700' },
+          { id: 'gloves_cryo', name: '低溫防護手套', Component: () => <IconGlove color="#3B82F6" type="line" />, category: 'hands', color: 'bg-blue-600' },
           { id: 'safety_shoes', name: '鋼頭安全鞋', Component: () => <IconBoot color="#1F2937" sole="#000"/>, category: 'feet', color: 'bg-slate-800' },
           { id: 'boots_rubber', name: '防護雨鞋', Component: () => <IconBoot color="#CA8A04" sole="#854D0E"/>, category: 'feet', color: 'bg-yellow-600' },
         ];
 
         const SCENARIOS = [
-          { id: 1, title: '高空鷹架作業', description: '在 5 公尺高的鷹架上維護外牆，上方偶爾有落石。', required: ['helmet', 'harness', 'safety_shoes'], hint: '【墜落危害】高處作業須配戴安全帶，並保護頭部與腳部。' },
-          { id: 2, title: '調膠室溶劑調配', description: '室內充滿有機溶劑氣味，液體具腐蝕性且容易噴濺。', required: ['mask_gas', 'goggles', 'gloves_rubber', 'apron'], hint: '【化學危害】需防止吸入毒氣，並保護眼、身、手不被腐蝕。' },
-          { id: 3, title: '發電機房巡檢', description: '機房內發電機運轉中，噪音高達 95 分貝。', required: ['earmuffs', 'safety_shoes', 'helmet'], hint: '【噪音危害】保護聽力是首要任務，同時注意頭部與腳部安全。' },
-          { id: 4, title: '手持砂輪機研磨', description: '研磨金屬零件，有大量火花與金屬粉塵飛散。', required: ['goggles', 'mask_dust', 'gloves_cotton', 'earmuffs'], hint: '【粉塵/火花】防護眼、肺、手，且研磨噪音大需戴耳罩。' },
-          { id: 5, title: '夜間道路搶修', description: '夜間在車流量大的馬路進行坑洞修補。', required: ['helmet', 'vest', 'safety_shoes'], hint: '【被撞危害】最重要的是高可視度反光背心。' },
-          { id: 6, title: '配電盤活線作業', description: '檢修 220V 未斷電的配電盤設備。', required: ['helmet', 'gloves_insulation', 'safety_shoes', 'shield_face'], hint: '【感電危害】絕緣手套與面罩防止電弧灼傷是關鍵。' },
-          { id: 7, title: '鋼構電銲作業', description: '焊接鋼材，產生強烈紫外線強光、高溫與金屬噴濺。', required: ['mask_welding', 'gloves_leather', 'apron', 'safety_shoes'], hint: '【光害/高溫】需焊接面罩擋強光，皮革手套與圍裙防高溫噴濺。' },
-          { id: 8, title: '割草機除草', description: '使用背負式割草機，地面碎石容易飛濺。', required: ['shield_face', 'boots_rubber', 'apron', 'gloves_cotton'], hint: '【飛落物危害】碎石易傷臉與腿，需面罩與長筒雨鞋/圍裙。' },
-          { id: 9, title: '廢棄玻璃清理', description: '清理含有大量碎玻璃與尖銳鐵片的廢棄物。', required: ['gloves_cut', 'safety_shoes', 'helmet'], hint: '【切割危害】首重手部防切割與足部防穿刺。' },
-          { id: 10, title: '強酸地板清洗', description: '地面積水且使用強酸清潔劑，極度濕滑。', required: ['boots_rubber', 'gloves_rubber', 'goggles', 'mask_gas'], hint: '【化學/跌倒】需防滑防水雨鞋，與完整的抗酸防護。' },
-          { id: 11, title: '鑽床/車床操作', description: '操作高速旋轉的機具進行金屬鑽孔與加工。', required: ['goggles', 'safety_shoes'], forbidden: ['hands'], hint: '【捲夾危害】旋轉機具「絕對禁止」戴手套，以免被捲入！' },
-          { id: 12, title: '高溫熔煉爐作業', description: '在鑄造廠高溫熔爐旁作業，有熱輻射與金屬液噴濺風險。', required: ['helmet', 'shield_face', 'gloves_leather', 'apron', 'safety_shoes'], hint: '【高溫危害】全身需耐高溫防護：皮革手套、圍裙、面罩。' },
-          { id: 13, title: '破碎機打石作業', description: '使用大型氣動破碎機拆除混泥土，噪音極大且粉塵多。', required: ['earmuffs', 'mask_dust', 'goggles', 'helmet', 'safety_shoes', 'gloves_cotton'], hint: '【噪音/粉塵】高分貝噪音需耳罩，並防護粉塵與飛石。' },
-          { id: 14, title: '輸送帶維修 (運轉中)', description: '在運轉中的輸送帶旁進行目視檢查 (不可接觸)。', required: ['helmet', 'safety_shoes', 'goggles'], forbidden: ['hands'], hint: '【捲夾危害】靠近運轉中機械，嚴禁戴手套或寬鬆衣物以免捲入。' },
-          { id: 15, title: '化學槽車卸料 (酸液)', description: '連接管線卸收高腐蝕性酸液，接口處可能噴濺。', required: ['shield_face', 'mask_gas', 'apron', 'gloves_rubber', 'boots_rubber'], hint: '【噴濺危害】最高規格化學防護：面罩+防毒+橡膠手套+圍裙+雨鞋。' },
-          { id: 16, title: '堆高機駕駛', description: '駕駛堆高機在倉庫間搬運貨物，需注意頭頂貨物與周遭人員。', required: ['helmet', 'vest', 'safety_shoes'], hint: '【被撞/物體飛落】駕駛需戴安全帽防護落物，穿背心提升能見度。' },
-          { id: 17, title: '金屬切割操作', description: '使用切割機進行金屬切斷，有鐵屑飛濺與極大噪音。', required: ['helmet', 'earmuffs', 'shield_face', 'gloves_cut', 'safety_shoes'], hint: '【切割/噪音】需防切割手套、面罩擋鐵屑，以及耳罩防噪音。' },
-          { id: 18, title: '粉塵作業', description: '粒子添加作業，空氣中懸浮大量細微粉塵。', required: ['mask_dust', 'goggles', 'helmet', 'safety_shoes'], hint: '【粉塵危害】高濃度粉塵環境，N95等級以上口罩與護目鏡是必須的。' },
-          { id: 19, title: '液態氮分裝操作', description: '分裝零下 196 度液態氮，極低溫液體可能噴濺。', required: ['shield_face', 'gloves_leather', 'apron', 'safety_shoes'], hint: '【低溫危害】防止凍傷與噴濺，需面罩與厚絕緣手套（如皮革）。' },
-          { id: 20, title: '局限空間氣體偵測', description: '進入通風不良的地下道前，需先確認氣體狀況。', required: ['helmet', 'mask_gas', 'safety_shoes', 'harness'], hint: '【缺氧/中毒】雖是偵測，但需預設有危害：佩戴呼吸防護與救援用安全帶。' }
+            { id: 1, title: '高處設備更換作業', description: '人員於高處進行設備更換作業時，應配戴哪些完整安全防護具？', hint: '「墜落危害」高處作業須防止人員墜落並有防護具保護頭部與腳部', required: ['helmet', 'harness', 'safety_shoes'] },
+            { id: 2, title: '調膠室溶劑調配', description: '進行化學品調配作業時，應配戴哪些整套安全防護具？', hint: '「化學危害」需防止吸入有機溶劑氣體並保護眼睛、身體、手部不被化學品噴濺', required: ['mask_gas', 'goggles', 'apron', 'gloves_rubber'] },
+            { id: 3, title: '發電機房巡檢', description: '於噪音高達95分貝的環境作業時，應配戴哪些完整安全防護具？', hint: '「噪音危害」保護聽力是首要任務同時注意頭部與腳部安全', required: ['helmet', 'earmuffs', 'safety_shoes'] },
+            { id: 4, title: '粉體投料作業', description: '粉塵環境中作業時，應配戴哪些完整安全防護具？', hint: '「粉塵危害」需防止粉塵對人體的危害做好保護眼睛及呼吸道', required: ['goggles', 'mask_dust'] },
+            { id: 5, title: '物料吊掛作業', description: '人員於吊掛作業區工作時，應配戴哪些完整安全防護具？', hint: '「飛落物危害」吊掛作業區須防止物體掉落砸傷人員頭部及腳部', required: ['helmet', 'safety_shoes'] },
+            { id: 6, title: '物料搬運作業', description: '駕駛堆高機進行物料搬運作業時，應配戴哪些完整安全防護具？', hint: '「撞傷/壓傷」駕駛人員除安全帶以外須做好頭部及腳部防護', required: ['helmet', 'safety_shoes'] },
+            { id: 7, title: '電氣檢修做業', description: '進行電氣設備檢修作業時，應配戴哪些完整安全防護具？', hint: '「感電危害」電氣設備檢修手部有感電風險須配戴絕緣防護並保護頭部及腳部', required: ['helmet', 'safety_shoes', 'gloves_insulation'] },
+            { id: 8, title: '膜料切割作業', description: '使用安全刀具進行作業時，應配戴哪些完整安全防護具？', hint: '「切割危害」避免刀具使用時對手部造成危害', required: ['gloves_cut'] },
+            { id: 9, title: '廢水處理作業', description: '於潮濕或積水環境作業時，應配戴哪些完整安全防護具？', hint: '「跌倒危害」需防滑防水設備並防止人員跌倒撞傷頭部', required: ['helmet', 'boots_rubber'] },
+            { id: 10, title: '庫房碼頭作業', description: '人員於車輛頻繁進出區域作業時，應配戴哪些完整安全防護具？', hint: '「撞傷/壓傷」在車輛進出區域除了頭部及腳部的防護需要顯眼裝備提醒駕駛', required: ['helmet', 'safety_shoes', 'vest'] },
+            { id: 11, title: '焊接金屬作業', description: '焊接飛濺作業時，應配戴哪些完整安全防護具？', hint: '「光害/高溫」需防止強光高溫對眼睛及臉部的危害並阻擋高溫噴濺對手部及身體的危害', required: ['mask_welding', 'goggles', 'gloves_leather', 'apron'] },
+            { id: 12, title: '化學品檢測作業', description: '接觸酸、鹼等腐蝕性化學品時，應配戴哪些完整安全防護具？', hint: '「噴濺危害」最高規格化學防護保護臉部、呼吸器官、身體及手部', required: ['shield_face', 'mask_gas', 'apron', 'gloves_rubber'] },
+            { id: 13, title: '設備維修作業', description: '進行設備拆檢維護作業時，應配戴哪些完整安全防護具？', hint: '「切割危害」需防止手部受傷並保護眼睛及腳部', required: ['gloves_cut', 'goggles', 'safety_shoes'] },
+            { id: 14, title: '無塵室設備保養作業', description: '人員於無塵室內進行酒精擦拭清潔作業時，應配戴哪些完整安全防護具？', hint: '「化學危害」保護作業人員的眼睛、呼吸道及手部的安全', required: ['goggles', 'mask_dust', 'gloves_rubber'] },
+            { id: 15, title: '化學品桶搬運作業', description: '人員於化學品倉庫以人工搬運桶裝化學品時，應配戴哪些完整安全防護具？', hint: '「化學/壓傷」防止化學品對眼睛、手部及身體危害及桶身掉落時對腳部的危害', required: ['goggles', 'gloves_rubber', 'safety_shoes', 'apron'] },
+            { id: 16, title: '化學品洩漏初期應變作業', description: '發生化學品洩漏，進行初期處理作業時，應配戴哪些完整安全防護具？', hint: '「化學危害」須避免呼吸道吸入及對眼睛、手部及身體的危害', required: ['mask_gas', 'goggles', 'gloves_rubber', 'apron'] },
+            { id: 17, title: '研磨金屬作業', description: '人員進行金屬切削或研磨時，應配戴哪些完整安全防護具？', hint: '「割傷/粉塵」人員進行作業時應防止金屬飛濺對眼睛造成傷害並注意研磨過程中所產生之粉塵對呼吸道的危害同時手部進行防護', required: ['goggles', 'mask_dust', 'gloves_cut'] },
+            { id: 18, title: '化學品廢棄物區作業', description: '人員於化學品廢棄物暫存區進行分類檢查時，應配戴哪些完整安全防護具？', hint: '「化學/壓傷」避免接觸殘留化學物質保護眼睛、手部及身體避免重物壓傷腳部', required: ['goggles', 'gloves_rubber', 'apron', 'safety_shoes'] },
+            { id: 19, title: '化學品整理作業', description: '人員於防爆櫃內整理有機溶劑及化學品容器時，應配戴哪些完整安全防護具？', hint: '「化學危害」避免眼睛、手部及身體接觸揮發性溶劑且避免吸入揮發性氣體', required: ['goggles', 'gloves_rubber', 'apron', 'mask_gas'] },
+            { id: 20, title: '園藝除草作業', description: '使用背負式割草機進行除草，地面有小碎石，應配戴哪些完整安全防護具？', hint: '「飛落物危害」碎石易傷臉部、手部與身體', required: ['shield_face', 'gloves_cotton', 'apron'] },
+            { id: 21, title: '液氮充填作業', description: '進行超低溫液體充填或取樣時，應配戴哪些完整安全防護具？', hint: '「低溫灼傷」防止極低溫液體噴濺造成凍傷需保護眼睛、手部與身體', required: ['shield_face', 'gloves_cryo', 'apron'] },
+            { id: 22, title: '進入局限空間作業', description: '進入通風不良之槽體、坑道進行清理時，應配戴哪些完整安全防護具？', hint: '「缺氧/中毒」除通風外需防止吸入有害氣體並確保受困時能被拉出', required: ['mask_gas', 'harness'] },
+            { id: 23, title: '實驗室', description: '玻璃器皿清洗使用大量清水與清潔劑清洗玻璃器皿時，應配戴哪些完整安全防護具？', hint: '「割傷/濕滑」防止玻璃破裂割傷及藥品殘留並注意腳部防滑', required: ['goggles', 'gloves_rubber', 'boots_rubber'] },
+            { id: 24, title: '紫外線/強光操作作業', description: '操作紫外線/強光設備對準時，應配戴哪些完整安全防護具？', hint: '「外線/強光」防止特定波長之強光對眼睛造成永久性傷害', required: ['goggles'] },
+            { id: 25, title: '密閉空間油漆噴塗', description: '於通風較差區域進行大面積油漆作業時，應配戴哪些完整安全防護具？', hint: '「化學/有機溶劑」防止高濃度有機溶劑經由呼吸道及皮膚吸收', required: ['mask_gas', 'goggles', 'suit_protection', 'gloves_rubber'] },
+            { id: 26, title: '天花板管線巡查', description: '巡檢人員需爬梯進入天花板上方狹窄空間時，應配戴哪些完整安全防護具？', hint: '「碰撞/墜落」預防上方管線撞擊頭部及從梯子墜落風險', required: ['helmet', 'harness', 'safety_shoes'] },
+            { id: 27, title: '廢棄物清理/資源回收整理', description: '含有尖銳物（如鐵釘、碎玻璃）的廢棄物時，應配戴哪些完整安全防護具？', hint: '「刺傷危害」防止腳底被刺穿及手部被割傷', required: ['safety_shoes', 'gloves_cut'] },
+            { id: 28, title: '戶外高溫巡檢作業', description: '於夏季高溫戶外環境長時間進行巡檢時，應配戴哪些完整安全防護具？', hint: '「熱危害」防止紫外線傷害皮膚並預防中暑且維持頭腳基本防護', required: ['helmet', 'sleeves_sun', 'safety_shoes'] },
+            { id: 29, title: '生物醫療廢棄物處理', description: '處理可能受病原體污染之廢棄物時，應配戴哪些完整安全防護具？', hint: '「感染危害」防止生物病原體接觸皮膚、眼睛或吸入', required: ['mask_dust', 'goggles', 'suit_protection', 'gloves_rubber'] }
         ];
 
         const TOTAL_ROUNDS = 10;
@@ -334,6 +339,8 @@
             const body = getItemByCat('body');
             const bodyAcc = getItemByCat('body_acc');
             const bodyOuter = getItemByCat('body_outer');
+            const bodyFull = getItemByCat('body_full');
+            const arms = getItemByCat('arms');
             const hands = getItemByCat('hands');
             const feet = getItemByCat('feet');
 
@@ -347,10 +354,8 @@
                 
                 <div className={`relative flex flex-col items-center transform transition-transform duration-500 origin-bottom z-10 -mb-2 ${className} ${successClass} ${failClass}`}>
                   
-                  {/* 阿基獅頭部 (更新版) */}
+                  {/* 阿基獅頭部 */}
                   <div className={`relative z-30 flex flex-col items-center w-40 h-40 -mb-4 ${breatheClass}`}>
-                    
-                    {/* 鬃毛 (最底層) - 棕色圓形 */}
                     <div className="absolute top-0 left-0 w-full h-full z-0 scale-110">
                        <svg viewBox="0 0 100 100" className="w-full h-full overflow-visible">
                           <circle cx="50" cy="50" r="48" fill="#C27803" stroke="#92400E" strokeWidth="2" />
@@ -367,28 +372,17 @@
 
                     <div className="relative w-28 h-32 z-10 top-2">
                        <svg viewBox="0 0 100 120" className="w-full h-full overflow-visible">
-                          {/* 耳朵 */}
                           <circle cx="20" cy="10" r="12" fill="#FCD34D" stroke="#C27803" strokeWidth="2" />
                           <circle cx="20" cy="10" r="6" fill="#C27803" opacity="0.6" />
                           <circle cx="80" cy="10" r="12" fill="#FCD34D" stroke="#C27803" strokeWidth="2" />
                           <circle cx="80" cy="10" r="6" fill="#C27803" opacity="0.6" />
-
-                          {/* 臉型 (倒蛋形) */}
                           <path d="M 15 40 Q 15 5 50 5 Q 85 5 85 40 L 85 70 Q 85 105 50 105 Q 15 105 15 70 Z" fill="#FCD34D" stroke="#C27803" strokeWidth="2" />
-                          
-                          {/* 眼睛 (笑眼 - 倒U) */}
                           <path d="M 30 45 Q 38 35 46 45" stroke="#1F2937" strokeWidth="4" fill="none" strokeLinecap="round" />
                           <path d="M 54 45 Q 62 35 70 45" stroke="#1F2937" strokeWidth="4" fill="none" strokeLinecap="round" />
-
-                          {/* 吻部線條 */}
                           <path d="M 20 60 Q 50 55 80 60" stroke="#C27803" strokeWidth="1" fill="none" opacity="0.3" />
-
-                          {/* 鼻子 (大黑鼻 + 高光) */}
                           <path d="M 35 60 Q 50 50 65 60 Q 70 70 50 75 Q 30 70 35 60" fill="#000" />
                           <ellipse cx="45" cy="58" rx="6" ry="3" fill="white" opacity="0.9" transform="rotate(-15 45 58)"/>
                           <path d="M 50 75 L 50 85" stroke="#000" strokeWidth="1.5" />
-
-                          {/* 嘴巴 (大笑 - 開口) */}
                           <path d="M 30 85 Q 50 105 70 85 Q 50 85 30 85" fill="#7F1D1D" />
                           <path d="M 40 95 Q 50 90 60 95" fill="#F472B6" /> 
                        </svg>
@@ -425,9 +419,18 @@
                        <div className="w-1 h-full bg-black/20"></div>
                        <div className="absolute top-10 left-10 opacity-40 text-white"><Building2 size={20}/></div>
                        {body && <div className={`absolute inset-0 w-full h-full ${body.color} flex flex-col items-center`}><div className="w-full h-full border-x-8 border-orange-500/50"></div></div>}
+                       {bodyFull && <div className={`absolute inset-0 w-full h-full ${bodyFull.color} rounded-[2rem] border-2 border-gray-300 flex flex-col items-center justify-center`}><div className="w-1 h-full bg-gray-200"></div></div>}
                        {bodyOuter && <div className={`absolute inset-0 top-4 mx-2 h-full ${bodyOuter.color} rounded-b-lg border-2 border-white/20 shadow-lg`}><div className="absolute -top-4 left-1/2 -translate-x-1/2 w-20 h-4 bg-inherit border-x-2 border-t-2 border-white/20"></div></div>}
                        {bodyAcc && <div className="absolute inset-0 w-full h-full pointer-events-none"><div className="absolute top-10 left-0 w-full h-3 bg-red-600 shadow-sm"></div><div className="absolute top-0 left-8 w-3 h-full bg-red-600 shadow-sm"></div><div className="absolute top-0 right-8 w-3 h-full bg-red-600 shadow-sm"></div></div>}
                     </div>
+
+                    {/* Arms/Sleeves */}
+                    {arms && (
+                        <>
+                            <div className={`absolute -left-9 top-10 w-12 h-32 ${arms.color} rounded-full origin-top transform rotate-12 z-5`}></div>
+                            <div className={`absolute -right-9 top-10 w-12 h-32 ${arms.color} rounded-full origin-top transform -rotate-12 z-5`}></div>
+                        </>
+                    )}
 
                     {hands && (
                       <>
@@ -440,9 +443,11 @@
                   {/* 腿部 */}
                   <div className="flex gap-1 -mt-4 z-10">
                     <div className="w-16 h-32 bg-slate-800 rounded-b-lg border-2 border-slate-900 relative flex justify-center shadow-lg">
+                        {bodyFull && <div className="absolute inset-0 bg-white rounded-b-lg opacity-90"></div>}
                        {feet ? <div className={`absolute -bottom-2 w-18 h-12 ${feet.color} rounded-lg border-b-4 border-black z-20`}></div> : <div className="absolute -bottom-2 w-18 h-10 bg-black rounded-lg z-20"></div>}
                     </div>
                     <div className="w-16 h-32 bg-slate-800 rounded-b-lg border-2 border-slate-900 relative flex justify-center shadow-lg">
+                        {bodyFull && <div className="absolute inset-0 bg-white rounded-b-lg opacity-90"></div>}
                        {feet ? <div className={`absolute -bottom-2 w-18 h-12 ${feet.color} rounded-lg border-b-4 border-black z-20`}></div> : <div className="absolute -bottom-2 w-18 h-10 bg-black rounded-lg z-20"></div>}
                     </div>
                   </div>
