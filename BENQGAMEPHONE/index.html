@@ -181,7 +181,7 @@
 
         // Group definitions with Icons for Buttons
         const CATEGORY_GROUPS = [
-            { id: 'head_group', name: '頭部', icon: () => <IconHelmet color="#FBBF24"/>, categories: ['head', 'ears'] },
+            { id: 'head_group', name: '頭部', icon: IconHelmet, categories: ['head', 'ears'] },
             { id: 'face_group', name: '眼臉', icon: IconGoggles, categories: ['eyes', 'face'] },
             { id: 'body_group', name: '身體', icon: IconVest, categories: ['body', 'body_acc', 'body_outer', 'body_full'] },
             { id: 'hand_group', name: '手部', icon: () => <IconGlove color="#A855F7" />, categories: ['hands', 'arms'] },
@@ -603,7 +603,7 @@
                          {/* Hint & Count Row */}
                          <div className="flex flex-wrap items-center gap-2 mb-2">
                              {!hintVisible ? (
-                                <button onClick={showHint} className="flex items-center gap-1 text-xs font-bold text-amber-600 bg-amber-100 px-2 py-1 rounded-full border border-amber-200 active:scale-95 whitespace-nowrap"><Lightbulb size={12}/> 提示</button>
+                                <button onClick={showHint} className="flex items-center gap-1 text-xs font-bold text-amber-600 bg-amber-100 px-2 py-1 rounded-full border border-amber-200 active:scale-95 whitespace-nowrap"><Lightbulb size={12}/> 點選提示</button>
                             ) : (
                                 <div className="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded border border-amber-100 animate-fade-in">{currentScenario?.hint}</div>
                             )}
