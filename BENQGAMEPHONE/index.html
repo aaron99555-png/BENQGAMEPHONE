@@ -166,7 +166,6 @@
           { id: 'vest', name: '反光背心', Component: IconVest, category: 'body', color: 'bg-lime-400' },
           { id: 'apron', name: '防護圍裙', Component: IconApron, category: 'body_outer', color: 'bg-blue-700' },
           { id: 'suit_protection', name: 'C級防護衣', Component: IconSuit, category: 'body_full', color: 'bg-white' },
-          { id: 'sleeves_sun', name: '防曬袖套', Component: IconSleeves, category: 'arms', color: 'bg-blue-300' },
           { id: 'gloves_cotton', name: '棉紗手套', Component: () => <IconGlove color="#E5E7EB" type="dot"/>, category: 'hands', color: 'bg-gray-200' },
           { id: 'gloves_rubber', name: '耐化學手套', Component: () => <IconGlove color="#A855F7" type="line"/>, category: 'hands', color: 'bg-purple-500' },
           { id: 'gloves_insulation', name: '絕緣手套', Component: () => <IconGlove color="#EA580C" />, category: 'hands', color: 'bg-orange-600' },
@@ -191,9 +190,9 @@
             { id: 1, title: '燈管更換作業', description: '人員於高處進行燈管更換作業時，應配戴哪些安全防護具？', hint: '「墜落危害」高處作業須防止人員墜落並有防護具保護頭部與腳部', required: ['helmet', 'harness', 'safety_shoes'] },
             { id: 2, title: '調膠室溶劑調配', description: '進行調膠作業時，應配戴哪些安全防護具？', hint: '「化學危害」需防止吸入有機溶劑氣體並保護眼睛、身體、手部不被化學品噴濺', required: ['mask_gas', 'goggles', 'apron', 'gloves_rubber'] },
             { id: 3, title: '化調粉體投料作業', description: '化調進行投料作業時，應配戴哪些安全防護具？', hint: '「粉塵危害」需防止粉塵對人體的危害做好保護眼睛及呼吸道', required: ['goggles', 'mask_dust'] },
-            { id: 4, title: '捲料吊掛作業作業', description: '於吊掛作業區工作時，應配戴哪些安全防護具？', hint: '「飛落物危害」吊掛作業區須防止物體掉落砸傷人員頭部及腳部', required: ['helmet', 'safety_shoes'] },
+            { id: 4, title: '捲料吊掛作業', description: '於吊掛作業區工作時，應配戴哪些安全防護具？', hint: '「飛落物危害」吊掛作業區須防止物體掉落砸傷人員頭部及腳部', required: ['helmet', 'safety_shoes'] },
             { id: 5, title: '推高機物料搬運作業', description: '駕駛堆高機進行物料搬運作業時，應配戴哪些安全防護具？', hint: '「撞傷/壓傷」駕駛人員除安全帶以外須做好頭部及腳部防護', required: ['helmet', 'safety_shoes'] },
-            { id: 6, title: '電氣室檢修做業', description: '進行電氣設備檢修作業時，應配戴哪些安全防護具？', hint: '「感電危害」電氣設備檢修手部有感電風險須配戴絕緣防護並保護頭部及腳部', required: ['helmet_electric', 'safety_shoes', 'gloves_insulation'] },
+            { id: 6, title: '電氣室檢修作業', description: '進行電氣設備檢修作業時，應配戴哪些安全防護具？', hint: '「感電危害」電氣設備檢修手部有感電風險須配戴絕緣防護並保護頭部及腳部', required: ['helmet_electric', 'safety_shoes', 'gloves_insulation'] },
             { id: 7, title: '膜料切割作業', description: '使用刀具進行切割/取膜作業時，應配戴哪些安全防護具？', hint: '「切割危害」避免刀具使用時對手部造成危害', required: ['gloves_cut'] },
             { id: 8, title: '化學品檢測作業', description: '接觸酸、鹼等腐蝕性化學品時，應配戴哪些安全防護具？', hint: '「噴濺危害」最高規格化學防護保護臉部、呼吸器官、身體及手部', required: ['shield_face', 'mask_gas', 'apron', 'gloves_rubber'] },
             { id: 9, title: '滾輪清潔作業', description: '進行酒精或IPA擦拭清潔作業時，應配戴哪些安全防護具？', hint: '「化學危害」保護作業人員的眼睛、呼吸道及手部的安全', required: ['goggles', 'mask_dust', 'gloves_rubber'] },
@@ -733,4 +732,3 @@
     </script>
 </body>
 </html>
-
