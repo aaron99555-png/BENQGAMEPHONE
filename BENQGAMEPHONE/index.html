@@ -139,7 +139,6 @@
         const X = (p) => <IconBase {...p}><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></IconBase>;
         const Info = (p) => <IconBase {...p}><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></IconBase>;
         const Volume2 = (p) => <IconBase {...p}><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></IconBase>;
-        const Sparkles = (p) => <IconBase {...p}><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path></IconBase>;
 
         // --- PPE Icons ---
         const IconHelmet = ({color = "#FBBF24"}) => <svg viewBox="0 0 64 64" className="w-full h-full" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 36c0-14 10-26 28-26s28 12 28 26v4H4v-4z" fill={color} stroke="#D97706" /><path d="M32 10v4M4 36h56M12 36c0-4 2-8 6-8h28c4 0 6 4 6 8" stroke="#D97706" strokeLinecap="round"/><path d="M28 14h8" stroke="#D97706" strokeWidth="3"/></svg>;
@@ -214,11 +213,9 @@
             { id: 15, title: '局限空間作業', description: '進入通風不良之槽體進行清理時，應配戴哪些安全防護具？', hint: '「缺氧/中毒」除通風外需防止吸入有害氣體並確保受困時能被拉出', required: ['mask_gas', 'harness', 'lanyard'] },
             { id: 16, title: '紫外線/強光操作作業', description: '操作紫外線/強光設備時，應配戴哪些安全防護具？', hint: '「外線/強光」防止特定波長之強光對眼睛造成永久性傷害', required: ['glasses_uv'] },
             { id: 17, title: '廢棄物清理/資源回收整理', description: '含有尖銳物（如鐵釘、碎玻璃）的廢棄物時，應配戴哪些安全防護具？', hint: '「刺傷危害」防止腳底被刺穿及手部被割傷', required: ['safety_shoes', 'gloves_cut'] },
-            { id: 18, title: '戶外高溫巡檢作業', description: '於夏季高溫戶外環境長時間進行巡檢時，應配戴哪些安全防護具？', hint: '「熱危害」防止紫外線傷害皮膚並預防中暑且維持頭腳基本防護', required: ['helmet_sun', 'sleeves_sun', 'safety_shoes'] },
-            { id: 19, title: '鍋爐加藥作業', description: '人員於鍋爐區進行加藥作業時，應配戴哪些完整安全防護具？', hint: '「化學/壓傷/噪音」注意避免接觸化學物質，保護眼睛、手部及身體，防止重物壓傷腳部，並配戴耳塞', required: ['helmet', 'earmuffs', 'goggles', 'gloves_rubber', 'apron', 'safety_shoes'] },
-            { id: 20, title: '烘箱取物作業', description: '需取出烘箱內之物品時，應配戴哪些安全防護具？', hint: '「高溫危害」 防止手部及身體直接接觸高溫工件或設備造成燙傷', required: ['gloves_heat', 'apron'] },
-            { id: 21, title: '塗頭管件清洗作業', description: '拆除後管件使用有機溶劑進行清洗時，應配戴哪些安全防護具？', hint: '「化學危害」 避免吸入有機溶劑氣體，並防止溶劑噴濺傷及眼睛與皮膚', required: ['mask_gas', 'goggles', 'gloves_rubber', 'apron'] },
-            { id: 22, title: '實驗室滴定作業', description: '使用化學品進行滴定作業時，應配戴哪些完整安全防護具？', hint: '「化學危害」為防止化學品噴濺，應保護眼睛、呼吸道、身體、手部及腳部，配戴個人防護具', required: ['goggles', 'mask_dust', 'gloves_rubber', 'safety_shoes'] }
+            { id: 18, title: '廠務\\設備機房巡檢', description: '進入機房等噪音作業場所時，應配戴哪些安全防護具？', hint: '「噪音危害」 高噪音區域須防止聽力受損，並維持基本頭部與足部防護', required: ['earmuffs', 'helmet', 'safety_shoes'] },
+            { id: 19, title: '烘箱取物作業', description: '需取出烘箱內之物品時，應配戴哪些安全防護具？', hint: '「高溫危害」 防止手部及身體直接接觸高溫工件或設備造成燙傷', required: ['gloves_heat', 'apron'] },
+            { id: 20, title: '塗頭管件清洗作業', description: '拆除後管件使用有機溶劑進行清洗時，應配戴哪些安全防護具？', hint: '「化學危害」 避免吸入有機溶劑氣體，並防止溶劑噴濺傷及眼睛與皮膚', required: ['mask_gas', 'goggles', 'gloves_rubber', 'apron'] }
         ];
 
         const TOTAL_ROUNDS = 10;
@@ -239,8 +236,6 @@
           
           const [employeeId, setEmployeeId] = useState('');
           const [isBlinking, setIsBlinking] = useState(false);
-          const [aiFeedback, setAiFeedback] = useState(null);
-          const [isAiLoading, setIsAiLoading] = useState(false);
           const [isTtsLoading, setIsTtsLoading] = useState(false);
           
           // Audio Ref
@@ -295,7 +290,6 @@
             setMessage('');
             setFailDetails(null);
             setHintVisible(false);
-            setAiFeedback(null);
             setIsActive(true); 
             // Optional: reset to first group or keep current
             setActiveGroupId(CATEGORY_GROUPS[0].id);
@@ -337,40 +331,6 @@
           };
           
           // --- Gemini API Functions ---
-          const fetchGeminiFeedback = async () => {
-              if (isAiLoading || aiFeedback) return;
-              setIsAiLoading(true);
-              
-              const wornNames = wornItems.map(i => i.name).join(', ') || "無";
-              const requiredNames = currentScenario.required.map(id => EQUIPMENT_LIST.find(i => i.id === id)?.name).join(', ');
-              const isSuccess = failDetails === null; // failDetails is set on checkAnswer if incorrect
-              
-              const prompt = `
-              你是BenQ專業的工安教官。請針對以下情況給予繁體中文的安全分析建議 (100字以內)：
-              情境：${currentScenario.title} - ${currentScenario.description}
-              使用者選擇裝備：${wornNames}
-              正確裝備：${requiredNames}
-              結果：${isSuccess ? '正確' : '錯誤'}
-              ${!isSuccess ? '請解釋為什麼漏選或選錯的裝備很重要，以及可能造成的具體危害。' : '請簡短肯定並補充一個相關的安全小知識。'}
-              語氣：專業、鼓勵性。`;
-
-              try {
-                  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-                  });
-                  const data = await response.json();
-                  const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-                  setAiFeedback(text || "AI 暫時無法提供分析，請稍後再試。");
-              } catch (error) {
-                  console.error("Gemini API Error:", error);
-                  setAiFeedback("連線錯誤，無法取得 AI 分析。");
-              } finally {
-                  setIsAiLoading(false);
-              }
-          };
-
           const fetchGeminiTTS = async () => {
               if (isTtsLoading) return;
               setIsTtsLoading(true);
@@ -395,19 +355,7 @@
                   const base64Audio = data.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
                   
                   if (base64Audio) {
-                      const audioSrc = `data:audio/mp3;base64,${base64Audio}`; // Note: API returns PCM usually, but browser might need conversion or specific header. 
-                      // Simpler approach for this demo environment if raw PCM:
-                      // Actually, the prompt instruction says it returns "audio/L16" (PCM). 
-                      // Browsers don't play raw L16 easily in <audio>. 
-                      // For a simple web app without complex WAV encoding libraries, 
-                      // we might try to use a standard TTS endpoint if available or just assume the user
-                      // understands this is a demo. 
-                      // However, let's try to wrap it in a WAV container or use a library if we could.
-                      // Since we can't import libraries easily here, let's skip complex audio processing 
-                      // and simulate the "Play" action visual or use browser native TTS as fallback if Gemini fails/is complex format.
-                      
-                      // FALLBACK TO BROWSER TTS for reliability in this specific constrained HTML demo
-                      // (Gemini TTS is powerful but handling raw PCM in a single HTML file without helpers is tricky)
+                      const audioSrc = `data:audio/mp3;base64,${base64Audio}`; 
                       const utterance = new SpeechSynthesisUtterance(textToRead);
                       utterance.lang = 'zh-TW';
                       window.speechSynthesis.speak(utterance);
@@ -847,36 +795,6 @@
                                 </div>
                             </div>
                         )}
-
-                        {/* AI Feedback Section */}
-                        <div className="bg-indigo-50 rounded-xl p-3 border border-indigo-100 text-left">
-                            <div className="flex justify-between items-center mb-2">
-                                <div className="font-bold text-indigo-700 flex items-center gap-1">
-                                    <Sparkles size={14} className="text-indigo-500"/> BenQ安全教官
-                                </div>
-                                {!aiFeedback && (
-                                    <button 
-                                        onClick={fetchGeminiFeedback} 
-                                        disabled={isAiLoading}
-                                        className="text-[10px] bg-indigo-600 text-white px-2 py-1 rounded hover:bg-indigo-700 disabled:opacity-50 transition-colors"
-                                    >
-                                        {isAiLoading ? '分析中...' : '進行分析'}
-                                    </button>
-                                )}
-                            </div>
-                            
-                            {isAiLoading && (
-                                <div className="flex justify-center py-2">
-                                    <div className="w-4 h-4 border-2 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
-                                </div>
-                            )}
-                            
-                            {aiFeedback && (
-                                <div className="text-xs text-slate-700 leading-relaxed animate-fade-in whitespace-pre-wrap">
-                                    {aiFeedback}
-                                </div>
-                            )}
-                        </div>
                     </div>
                 )}
             </div>
