@@ -12,11 +12,16 @@
             padding: 0; 
             background-color: #f8fafc;
             overscroll-behavior: none;
-            /* Prevent bounce effect on iOS */
             position: fixed;
             width: 100%;
             height: 100%;
+            display: flex;
+            flex-direction: column;
         }
+        
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+        .pt-safe { padding-top: env(safe-area-inset-top); }
+
         .loading-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
@@ -93,7 +98,6 @@
         .rank-2 { color: #94a3b8; font-weight: bold; } /* Silver */
         .rank-3 { color: #b45309; font-weight: bold; } /* Bronze */
         
-        /* Responsive tweaks */
         @media (max-width: 380px) {
             .leaderboard-table { font-size: 0.75rem; }
             .leaderboard-table th, .leaderboard-table td { padding: 4px; }
@@ -118,7 +122,6 @@
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
         import { getFirestore, collection, addDoc, getDocs, serverTimestamp, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
 
-        // User provided config
         const firebaseConfig = {
           apiKey: "AIzaSyDwd5lS02P0sbD8aOHl61NmmIsa2zVaEbU",
           authDomain: "benqgame-38336.firebaseapp.com",
@@ -130,13 +133,11 @@
         };
 
         try {
-            // Initialize Firebase
             const app = initializeApp(firebaseConfig);
             const analytics = getAnalytics(app);
             const auth = getAuth(app);
             const db = getFirestore(app);
 
-            // Expose services to window for React component to access
             window.firebaseServices = {
                 auth,
                 db,
@@ -152,7 +153,6 @@
 
             console.log("Firebase initialized successfully");
 
-            // Attempt anonymous sign-in
             signInAnonymously(auth)
                 .then(() => console.log("Firebase: Signed in anonymously"))
                 .catch((error) => console.warn("Firebase: Sign-in failed", error.message));
@@ -216,7 +216,7 @@
 
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
-        const apiKey = ""; // Gemini API Key if available
+        const apiKey = ""; 
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
         // --- Icon Components ---
@@ -256,6 +256,7 @@
         const EQUIPMENT_LIST = [
           { id: 'helmet', name: '工業安全帽', Component: () => <IconHelmet color="#FBBF24"/>, category: 'head', color: 'bg-yellow-400' },
           { id: 'helmet_electric', name: '電工安全帽', Component: () => <IconHelmet color="#FFFFFF"/>, category: 'head', color: 'bg-white' },
+          { id: 'helmet_sun', name: '安全帽附遮陽緣', Component: () => <IconHelmet color="#FCD34D"/>, category: 'head', color: 'bg-yellow-300' },
           { id: 'goggles', name: '安全護目鏡', Component: () => <IconGoggles/>, category: 'eyes', color: 'bg-blue-200' },
           { id: 'glasses_uv', name: '抗UV防護眼鏡', Component: () => <IconGoggles lens="#4B5563"/>, category: 'eyes', color: 'bg-gray-400' },
           { id: 'mask_welding', name: '焊接面罩', Component: IconWeldingMask, category: 'eyes', color: 'bg-gray-800' },
@@ -307,10 +308,11 @@
             { id: 15, title: '局限空間作業', description: '進入通風不良之槽體進行清理時，應配戴哪些安全防護具？', hint: '「缺氧/中毒」除通風外需防止吸入有害氣體並確保受困時能被拉出', required: ['mask_gas', 'harness', 'lanyard'] },
             { id: 16, title: '紫外線/強光操作作業', description: '操作紫外線/強光設備時，應配戴哪些安全防護具？', hint: '「外線/強光」防止特定波長之強光對眼睛造成永久性傷害', required: ['glasses_uv'] },
             { id: 17, title: '廢棄物清理/資源回收整理', description: '含有尖銳物（如鐵釘、碎玻璃）的廢棄物時，應配戴哪些安全防護具？', hint: '「刺傷危害」防止腳底被刺穿及手部被割傷', required: ['safety_shoes', 'gloves_cut'] },
-            { id: 18, title: '鍋爐加藥作業', description: '人員於鍋爐區進行加藥作業時，應配戴哪些完整安全防護具？', hint: '「化學/壓傷/噪音」注意避免接觸化學物質，保護眼睛、手部及身體，防止重物壓傷腳部，並配戴耳塞', required: ['helmet', 'earmuffs', 'goggles', 'gloves_rubber', 'apron', 'safety_shoes'] },
-            { id: 19, title: '烘箱取物作業', description: '需取出烘箱內之物品時，應配戴哪些安全防護具？', hint: '「高溫危害」 防止手部及身體直接接觸高溫工件或設備造成燙傷', required: ['gloves_heat', 'apron'] },
-            { id: 20, title: '塗頭管件清洗作業', description: '拆除後管件使用有機溶劑進行清洗時，應配戴哪些安全防護具？', hint: '「化學危害」 避免吸入有機溶劑氣體，並防止溶劑噴濺傷及眼睛與皮膚', required: ['mask_gas', 'goggles', 'gloves_rubber', 'apron'] },
-            { id: 21, title: '實驗室滴定作業', description: '使用化學品進行滴定作業時，應配戴哪些完整安全防護具？', hint: '「化學危害」為防止化學品噴濺，應保護眼睛、呼吸道、身體、手部及腳部，配戴個人防護具', required: ['goggles', 'mask_dust', 'gloves_rubber', 'safety_shoes'] }
+            { id: 18, title: '戶外高溫巡檢作業', description: '於夏季高溫戶外環境長時間進行巡檢時，應配戴哪些安全防護具？', hint: '「熱危害」防止紫外線傷害皮膚並預防中暑且維持頭腳基本防護', required: ['helmet_sun', 'sleeves_sun', 'safety_shoes'] },
+            { id: 19, title: '鍋爐加藥作業', description: '人員於鍋爐區進行加藥作業時，應配戴哪些完整安全防護具？', hint: '「化學/壓傷/噪音」注意避免接觸化學物質，保護眼睛、手部及身體，防止重物壓傷腳部，並配戴耳塞', required: ['helmet', 'earmuffs', 'goggles', 'gloves_rubber', 'apron', 'safety_shoes'] },
+            { id: 20, title: '烘箱取物作業', description: '需取出烘箱內之物品時，應配戴哪些安全防護具？', hint: '「高溫危害」 防止手部及身體直接接觸高溫工件或設備造成燙傷', required: ['gloves_heat', 'apron'] },
+            { id: 21, title: '塗頭管件清洗作業', description: '拆除後管件使用有機溶劑進行清洗時，應配戴哪些安全防護具？', hint: '「化學危害」 避免吸入有機溶劑氣體，並防止溶劑噴濺傷及眼睛與皮膚', required: ['mask_gas', 'goggles', 'gloves_rubber', 'apron'] },
+            { id: 22, title: '實驗室滴定作業', description: '使用化學品進行滴定作業時，應配戴哪些完整安全防護具？', hint: '「化學危害」為防止化學品噴濺，應保護眼睛、呼吸道、身體、手部及腳部，配戴個人防護具', required: ['goggles', 'mask_dust', 'gloves_rubber', 'safety_shoes'] }
         ];
 
         const TOTAL_ROUNDS = 10;
@@ -611,115 +613,122 @@
             const failClass = gameState === 'failure' ? '' : ''; 
 
             return (
-              <div className={`relative w-full h-full rounded-2xl flex flex-col items-center justify-end shrink-0
-                ${gameState === 'success' ? 'bg-green-100/50' : gameState === 'failure' ? 'bg-red-50/50' : 'bg-transparent'} transition-all`}>
-                
-                <div className={`relative flex flex-col items-center transform transition-transform duration-500 origin-bottom z-10 -mb-2 ${className} ${successClass} ${failClass}`}>
-                  
-                  {/* 阿基獅頭部 */}
-                  <div className={`relative z-30 flex flex-col items-center w-40 h-40 -mb-4 ${breatheClass}`}>
-                    <div className="absolute top-0 left-0 w-full h-full z-0 scale-110">
-                       <svg viewBox="0 0 100 100" className="w-full h-full overflow-visible">
-                          <circle cx="50" cy="50" r="48" fill="#C27803" stroke="#92400E" strokeWidth="2" />
-                       </svg>
+                // Outer wrapper just for positioning in parent flex
+                <div className="flex items-center justify-center">
+                    
+                    {/* Transformed Container (Scale/Translate applies here) */}
+                    <div className={`relative flex flex-col items-center ${className}`}>
+                        
+                        {/* Shadow: Put it here so it scales/moves with lion */}
+                        {/* Positioned at bottom, centered horizontally */}
+                        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-48 h-6 bg-black/20 rounded-[100%] blur-sm z-0"></div>
+        
+                        {/* Character Content (Z-index > 0 to stand on shadow) */}
+                        <div className="relative z-10 flex flex-col items-center">
+                            
+                            {/* 阿基獅頭部 */}
+                            <div className={`relative z-30 flex flex-col items-center w-40 h-40 -mb-4 ${breatheClass}`}>
+                                <div className="absolute top-0 left-0 w-full h-full z-0 scale-110">
+                                <svg viewBox="0 0 100 100" className="w-full h-full overflow-visible">
+                                    <circle cx="50" cy="50" r="48" fill="#C27803" stroke="#92400E" strokeWidth="2" />
+                                </svg>
+                                </div>
+        
+                                {ears && (
+                                <div className="absolute top-8 w-full flex justify-between px-2 z-20 pointer-events-none">
+                                    <div className={`w-5 h-10 ${ears.color} rounded-lg border-2 border-gray-700 shadow-sm -ml-4`}></div>
+                                    <div className={`w-5 h-10 ${ears.color} rounded-lg border-2 border-gray-700 shadow-sm -mr-4`}></div>
+                                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-44 h-12 border-t-4 border-gray-700 rounded-full"></div>
+                                </div>
+                                )}
+        
+                                <div className="relative w-28 h-32 z-10 top-2">
+                                <svg viewBox="0 0 100 120" className="w-full h-full overflow-visible">
+                                    <circle cx="20" cy="10" r="12" fill="#FCD34D" stroke="#C27803" strokeWidth="2" />
+                                    <circle cx="20" cy="10" r="6" fill="#C27803" opacity="0.6" />
+                                    <circle cx="80" cy="10" r="12" fill="#FCD34D" stroke="#C27803" strokeWidth="2" />
+                                    <circle cx="80" cy="10" r="6" fill="#C27803" opacity="0.6" />
+                                    <path d="M 15 40 Q 15 5 50 5 Q 85 5 85 40 L 85 70 Q 85 105 50 105 Q 15 105 15 70 Z" fill="#FCD34D" stroke="#C27803" strokeWidth="2" />
+                                    <path d="M 30 45 Q 38 35 46 45" stroke="#1F2937" strokeWidth="4" fill="none" strokeLinecap="round" />
+                                    <path d="M 54 45 Q 62 35 70 45" stroke="#1F2937" strokeWidth="4" fill="none" strokeLinecap="round" />
+                                    <path d="M 20 60 Q 50 55 80 60" stroke="#C27803" strokeWidth="1" fill="none" opacity="0.3" />
+                                    <path d="M 35 60 Q 50 50 65 60 Q 70 70 50 75 Q 30 70 35 60" fill="#000" />
+                                    <ellipse cx="45" cy="58" rx="6" ry="3" fill="white" opacity="0.9" transform="rotate(-15 45 58)"/>
+                                    <path d="M 50 75 L 50 85" stroke="#000" strokeWidth="1.5" />
+                                    <path d="M 30 85 Q 50 105 70 85 Q 50 85 30 85" fill="#7F1D1D" />
+                                    <path d="M 40 95 Q 50 90 60 95" fill="#F472B6" /> 
+                                </svg>
+        
+                                {/* 裝備層 */}
+                                {eyes && (
+                                    <div className="absolute top-8 left-1/2 -translate-x-1/2 z-50">
+                                    {(eyes.id === 'goggles' || eyes.id === 'glasses_uv') && <div className={`w-32 h-14 ${eyes.color} opacity-80 border-4 border-gray-600 rounded-xl backdrop-blur-sm shadow-md`}></div>}
+                                    {eyes.id === 'mask_welding' && <div className="w-36 h-40 -mt-12 bg-gray-800 rounded-3xl border-2 border-gray-600 flex items-center justify-center shadow-lg"><div className="w-24 h-12 bg-black border-2 border-yellow-500 rounded"></div></div>}
+                                    {eyes.id === 'shield_face' && <div className={`w-36 h-40 -mt-10 ${eyes.color} opacity-60 border-t-4 border-gray-500 rounded-3xl backdrop-blur-sm shadow-sm`}></div>}
+                                    </div>
+                                )}
+                                {face && (
+                                    <div className={`absolute bottom-[-10px] left-1/2 -translate-x-1/2 w-28 h-20 ${face.color} rounded-b-[2rem] rounded-t-lg border border-gray-400 z-40 flex items-center justify-center shadow-sm`}>
+                                    {face.id === 'mask_gas' && <div className="flex gap-2"><div className="w-8 h-8 bg-gray-800 rounded-full border-2 border-gray-500"></div><div className="w-8 h-8 bg-gray-800 rounded-full border-2 border-gray-500"></div></div>}
+                                    {face.id === 'mask_dust' && <div className="w-12 h-10 bg-white rounded-full border border-gray-200 opacity-50"></div>}
+                                    </div>
+                                )}
+                                {head && (
+                                    <div className={`absolute -top-16 left-1/2 -translate-x-1/2 w-44 h-24 ${head.color} rounded-t-full border-b-4 border-gray-700 shadow-md z-50 flex items-center justify-center`}>
+                                    <div className="w-32 h-2 bg-black/10 rounded-full mt-14"></div>
+                                    <div className="absolute top-4 w-full text-center text-[10px] font-bold text-black/30">SAFETY FIRST</div>
+                                    </div>
+                                )}
+                                </div>
+                            </div>
+        
+                            {/* 身體 (Purple) */}
+                            <div className="relative z-20 -mt-2">
+                                <div className={`absolute -left-8 top-6 w-10 h-32 bg-[#FCD34D] rounded-full origin-top transform rotate-12 border-2 border-[#C27803] flex flex-col justify-end items-center z-0 transition-transform ${gameState === 'success' ? '-rotate-[140deg] -translate-x-4' : ''}`}></div>
+                                <div className={`absolute -right-8 top-6 w-10 h-32 bg-[#FCD34D] rounded-full origin-top transform -rotate-12 border-2 border-[#C27803] flex flex-col justify-end items-center z-0 transition-transform ${gameState === 'success' ? 'rotate-[140deg] translate-x-4' : ''}`}></div>
+            
+                                <div className="w-40 h-44 bg-purple-800 rounded-[2rem] relative z-10 border-2 border-purple-900 overflow-hidden flex items-center justify-center shadow-inner">
+                                <div className="w-1 h-full bg-black/20"></div>
+                                <div className="absolute top-10 left-10 opacity-40 text-white"><Building2 size={20}/></div>
+                                {body && <div className={`absolute inset-0 w-full h-full ${body.color} flex flex-col items-center`}><div className="w-full h-full border-x-8 border-orange-500/50"></div></div>}
+                                {bodyFull && <div className={`absolute inset-0 w-full h-full ${bodyFull.color} rounded-[2rem] border-2 border-gray-300 flex flex-col items-center justify-center`}><div className="w-1 h-full bg-gray-200"></div></div>}
+                                {bodyOuter && <div className={`absolute inset-0 top-4 mx-2 h-full ${bodyOuter.color} rounded-b-lg border-2 border-white/20 shadow-lg`}><div className="absolute -top-4 left-1/2 -translate-x-1/2 w-20 h-4 bg-inherit border-x-2 border-t-2 border-white/20"></div></div>}
+                                {bodyAcc && <div className="absolute inset-0 w-full h-full pointer-events-none">
+                                    {bodyAcc.id === 'harness' && <><div className="absolute top-10 left-0 w-full h-3 bg-red-600 shadow-sm"></div><div className="absolute top-0 left-8 w-3 h-full bg-red-600 shadow-sm"></div><div className="absolute top-0 right-8 w-3 h-full bg-red-600 shadow-sm"></div></>}
+                                    {bodyAcc.id === 'lanyard' && <div className="absolute top-6 right-4 w-4 h-32 bg-orange-400 rotate-12 rounded-full border-2 border-orange-600"></div>}
+                                </div>}
+                                </div>
+            
+                                {/* Arms/Sleeves */}
+                                {arms && (
+                                    <>
+                                        <div className={`absolute -left-9 top-10 w-12 h-32 ${arms.color} rounded-full origin-top transform rotate-12 z-5`}></div>
+                                        <div className={`absolute -right-9 top-10 w-12 h-32 ${arms.color} rounded-full origin-top transform -rotate-12 z-5`}></div>
+                                    </>
+                                )}
+            
+                                {hands && (
+                                <>
+                                    <div className={`absolute -left-10 top-32 w-14 h-16 ${hands.color} rounded-xl border-2 border-gray-600 shadow-sm z-20 transform rotate-12 ${gameState === 'success' ? 'top-[-50px] -left-[90px]' : ''}`}></div>
+                                    <div className={`absolute -right-10 top-32 w-14 h-16 ${hands.color} rounded-xl border-2 border-gray-600 shadow-sm z-20 transform -rotate-12 ${gameState === 'success' ? 'top-[-50px] -right-[90px]' : ''}`}></div>
+                                </>
+                                )}
+                            </div>
+        
+                            {/* 腿部 */}
+                            <div className="flex gap-1 -mt-4 z-10">
+                                <div className="w-16 h-32 bg-slate-800 rounded-b-lg border-2 border-slate-900 relative flex justify-center shadow-lg">
+                                    {bodyFull && <div className="absolute inset-0 bg-white rounded-b-lg opacity-90"></div>}
+                                {feet ? <div className={`absolute -bottom-2 w-20 h-12 left-1/2 -translate-x-1/2 ${feet.color} rounded-lg border-b-4 border-black z-20`}></div> : <div className="absolute -bottom-2 w-18 h-10 bg-black rounded-lg z-20"></div>}
+                                </div>
+                                <div className="w-16 h-32 bg-slate-800 rounded-b-lg border-2 border-slate-900 relative flex justify-center shadow-lg">
+                                    {bodyFull && <div className="absolute inset-0 bg-white rounded-b-lg opacity-90"></div>}
+                                {feet ? <div className={`absolute -bottom-2 w-20 h-12 left-1/2 -translate-x-1/2 ${feet.color} rounded-lg border-b-4 border-black z-20`}></div> : <div className="absolute -bottom-2 w-18 h-10 bg-black rounded-lg z-20"></div>}
+                                </div>
+                            </div>
+                        </div>
                     </div>
-
-                    {ears && (
-                      <div className="absolute top-8 w-full flex justify-between px-2 z-20 pointer-events-none">
-                          <div className={`w-5 h-10 ${ears.color} rounded-lg border-2 border-gray-700 shadow-sm -ml-4`}></div>
-                          <div className={`w-5 h-10 ${ears.color} rounded-lg border-2 border-gray-700 shadow-sm -mr-4`}></div>
-                          <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-44 h-12 border-t-4 border-gray-700 rounded-full"></div>
-                      </div>
-                    )}
-
-                    <div className="relative w-28 h-32 z-10 top-2">
-                       <svg viewBox="0 0 100 120" className="w-full h-full overflow-visible">
-                          <circle cx="20" cy="10" r="12" fill="#FCD34D" stroke="#C27803" strokeWidth="2" />
-                          <circle cx="20" cy="10" r="6" fill="#C27803" opacity="0.6" />
-                          <circle cx="80" cy="10" r="12" fill="#FCD34D" stroke="#C27803" strokeWidth="2" />
-                          <circle cx="80" cy="10" r="6" fill="#C27803" opacity="0.6" />
-                          <path d="M 15 40 Q 15 5 50 5 Q 85 5 85 40 L 85 70 Q 85 105 50 105 Q 15 105 15 70 Z" fill="#FCD34D" stroke="#C27803" strokeWidth="2" />
-                          <path d="M 30 45 Q 38 35 46 45" stroke="#1F2937" strokeWidth="4" fill="none" strokeLinecap="round" />
-                          <path d="M 54 45 Q 62 35 70 45" stroke="#1F2937" strokeWidth="4" fill="none" strokeLinecap="round" />
-                          <path d="M 20 60 Q 50 55 80 60" stroke="#C27803" strokeWidth="1" fill="none" opacity="0.3" />
-                          <path d="M 35 60 Q 50 50 65 60 Q 70 70 50 75 Q 30 70 35 60" fill="#000" />
-                          <ellipse cx="45" cy="58" rx="6" ry="3" fill="white" opacity="0.9" transform="rotate(-15 45 58)"/>
-                          <path d="M 50 75 L 50 85" stroke="#000" strokeWidth="1.5" />
-                          <path d="M 30 85 Q 50 105 70 85 Q 50 85 30 85" fill="#7F1D1D" />
-                          <path d="M 40 95 Q 50 90 60 95" fill="#F472B6" /> 
-                       </svg>
-
-                       {/* 裝備層 */}
-                       {eyes && (
-                         <div className="absolute top-8 left-1/2 -translate-x-1/2 z-50">
-                            {(eyes.id === 'goggles' || eyes.id === 'glasses_uv') && <div className={`w-32 h-14 ${eyes.color} opacity-80 border-4 border-gray-600 rounded-xl backdrop-blur-sm shadow-md`}></div>}
-                            {eyes.id === 'mask_welding' && <div className="w-36 h-40 -mt-12 bg-gray-800 rounded-3xl border-2 border-gray-600 flex items-center justify-center shadow-lg"><div className="w-24 h-12 bg-black border-2 border-yellow-500 rounded"></div></div>}
-                            {eyes.id === 'shield_face' && <div className={`w-36 h-40 -mt-10 ${eyes.color} opacity-60 border-t-4 border-gray-500 rounded-3xl backdrop-blur-sm shadow-sm`}></div>}
-                         </div>
-                       )}
-                       {face && (
-                         <div className={`absolute bottom-[-10px] left-1/2 -translate-x-1/2 w-28 h-20 ${face.color} rounded-b-[2rem] rounded-t-lg border border-gray-400 z-40 flex items-center justify-center shadow-sm`}>
-                            {face.id === 'mask_gas' && <div className="flex gap-2"><div className="w-8 h-8 bg-gray-800 rounded-full border-2 border-gray-500"></div><div className="w-8 h-8 bg-gray-800 rounded-full border-2 border-gray-500"></div></div>}
-                            {face.id === 'mask_dust' && <div className="w-12 h-10 bg-white rounded-full border border-gray-200 opacity-50"></div>}
-                         </div>
-                       )}
-                       {head && (
-                         <div className={`absolute -top-16 left-1/2 -translate-x-1/2 w-44 h-24 ${head.color} rounded-t-full border-b-4 border-gray-700 shadow-md z-50 flex items-center justify-center`}>
-                            <div className="w-32 h-2 bg-black/10 rounded-full mt-14"></div>
-                            <div className="absolute top-4 w-full text-center text-[10px] font-bold text-black/30">SAFETY FIRST</div>
-                         </div>
-                       )}
-                    </div>
-                  </div>
-
-                  {/* 身體 (Purple) */}
-                  <div className="relative z-20 -mt-2">
-                    <div className={`absolute -left-8 top-6 w-10 h-32 bg-[#FCD34D] rounded-full origin-top transform rotate-12 border-2 border-[#C27803] flex flex-col justify-end items-center z-0 transition-transform ${gameState === 'success' ? '-rotate-[140deg] -translate-x-4' : ''}`}></div>
-                    <div className={`absolute -right-8 top-6 w-10 h-32 bg-[#FCD34D] rounded-full origin-top transform -rotate-12 border-2 border-[#C27803] flex flex-col justify-end items-center z-0 transition-transform ${gameState === 'success' ? 'rotate-[140deg] translate-x-4' : ''}`}></div>
-
-                    <div className="w-40 h-44 bg-purple-800 rounded-[2rem] relative z-10 border-2 border-purple-900 overflow-hidden flex items-center justify-center shadow-inner">
-                       <div className="w-1 h-full bg-black/20"></div>
-                       <div className="absolute top-10 left-10 opacity-40 text-white"><Building2 size={20}/></div>
-                       {body && <div className={`absolute inset-0 w-full h-full ${body.color} flex flex-col items-center`}><div className="w-full h-full border-x-8 border-orange-500/50"></div></div>}
-                       {bodyFull && <div className={`absolute inset-0 w-full h-full ${bodyFull.color} rounded-[2rem] border-2 border-gray-300 flex flex-col items-center justify-center`}><div className="w-1 h-full bg-gray-200"></div></div>}
-                       {bodyOuter && <div className={`absolute inset-0 top-4 mx-2 h-full ${bodyOuter.color} rounded-b-lg border-2 border-white/20 shadow-lg`}><div className="absolute -top-4 left-1/2 -translate-x-1/2 w-20 h-4 bg-inherit border-x-2 border-t-2 border-white/20"></div></div>}
-                       {bodyAcc && <div className="absolute inset-0 w-full h-full pointer-events-none">
-                           {bodyAcc.id === 'harness' && <><div className="absolute top-10 left-0 w-full h-3 bg-red-600 shadow-sm"></div><div className="absolute top-0 left-8 w-3 h-full bg-red-600 shadow-sm"></div><div className="absolute top-0 right-8 w-3 h-full bg-red-600 shadow-sm"></div></>}
-                           {bodyAcc.id === 'lanyard' && <div className="absolute top-6 right-4 w-4 h-32 bg-orange-400 rotate-12 rounded-full border-2 border-orange-600"></div>}
-                       </div>}
-                    </div>
-
-                    {/* Arms/Sleeves */}
-                    {arms && (
-                        <>
-                            <div className={`absolute -left-9 top-10 w-12 h-32 ${arms.color} rounded-full origin-top transform rotate-12 z-5`}></div>
-                            <div className={`absolute -right-9 top-10 w-12 h-32 ${arms.color} rounded-full origin-top transform -rotate-12 z-5`}></div>
-                        </>
-                    )}
-
-                    {hands && (
-                      <>
-                        <div className={`absolute -left-10 top-32 w-14 h-16 ${hands.color} rounded-xl border-2 border-gray-600 shadow-sm z-20 transform rotate-12 ${gameState === 'success' ? 'top-[-50px] -left-[90px]' : ''}`}></div>
-                        <div className={`absolute -right-10 top-32 w-14 h-16 ${hands.color} rounded-xl border-2 border-gray-600 shadow-sm z-20 transform -rotate-12 ${gameState === 'success' ? 'top-[-50px] -right-[90px]' : ''}`}></div>
-                      </>
-                    )}
-                  </div>
-
-                  {/* 腿部 */}
-                  <div className="flex gap-1 -mt-4 z-10">
-                    <div className="w-16 h-32 bg-slate-800 rounded-b-lg border-2 border-slate-900 relative flex justify-center shadow-lg">
-                        {bodyFull && <div className="absolute inset-0 bg-white rounded-b-lg opacity-90"></div>}
-                       {feet ? <div className={`absolute -bottom-2 w-20 h-12 left-1/2 -translate-x-1/2 ${feet.color} rounded-lg border-b-4 border-black z-20`}></div> : <div className="absolute -bottom-2 w-18 h-10 bg-black rounded-lg z-20"></div>}
-                    </div>
-                    <div className="w-16 h-32 bg-slate-800 rounded-b-lg border-2 border-slate-900 relative flex justify-center shadow-lg">
-                        {bodyFull && <div className="absolute inset-0 bg-white rounded-b-lg opacity-90"></div>}
-                       {feet ? <div className={`absolute -bottom-2 w-20 h-12 left-1/2 -translate-x-1/2 ${feet.color} rounded-lg border-b-4 border-black z-20`}></div> : <div className="absolute -bottom-2 w-18 h-10 bg-black rounded-lg z-20"></div>}
-                    </div>
-                  </div>
                 </div>
-
-                <div className="absolute bottom-4 w-56 h-8 bg-black/20 rounded-[100%] blur-sm z-0"></div>
-              </div>
             );
           };
 
@@ -915,8 +924,8 @@
                     </div>
 
                     {/* Right: Character Area (Narrower 1/3 width) */}
-                    <div className="w-1/3 relative bg-gradient-to-b from-white to-slate-100 flex justify-center items-start pt-12 overflow-hidden">
-                         <WorkerFigure className="scale-[0.28] origin-top" />
+                    <div className="w-1/3 relative bg-gradient-to-b from-white to-slate-100 flex justify-center items-center pb-0 overflow-hidden">
+                         <WorkerFigure className="scale-[0.45] sm:scale-75" />
                     </div>
                 </div>
 
