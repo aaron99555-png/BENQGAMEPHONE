@@ -122,7 +122,8 @@
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
         import { getFirestore, collection, addDoc, getDocs, serverTimestamp, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
 
-        const firebaseConfig = {
+        // Use environment provided config if available, otherwise fallback (though fallback might fail in preview)
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
           apiKey: "AIzaSyDwd5lS02P0sbD8aOHl61NmmIsa2zVaEbU",
           authDomain: "benqgame-38336.firebaseapp.com",
           projectId: "benqgame-38336",
@@ -134,7 +135,9 @@
 
         try {
             const app = initializeApp(firebaseConfig);
-            const analytics = getAnalytics(app);
+            // Analytics might not be initialized if not supported in environment
+            try { const analytics = getAnalytics(app); } catch(e) {}
+            
             const auth = getAuth(app);
             const db = getFirestore(app);
 
@@ -227,7 +230,7 @@
         const Lightbulb = (p) => <IconBase {...p}><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-1 1.5-2 1.5-3.5A6 6 0 0 0 6 8c0 1 .5 2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"></path><path d="M9 18h6"></path><path d="M10 22h4"></path></IconBase>;
         const AlertTriangle = (p) => <IconBase {...p}><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></IconBase>;
         const History = (p) => <IconBase {...p}><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path><path d="M12 7v5l4 2"></path></IconBase>;
-        const Building2 = (p) => <IconBase {...p}><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"></path><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"></path><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"></path><path d="M10 6h4"></path><path d="M10 10h4"></path><path d="M10 14h4"></path><path d="M10 18h4"></path></IconBase>;
+        const Building2 = (p) => <IconBase {...p}><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"></path><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"></path><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"></path><path d="M10 6h4"></path><path d="M10 10h4"></path><path d="M10 14h4"></path><path d="M10 18h4"></path></IconBase>;
         const UserCheck = (p) => <IconBase {...p}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><polyline points="16 11 18 13 22 9"></polyline></IconBase>;
         const Upload = (p) => <IconBase {...p}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></IconBase>;
         const Trophy = (p) => <IconBase {...p}><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M9 14.66V17a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-2.34l-3.14-3.14a3 3 0 0 1-.72-1.54l-.52-2.28"></path><path d="M19.42 4.94A2 2 0 0 0 18 4H6a2 2 0 0 0-1.42.94L2 9.07a2.12 2.12 0 0 0 .59 2.14l8.28 7.37a2 2 0 0 0 2.26 0l8.28-7.37a2.12 2.12 0 0 0 .59-2.14z"></path></IconBase>;
@@ -256,7 +259,6 @@
         const EQUIPMENT_LIST = [
           { id: 'helmet', name: '工業安全帽', Component: () => <IconHelmet color="#FBBF24"/>, category: 'head', color: 'bg-yellow-400' },
           { id: 'helmet_electric', name: '電工安全帽', Component: () => <IconHelmet color="#FFFFFF"/>, category: 'head', color: 'bg-white' },
-          // REMOVED: helmet_sun
           { id: 'goggles', name: '安全護目鏡', Component: () => <IconGoggles/>, category: 'eyes', color: 'bg-blue-200' },
           { id: 'glasses_uv', name: '抗UV防護眼鏡', Component: () => <IconGoggles lens="#4B5563"/>, category: 'eyes', color: 'bg-gray-400' },
           { id: 'mask_welding', name: '焊接面罩', Component: IconWeldingMask, category: 'eyes', color: 'bg-gray-800' },
@@ -308,11 +310,10 @@
             { id: 15, title: '局限空間作業', description: '進入通風不良之槽體進行清理時，應配戴哪些安全防護具？', hint: '「缺氧/中毒」除通風外需防止吸入有害氣體並確保受困時能被拉出', required: ['mask_gas', 'harness', 'lanyard'] },
             { id: 16, title: '紫外線/強光操作作業', description: '操作紫外線/強光設備時，應配戴哪些安全防護具？', hint: '「外線/強光」防止特定波長之強光對眼睛造成永久性傷害', required: ['glasses_uv'] },
             { id: 17, title: '廢棄物清理/資源回收整理', description: '含有尖銳物（如鐵釘、碎玻璃）的廢棄物時，應配戴哪些安全防護具？', hint: '「刺傷危害」防止腳底被刺穿及手部被割傷', required: ['safety_shoes', 'gloves_cut'] },
-            // REMOVED: Scenario 18 戶外高溫巡檢作業
-            { id: 19, title: '鍋爐加藥作業', description: '人員於鍋爐區進行加藥作業時，應配戴哪些完整安全防護具？', hint: '「化學/壓傷/噪音」注意避免接觸化學物質，保護眼睛、手部及身體，防止重物壓傷腳部，並配戴耳塞', required: ['helmet', 'earmuffs', 'goggles', 'gloves_rubber', 'apron', 'safety_shoes'] },
-            { id: 20, title: '烘箱取物作業', description: '需取出烘箱內之物品時，應配戴哪些安全防護具？', hint: '「高溫危害」 防止手部及身體直接接觸高溫工件或設備造成燙傷', required: ['gloves_heat', 'apron'] },
-            { id: 21, title: '塗頭管件清洗作業', description: '拆除後管件使用有機溶劑進行清洗時，應配戴哪些安全防護具？', hint: '「化學危害」 避免吸入有機溶劑氣體，並防止溶劑噴濺傷及眼睛與皮膚', required: ['mask_gas', 'goggles', 'gloves_rubber', 'apron'] },
-            { id: 22, title: '實驗室滴定作業', description: '使用化學品進行滴定作業時，應配戴哪些完整安全防護具？', hint: '「化學危害」為防止化學品噴濺，應保護眼睛、呼吸道、身體、手部及腳部，配戴個人防護具', required: ['goggles', 'mask_dust', 'gloves_rubber', 'safety_shoes'] }
+            { id: 18, title: '鍋爐加藥作業', description: '人員於鍋爐區進行加藥作業時，應配戴哪些完整安全防護具？', hint: '「化學/壓傷/噪音」注意避免接觸化學物質，保護眼睛、手部及身體，防止重物壓傷腳部，並配戴耳塞', required: ['helmet', 'earmuffs', 'goggles', 'gloves_rubber', 'apron', 'safety_shoes'] },
+            { id: 19, title: '烘箱取物作業', description: '需取出烘箱內之物品時，應配戴哪些安全防護具？', hint: '「高溫危害」 防止手部及身體直接接觸高溫工件或設備造成燙傷', required: ['gloves_heat', 'apron'] },
+            { id: 20, title: '塗頭管件清洗作業', description: '拆除後管件使用有機溶劑進行清洗時，應配戴哪些安全防護具？', hint: '「化學危害」 避免吸入有機溶劑氣體，並防止溶劑噴濺傷及眼睛與皮膚', required: ['mask_gas', 'goggles', 'gloves_rubber', 'apron'] },
+            { id: 21, title: '實驗室滴定作業', description: '使用化學品進行滴定作業時，應配戴哪些完整安全防護具？', hint: '「化學危害」為防止化學品噴濺，應保護眼睛、呼吸道、身體、手部及腳部，配戴個人防護具', required: ['goggles', 'mask_dust', 'gloves_rubber', 'safety_shoes'] }
         ];
 
         const TOTAL_ROUNDS = 10;
@@ -368,6 +369,7 @@
                  setSaveStatus("saving");
                  try {
                      const { db, collection, addDoc, serverTimestamp } = window.firebaseServices;
+                     // Use standard path structure for artifacts
                      await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'scores'), {
                          departmentId: departmentId,
                          employeeId: employeeId,
@@ -532,10 +534,11 @@
                   
                   if (base64Audio) {
                       const audioSrc = `data:audio/mp3;base64,${base64Audio}`; 
-                      const utterance = new SpeechSynthesisUtterance(textToRead);
-                      utterance.lang = 'zh-TW';
-                      window.speechSynthesis.speak(utterance);
+                      const audio = new Audio(audioSrc);
+                      audioRef.current = audio;
+                      audio.play();
                   } else {
+                      // Fallback to browser TTS
                       const utterance = new SpeechSynthesisUtterance(textToRead);
                       utterance.lang = 'zh-TW';
                       window.speechSynthesis.speak(utterance);
@@ -1068,3 +1071,4 @@
     </script>
 </body>
 </html>
+
