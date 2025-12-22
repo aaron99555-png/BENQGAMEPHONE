@@ -256,7 +256,7 @@
         const EQUIPMENT_LIST = [
           { id: 'helmet', name: '工業安全帽', Component: () => <IconHelmet color="#FBBF24"/>, category: 'head', color: 'bg-yellow-400' },
           { id: 'helmet_electric', name: '電工安全帽', Component: () => <IconHelmet color="#FFFFFF"/>, category: 'head', color: 'bg-white' },
-          { id: 'helmet_sun', name: '安全帽附遮陽緣', Component: () => <IconHelmet color="#FCD34D"/>, category: 'head', color: 'bg-yellow-300' },
+          // REMOVED: helmet_sun
           { id: 'goggles', name: '安全護目鏡', Component: () => <IconGoggles/>, category: 'eyes', color: 'bg-blue-200' },
           { id: 'glasses_uv', name: '抗UV防護眼鏡', Component: () => <IconGoggles lens="#4B5563"/>, category: 'eyes', color: 'bg-gray-400' },
           { id: 'mask_welding', name: '焊接面罩', Component: IconWeldingMask, category: 'eyes', color: 'bg-gray-800' },
@@ -308,7 +308,7 @@
             { id: 15, title: '局限空間作業', description: '進入通風不良之槽體進行清理時，應配戴哪些安全防護具？', hint: '「缺氧/中毒」除通風外需防止吸入有害氣體並確保受困時能被拉出', required: ['mask_gas', 'harness', 'lanyard'] },
             { id: 16, title: '紫外線/強光操作作業', description: '操作紫外線/強光設備時，應配戴哪些安全防護具？', hint: '「外線/強光」防止特定波長之強光對眼睛造成永久性傷害', required: ['glasses_uv'] },
             { id: 17, title: '廢棄物清理/資源回收整理', description: '含有尖銳物（如鐵釘、碎玻璃）的廢棄物時，應配戴哪些安全防護具？', hint: '「刺傷危害」防止腳底被刺穿及手部被割傷', required: ['safety_shoes', 'gloves_cut'] },
-            { id: 18, title: '戶外高溫巡檢作業', description: '於夏季高溫戶外環境長時間進行巡檢時，應配戴哪些安全防護具？', hint: '「熱危害」防止紫外線傷害皮膚並預防中暑且維持頭腳基本防護', required: ['helmet_sun', 'sleeves_sun', 'safety_shoes'] },
+            // REMOVED: Scenario 18 戶外高溫巡檢作業
             { id: 19, title: '鍋爐加藥作業', description: '人員於鍋爐區進行加藥作業時，應配戴哪些完整安全防護具？', hint: '「化學/壓傷/噪音」注意避免接觸化學物質，保護眼睛、手部及身體，防止重物壓傷腳部，並配戴耳塞', required: ['helmet', 'earmuffs', 'goggles', 'gloves_rubber', 'apron', 'safety_shoes'] },
             { id: 20, title: '烘箱取物作業', description: '需取出烘箱內之物品時，應配戴哪些安全防護具？', hint: '「高溫危害」 防止手部及身體直接接觸高溫工件或設備造成燙傷', required: ['gloves_heat', 'apron'] },
             { id: 21, title: '塗頭管件清洗作業', description: '拆除後管件使用有機溶劑進行清洗時，應配戴哪些安全防護具？', hint: '「化學危害」 避免吸入有機溶劑氣體，並防止溶劑噴濺傷及眼睛與皮膚', required: ['mask_gas', 'goggles', 'gloves_rubber', 'apron'] },
@@ -320,7 +320,7 @@
         function SafetyGearGame() {
           const [currentScenario, setCurrentScenario] = useState(null);
           const [wornItems, setWornItems] = useState([]);
-          const [gameState, setGameState] = useState('start'); 
+          const [gameState, setGameState] = useState('start'); // 'start', 'playing', 'success', 'warning' (partial), 'failure', 'result'
           const [message, setMessage] = useState('');
           const [failDetails, setFailDetails] = useState(null);
           const [score, setScore] = useState(0);
@@ -558,35 +558,44 @@
             const wornIds = wornItems.map(i => i.id);
             const missingItems = requiredIds.filter(id => !wornIds.includes(id));
             const extraItems = wornIds.filter(id => !requiredIds.includes(id));
+            
             const requiredNames = requiredIds.map(id => EQUIPMENT_LIST.find(i => i.id === id)?.name);
             const missingNames = missingItems.map(id => EQUIPMENT_LIST.find(i => i.id === id)?.name);
+            const extraNames = extraItems.map(id => EQUIPMENT_LIST.find(i => i.id === id)?.name);
 
             const isEntanglementHazard = currentScenario.forbidden && currentScenario.forbidden.includes('hands');
             const hasGloves = wornItems.some(i => i.category === 'hands');
             
-            let isSuccess = false;
-            let failMsg = '';
-
+            // 1. Check Forbidden (Critical Failure) - 0 Points
             if (isEntanglementHazard && hasGloves) {
-                isSuccess = false;
-                failMsg = '捲夾危害：旋轉機具嚴禁戴手套！';
+                setGameState('failure');
+                setMessage('捲夾危害：旋轉機具嚴禁戴手套！');
                 setFailDetails({ type: 'forbidden', text: '旋轉機具禁止戴手套，因為會被捲入機械中造成嚴重傷害。', correctList: requiredNames });
-            } else if (missingItems.length === 0 && extraItems.length === 0) {
-                isSuccess = true;
-            } else {
-                isSuccess = false;
-                failMsg = '防護不完整或錯誤！';
-                setFailDetails({ type: 'incorrect', missing: missingNames, correctList: requiredNames });
+                return;
+            } 
+            
+            // 2. Check Missing Items (Unsafe) - 0 Points
+            if (missingItems.length > 0) {
+                setGameState('failure');
+                setMessage('防護不完整！');
+                setFailDetails({ type: 'missing', missing: missingNames, correctList: requiredNames });
+                return;
             }
 
-            if (isSuccess) {
-              setGameState('success');
-              setScore(s => s + 100);
-              setMessage(`完美防護！`);
-            } else {
-              setGameState('failure');
-              setMessage(failMsg);
+            // 3. Check Extra Items (Partial Correct) - 50 Points
+            if (extraItems.length > 0) {
+                setGameState('warning'); // Represents partial success
+                setScore(s => s + 50);
+                setMessage('防護足夠但有多餘裝備');
+                setFailDetails({ type: 'extra', extra: extraNames, correctList: requiredNames });
+                return;
             }
+
+            // 4. Perfect Match - 100 Points
+            setGameState('success');
+            setScore(s => s + 100);
+            setMessage('完美防護！');
+            setFailDetails(null);
           };
 
           const countWornInGroup = (group) => {
@@ -609,9 +618,10 @@
             const feet = getItemByCat('feet');
 
             const breatheClass = gameState === 'playing' ? '' : ''; 
-            const successClass = gameState === 'success' ? '' : ''; 
-            const failClass = gameState === 'failure' ? '' : ''; 
-
+            
+            // Determine lion mood based on game state
+            const isHappy = gameState === 'success' || gameState === 'warning';
+            
             return (
                 // Outer wrapper just for positioning in parent flex
                 <div className="flex items-center justify-center">
@@ -656,7 +666,11 @@
                                     <ellipse cx="45" cy="58" rx="6" ry="3" fill="white" opacity="0.9" transform="rotate(-15 45 58)"/>
                                     <path d="M 50 75 L 50 85" stroke="#000" strokeWidth="1.5" />
                                     <path d="M 30 85 Q 50 105 70 85 Q 50 85 30 85" fill="#7F1D1D" />
-                                    <path d="M 40 95 Q 50 90 60 95" fill="#F472B6" /> 
+                                    {/* Smile depends on isHappy */}
+                                    {isHappy 
+                                        ? <path d="M 40 95 Q 50 105 60 95" fill="none" stroke="#F472B6" strokeWidth="3" /> 
+                                        : <path d="M 40 95 Q 50 90 60 95" fill="#F472B6" /> 
+                                    }
                                 </svg>
         
                                 {/* 裝備層 */}
@@ -684,8 +698,8 @@
         
                             {/* 身體 (Purple) */}
                             <div className="relative z-20 -mt-2">
-                                <div className={`absolute -left-8 top-6 w-10 h-32 bg-[#FCD34D] rounded-full origin-top transform rotate-12 border-2 border-[#C27803] flex flex-col justify-end items-center z-0 transition-transform ${gameState === 'success' ? '-rotate-[140deg] -translate-x-4' : ''}`}></div>
-                                <div className={`absolute -right-8 top-6 w-10 h-32 bg-[#FCD34D] rounded-full origin-top transform -rotate-12 border-2 border-[#C27803] flex flex-col justify-end items-center z-0 transition-transform ${gameState === 'success' ? 'rotate-[140deg] translate-x-4' : ''}`}></div>
+                                <div className={`absolute -left-8 top-6 w-10 h-32 bg-[#FCD34D] rounded-full origin-top transform rotate-12 border-2 border-[#C27803] flex flex-col justify-end items-center z-0 transition-transform ${isHappy ? '-rotate-[140deg] -translate-x-4' : ''}`}></div>
+                                <div className={`absolute -right-8 top-6 w-10 h-32 bg-[#FCD34D] rounded-full origin-top transform -rotate-12 border-2 border-[#C27803] flex flex-col justify-end items-center z-0 transition-transform ${isHappy ? 'rotate-[140deg] translate-x-4' : ''}`}></div>
             
                                 <div className="w-40 h-44 bg-purple-800 rounded-[2rem] relative z-10 border-2 border-purple-900 overflow-hidden flex items-center justify-center shadow-inner">
                                 <div className="w-1 h-full bg-black/20"></div>
@@ -709,8 +723,8 @@
             
                                 {hands && (
                                 <>
-                                    <div className={`absolute -left-10 top-32 w-14 h-16 ${hands.color} rounded-xl border-2 border-gray-600 shadow-sm z-20 transform rotate-12 ${gameState === 'success' ? 'top-[-50px] -left-[90px]' : ''}`}></div>
-                                    <div className={`absolute -right-10 top-32 w-14 h-16 ${hands.color} rounded-xl border-2 border-gray-600 shadow-sm z-20 transform -rotate-12 ${gameState === 'success' ? 'top-[-50px] -right-[90px]' : ''}`}></div>
+                                    <div className={`absolute -left-10 top-32 w-14 h-16 ${hands.color} rounded-xl border-2 border-gray-600 shadow-sm z-20 transform rotate-12 ${isHappy ? 'top-[-50px] -left-[90px]' : ''}`}></div>
+                                    <div className={`absolute -right-10 top-32 w-14 h-16 ${hands.color} rounded-xl border-2 border-gray-600 shadow-sm z-20 transform -rotate-12 ${isHappy ? 'top-[-50px] -right-[90px]' : ''}`}></div>
                                 </>
                                 )}
                             </div>
@@ -858,8 +872,9 @@
                                         <Trophy size={16} /> 評分與排名機制
                                     </div>
                                     <ul className="list-disc list-inside space-y-1 text-xs">
-                                        <li>基本分：每答對一題獲得 <span className="font-bold text-slate-800">100</span> 分</li>
-                                        <li>滿分：10 題全對共 <span className="font-bold text-slate-800">1000</span> 分</li>
+                                        <li>完美防護：每答對一題獲得 <span className="font-bold text-slate-800">100</span> 分</li>
+                                        <li>部分正確：多餘裝備獲得 <span className="font-bold text-orange-600">50</span> 分</li>
+                                        <li>嚴重違規/不完整：<span className="font-bold text-red-500">0</span> 分</li>
                                         <li>扣分：每次使用提示扣 <span className="font-bold text-red-500">20</span> 分</li>
                                     </ul>
                                 </div>
@@ -947,13 +962,13 @@
                                         className={`relative flex flex-col items-center justify-center py-1.5 rounded-lg transition-all active:scale-95
                                         ${isActive ? 'bg-benq text-white shadow-md' : 'bg-slate-50 text-slate-500 hover:bg-slate-100'}`}
                                     >
-                                        {count > 0 && (
-                                            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold border border-white shadow-sm">
-                                                {count}
-                                            </span>
-                                        )}
-                                        <Icon size={12} />
-                                        <span className="text-[10px] font-bold mt-0">{group.name}</span>
+                                            {count > 0 && (
+                                                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold border border-white shadow-sm">
+                                                    {count}
+                                                </span>
+                                            )}
+                                            <Icon size={12} />
+                                            <span className="text-[10px] font-bold mt-0">{group.name}</span>
                                     </button>
                                 )
                             })}
@@ -1002,26 +1017,41 @@
                 {/* 結果彈窗 (Overlay) */}
                 {message && gameState !== 'playing' && gameState !== 'leaderboard' && gameState !== 'result' && (
                     <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white/95 backdrop-blur shadow-2xl border-2 border-slate-100 rounded-2xl p-6 w-4/5 max-h-[85vh] overflow-y-auto custom-scrollbar text-center z-50 animate-fade-in flex flex-col">
-                        <div className={`text-xl font-black mb-2 ${gameState === 'success' ? 'text-green-500' : 'text-red-500'}`}>
-                            {gameState === 'success' ? '答對了！' : '哎呀...'}
+                        <div className={`text-xl font-black mb-2 
+                            ${gameState === 'success' ? 'text-green-500' : 
+                              gameState === 'warning' ? 'text-amber-500' : 'text-red-500'}`}>
+                            {gameState === 'success' ? '完美防護！' : 
+                             gameState === 'warning' ? '部分正確！' : '哎呀...'}
                         </div>
                         <p className="text-sm text-slate-600 font-bold mb-4">{message}</p>
                         
-                        {/* 顯示正確答案區域 */}
+                        {/* 顯示正確/錯誤詳情區域 */}
                         {failDetails && (
-                            <div className="bg-red-50 rounded-xl p-3 text-left border border-red-100 text-xs mb-3">
-                                {failDetails.type === 'incorrect' && failDetails.missing && failDetails.missing.length > 0 && (
+                            <div className={`rounded-xl p-3 text-left border text-xs mb-3 
+                                ${gameState === 'success' ? 'bg-green-50 border-green-100' : 
+                                  gameState === 'warning' ? 'bg-amber-50 border-amber-100' : 'bg-red-50 border-red-100'}`}>
+                                
+                                {failDetails.type === 'missing' && failDetails.missing && failDetails.missing.length > 0 && (
                                     <div className="mb-2">
                                         <div className="font-bold text-red-500 flex items-center gap-1 mb-1"><AlertTriangle size={12}/> 缺少裝備：</div>
                                         <div className="text-slate-700 pl-4">{failDetails.missing.join('、')}</div>
                                     </div>
                                 )}
+                                
+                                {failDetails.type === 'extra' && failDetails.extra && failDetails.extra.length > 0 && (
+                                    <div className="mb-2">
+                                        <div className="font-bold text-amber-600 flex items-center gap-1 mb-1"><Info size={12}/> 多餘裝備：</div>
+                                        <div className="text-slate-700 pl-4">{failDetails.extra.join('、')}</div>
+                                    </div>
+                                )}
+
                                 {failDetails.type === 'forbidden' && (
                                     <div className="mb-2 text-red-600 font-bold">
                                         {failDetails.text}
                                     </div>
                                 )}
-                                <div className="mt-2 pt-2 border-t border-red-200">
+                                
+                                <div className="mt-2 pt-2 border-t border-slate-200/50">
                                     <div className="font-bold text-emerald-600 flex items-center gap-1 mb-1"><CheckCircle size={12}/> 正確配置：</div>
                                     <div className="text-slate-700 pl-4">{failDetails.correctList.join('、')}</div>
                                 </div>
