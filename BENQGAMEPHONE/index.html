@@ -300,7 +300,7 @@
             { id: 5, title: '推高機物料搬運作業', description: '駕駛堆高機進行物料搬運作業時，應配戴哪些安全防護具？', hint: '「撞傷/壓傷」駕駛人員除安全帶以外須做好頭部及腳部防護', required: ['helmet', 'safety_shoes'] },
             { id: 6, title: '電氣室檢修作業', description: '進行電氣設備檢修作業時，應配戴哪些安全防護具？', hint: '「感電危害」電氣設備檢修手部有感電風險須配戴絕緣防護並保護頭部及腳部', required: ['helmet_electric', 'safety_shoes', 'gloves_insulation'] },
             { id: 7, title: '膜料切割作業', description: '使用刀具進行切割/取膜作業時，應配戴哪些安全防護具？', hint: '「切割危害」避免刀具使用時對手部造成危害', required: ['gloves_cut'] },
-            { id: 8, title: '化學品檢測作業', description: '接觸酸、鹼等腐蝕性化學品時，應配戴哪些安全防護具？', hint: '「噴濺危害」最高規格化學防護保護臉部、呼吸器官、身體及手部', required: ['shield_face', 'mask_gas', 'apron', 'gloves_rubber'] },
+            { id: 8, title: '化學品檢測作業', description: '接觸酸、鹼等腐蝕性化學品時，應配戴哪些安全防護具？', hint: '「噴濺危害」最高規格化學防護保護臉部、呼吸器官、身體及手部', required: ['shield_face', 'mask_dust', 'apron', 'gloves_rubber'] },
             { id: 9, title: '滾輪清潔作業', description: '進行酒精或IPA擦拭清潔作業時，應配戴哪些安全防護具？', hint: '「化學危害」保護作業人員的眼睛、呼吸道及手部的安全', required: ['goggles', 'mask_dust', 'gloves_rubber'] },
             { id: 10, title: '化學品分裝(混膠)作業', description: '於進行有機溶劑分裝或化學品混和時，應配戴哪些安全防護具？', hint: '「化學危害」避免眼睛、手部及身體接觸揮發性溶劑且避免吸入揮發性氣體', required: ['goggles', 'gloves_rubber', 'apron', 'mask_gas'] },
             { id: 11, title: '化學品桶搬運作業', description: '於化學品倉庫以人工搬運桶裝化學品時，應配戴哪些安全防護具？', hint: '「化學/壓傷」防止化學品對眼睛、手部及身體危害及桶身掉落時對腳部的危害', required: ['goggles', 'gloves_rubber', 'safety_shoes', 'apron'] },
@@ -313,7 +313,7 @@
             { id: 18, title: '鍋爐加藥作業', description: '人員於鍋爐區進行加藥作業時，應配戴哪些完整安全防護具？', hint: '「化學/壓傷/噪音」注意避免接觸化學物質，保護眼睛、手部及身體，防止重物壓傷腳部，並配戴耳塞', required: ['helmet', 'earmuffs', 'goggles', 'gloves_rubber', 'apron', 'safety_shoes'] },
             { id: 19, title: '烘箱取物作業', description: '需取出烘箱內之物品時，應配戴哪些安全防護具？', hint: '「高溫危害」 防止手部及身體直接接觸高溫工件或設備造成燙傷', required: ['gloves_heat', 'apron'] },
             { id: 20, title: '塗頭管件清洗作業', description: '拆除後管件使用有機溶劑進行清洗時，應配戴哪些安全防護具？', hint: '「化學危害」 避免吸入有機溶劑氣體，並防止溶劑噴濺傷及眼睛與皮膚', required: ['mask_gas', 'goggles', 'gloves_rubber', 'apron'] },
-            { id: 21, title: '實驗室滴定作業', description: '使用化學品進行滴定作業時，應配戴哪些完整安全防護具？', hint: '「化學危害」為防止化學品噴濺，應保護眼睛、呼吸道、身體、手部及腳部，配戴個人防護具', required: ['goggles', 'mask_dust', 'gloves_rubber', 'safety_shoes'] }
+            { id: 21, title: '實驗室滴定作業', description: '使用化學品進行滴定作業時，應配戴哪些完整安全防護具？', hint: '「化學危害」為防止化學品噴濺，應保護眼睛、呼吸道、身體及手部，配戴個人防護具', required: ['goggles', 'mask_dust', 'gloves_rubber', 'apron'] }
         ];
 
         const TOTAL_ROUNDS = 10;
@@ -1071,4 +1071,3 @@
     </script>
 </body>
 </html>
-
