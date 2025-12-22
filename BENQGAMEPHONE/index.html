@@ -122,7 +122,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-analytics.js";
-        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
         import { getFirestore, collection, addDoc, getDocs, serverTimestamp, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
 
         // Fallback config if environment variable is missing
@@ -165,13 +165,32 @@
 
             console.log("Firebase initialized successfully");
 
-            // Attempt anonymous sign-in immediately to ensure auth is ready
-            signInAnonymously(auth)
-                .then((userCred) => {
-                    console.log("Firebase: Signed in anonymously", userCred.user.uid);
+            // Authentication Logic: Prioritize Custom Token, fallback to Anonymous
+            const initAuth = async () => {
+                try {
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        console.log("Attempting sign-in with custom token...");
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        console.log("Attempting anonymous sign-in...");
+                        await signInAnonymously(auth);
+                    }
+                    console.log("Firebase: Signed in as", auth.currentUser?.uid);
                     window.isFirebaseAuthReady = true;
-                })
-                .catch((error) => console.warn("Firebase: Sign-in failed", error.message));
+                } catch (error) {
+                    console.warn("Firebase: Primary sign-in failed", error);
+                    // Fallback: If custom token failed, try anonymous
+                    try {
+                        await signInAnonymously(auth);
+                        console.log("Firebase: Fallback anonymous sign-in success");
+                        window.isFirebaseAuthReady = true;
+                    } catch (fallbackError) {
+                        console.error("Firebase: All sign-in attempts failed", fallbackError);
+                    }
+                }
+            };
+
+            initAuth();
 
         } catch (error) {
             console.error("Firebase Initialization Error:", error);
