@@ -403,30 +403,46 @@
           // Save score function
           const saveScore = async () => {
              if (window.firebaseServices && window.firebaseServices.db && employeeId && departmentId) {
-                 if (!user) {
-                     console.warn("User not authenticated yet, retrying save in a moment...");
-                     // Small retry logic or just alert
-                     setSaveStatus("error"); 
-                     return;
+                 const { auth, signInAnonymously } = window.firebaseServices;
+                 // Ensure auth before save
+                 if (!auth.currentUser) {
+                     try {
+                         await signInAnonymously(auth);
+                     } catch(e) {
+                         console.error("Auth failed during save", e);
+                         setSaveStatus("error");
+                         return;
+                     }
                  }
 
                  setSaveStatus("saving");
                  try {
                      const { db, collection, addDoc, serverTimestamp } = window.firebaseServices;
-                     // Use standard path structure for artifacts
-                     await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'scores'), {
+                     
+                     // Ensure appId is valid string
+                     const currentAppId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                     
+                     const scoreData = {
                          departmentId: departmentId,
                          employeeId: employeeId,
-                         score: score,
-                         timeMs: timeMs,
+                         score: Number(score),
+                         timeMs: Number(timeMs),
                          createdAt: serverTimestamp(),
-                         completedRounds: round >= TOTAL_ROUNDS ? TOTAL_ROUNDS : round
-                     });
+                         completedRounds: round >= TOTAL_ROUNDS ? TOTAL_ROUNDS : round,
+                         userId: auth.currentUser.uid
+                     };
+
+                     console.log("Saving score to:", `artifacts/${currentAppId}/public/data/scores`, scoreData);
+
+                     await addDoc(collection(db, 'artifacts', currentAppId, 'public', 'data', 'scores'), scoreData);
+                     
                      setSaveStatus("success");
-                     console.log("Score saved successfully");
-                     fetchLeaderboard(); // Update leaderboard immediately after saving
+                     fetchLeaderboard(); 
                  } catch (e) {
                      console.error("Error saving score:", e);
+                     if (e.code === 'permission-denied') {
+                          console.error("Permission denied. Check appId:", typeof __app_id !== 'undefined' ? __app_id : 'undefined');
+                     }
                      setSaveStatus("error");
                  }
              }
@@ -841,8 +857,14 @@
                                             <span className="font-bold text-slate-700">{employeeId}</span>
                                         </div>
                                    </div>
-                                   {saveStatus === 'success' && <div className="text-center text-xs text-emerald-600 font-bold">✓ 成績已上傳</div>}
-                                   {saveStatus === 'error' && <div className="text-center text-xs text-red-500 font-bold">⚠️ 上傳失敗</div>}
+                                   {saveStatus === 'success' && <div className="text-center text-xs text-emerald-600 font-bold animate-pulse">✓ 成績已上傳</div>}
+                                   {saveStatus === 'error' && (
+                                       <div className="text-center">
+                                           <div className="text-xs text-red-500 font-bold mb-2">⚠️ 上傳失敗，請檢查網路</div>
+                                           <button onClick={saveScore} className="px-4 py-1 bg-red-100 text-red-600 rounded-full text-xs font-bold hover:bg-red-200 active:scale-95 transition-colors">重試上傳</button>
+                                       </div>
+                                   )}
+                                   {saveStatus === 'saving' && <div className="text-center text-xs text-slate-400 font-bold animate-pulse">上傳中...</div>}
                                 </div>
 
                                 {/* Leaderboard Section */}
