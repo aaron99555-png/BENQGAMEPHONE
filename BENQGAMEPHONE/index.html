@@ -868,14 +868,25 @@
                                             <span className="font-bold text-slate-700">{employeeId}</span>
                                         </div>
                                    </div>
-                                   {saveStatus === 'success' && <div className="text-center text-xs text-emerald-600 font-bold animate-pulse">✓ 成績已上傳</div>}
-                                   {saveStatus === 'error' && (
-                                       <div className="text-center">
-                                           <div className="text-xs text-red-500 font-bold mb-2">⚠️ {saveError || '上傳失敗，請檢查網路'}</div>
-                                           <button onClick={saveScore} className="px-4 py-1 bg-red-100 text-red-600 rounded-full text-xs font-bold hover:bg-red-200 active:scale-95 transition-colors">重試上傳</button>
-                                       </div>
-                                   )}
-                                   {saveStatus === 'saving' && <div className="text-center text-xs text-slate-400 font-bold animate-pulse">上傳中...</div>}
+                                   
+                                   {/* Screenshot Instruction Area */}
+                                   <div className="mt-4 p-4 bg-yellow-50 border-2 border-yellow-200 rounded-xl text-center">
+                                       <h3 className="font-bold text-yellow-800 mb-2 text-lg">📸 步驟一：請截圖此畫面</h3>
+                                       <p className="text-xs text-yellow-700 mb-4">請確保包含分數、工號與部門代號</p>
+                                       
+                                       <div className="text-center font-bold text-yellow-800 mb-2">步驟二：上傳截圖</div>
+                                       <a 
+                                           href="https://drive.google.com/drive/mobile/my-drive?usp=forms_web&pli=1" 
+                                           target="_blank" 
+                                           rel="noopener noreferrer"
+                                           className="block w-full bg-benq hover:bg-benq-dark text-white font-bold py-3 rounded-xl shadow-lg active:scale-95 transition-transform flex justify-center items-center gap-2"
+                                       >
+                                           <Upload size={20} /> 前往上傳位置
+                                       </a>
+                                   </div>
+
+                                   {saveStatus === 'success' && <div className="text-center text-xs text-emerald-600 font-bold mt-2 opacity-60">✓ 系統已自動備份成績</div>}
+                                   {saveStatus === 'error' && <div className="text-center text-xs text-red-400 font-bold mt-2 opacity-60">⚠️ 自動備份失敗 (請以上傳截圖為主)</div>}
                                 </div>
 
                                 {/* Leaderboard Section */}
