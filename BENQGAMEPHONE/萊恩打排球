@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>萊恩打排球 Ryan Volleyball</title>
+    <style>
+/* ... existing code ... --> */
+// 按鍵狀態記錄
+const keys = {};
+
+// --- 角色物件 (萊恩 Ryan) ---
+class Ryan {
+    constructor(x, isP2 = false) {
+        this.startX = x;
+        this.x = x;
+        this.y = GROUND_Y;
+        this.vx = 0;
+        this.vy = 0;
+        this.radius = 32;
+        this.isP2 = isP2;
+        this.isGrounded = false;
+        this.color = '#f59e0b'; // 萊恩招牌橘黃色
+        this.speed = 6.5;
+        this.jumpForce = -12.5;
+        this.state = 'idle';
+    }
+
+    reset() {
+        this.x = this.startX;
+        this.y = GROUND_Y;
+        this.vx = 0;
+        this.vy = 0;
+        this.isGrounded = true;
+    }
+
+    update() {
+        // 重力
+        this.vy += 0.55;
+        this.x += this.vx;
+        this.y += this.vy;
+
+        // 地面碰撞
+        if (this.y >= GROUND_Y) {
+            this.y = GROUND_Y;
+            this.vy = 0;
+            this.isGrounded = true;
+        } else {
+            this.isGrounded = false;
+        }
+
+        // 邊界與網子碰撞鎖定
+        const minX = this.isP2 ? NET_X + NET_WIDTH/2 + this.radius : this.radius;
+        const maxX = this.isP2 ? CANVAS_WIDTH - this.radius : NET_X - NET_WIDTH/2 - this.radius;
+
+        if (this.x < minX) this.x = minX;
+        if (this.x > maxX) this.x = maxX;
+    }
+
+    draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y - this.radius);
+        if (this.isP2) ctx.scale(-1, 1); // 玩家2反轉面向
+
+        // 1. 耳朵 (左 & 右圓耳)
+        ctx.fillStyle = this.color;
+        ctx.strokeStyle = '#d97706';
+        ctx.lineWidth = 2.5;
+
+        // 左耳
+        ctx.beginPath();
+        ctx.arc(-20, -22, 10, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        // 右耳
+        ctx.beginPath();
+        ctx.arc(20, -22, 10, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        // 2. 萊恩大頭主體
+        ctx.beginPath();
+        ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+        ctx.stroke();
+
+        // 3. 萊恩最具特色的「招牌一字平眉」
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 4;
+        ctx.lineCap = 'round';
+
+        // 左眉
+        ctx.beginPath();
+        ctx.moveTo(-22, -12);
+        ctx.lineTo(-6, -12);
+        ctx.stroke();
+
+        // 右眉
+        ctx.beginPath();
+        ctx.moveTo(6, -12);
+        ctx.lineTo(22, -12);
+        ctx.stroke();
+
+        // 4. 眼睛 (圓滾滾無表情小黑眼)
+        ctx.fillStyle = '#1e293b';
+        ctx.beginPath();
+        ctx.arc(-13, -3, 3.5, 0, Math.PI * 2);
+        ctx.arc(13, -3, 3.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 5. 嘴鼻區域 (白色雙球嘴包 + 黑色小鼻子)
+        // 白色嘴包
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(-4, 7, 5, 0, Math.PI * 2);
+        ctx.arc(4, 7, 5, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 黑色小鼻子
+        ctx.fillStyle = '#1e293b';
+        ctx.beginPath();
+        ctx.arc(0, 4.5, 3, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.restore();
+    }
+}
+
+// --- 排球物件 ---
+class Ball {
+    constructor() {
+        this.radius = 18;
+        this.reset(1);
+    }
+
+    reset(servingPlayer = 1) {
+        // 發球位置
+        this.x = servingPlayer === 1 ? 200 : 600;
+        this.y = 120;
+        this.vx = 0;
+        this.vy = 0;
+        this.isSmash = false;
+    }
+
+    update() {
+        // 重力加速度
+        this.vy += 0.28;
+
+        this.x += this.vx;
+        this.y += this.vy;
+
+        // 邊界牆壁彈跳 (左右)
+        if (this.x - this.radius < 0) {
+            this.x = this.radius;
+            this.vx = -this.vx * 0.85;
+        }
+        if (this.x + this.radius > CANVAS_WIDTH) {
+            this.x = CANVAS_WIDTH - this.radius;
+            this.vx = -this.vx * 0.85;
+        }
+
+        // 天花板
+        if (this.y - this.radius < 0) {
+            this.y = this.radius;
+            this.vy = -this.vy * 0.8;
+        }
+
+        // 網子碰撞
+        const netTop = GROUND_Y - NET_HEIGHT;
+        const netLeft = NET_X - NET_WIDTH/2;
+        const netRight = NET_X + NET_WIDTH/2;
+
+        if (this.x + this.radius > netLeft && this.x - this.radius < netRight) {
+            if (this.y + this.radius > netTop) {
+                // 撞到網頂
+                if (this.y < netTop + 10 && this.vy > 0) {
+                    this.y = netTop - this.radius;
+                    this.vy = -this.vy * 0.7;
+                } else { // 撞到網子側邊
+                    if (this.x < NET_X) {
+                        this.x = netLeft - this.radius;
+                        this.vx = -Math.abs(this.vx) * 0.8;
+                    } else {
+                        this.x = netRight + this.radius;
+                        this.vx = Math.abs(this.vx) * 0.8;
+                    }
+                }
+            }
+        }
+    }
+
+    draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+
+        // 扣殺尾跡效果
+        if (this.isSmash) {
+            ctx.shadowColor = '#ff3d00';
+            ctx.shadowBlur = 15;
+        }
+
+        // 經典黃藍排球紋理
+        ctx.beginPath();
+        ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = '#fbbf24';
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(0, 0, this.radius, -Math.PI * 0.35, Math.PI * 0.35);
+        ctx.fillStyle = '#2563eb';
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(0, 0, this.radius, Math.PI * 0.65, Math.PI * 1.35);
+        ctx.fillStyle = '#2563eb';
+        ctx.fill();
+
+        // 內圈條紋線條
+        ctx.beginPath();
+        ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#1e293b';
+        ctx.stroke();
+
+        ctx.restore();
+    }
+}
+
+// 實體化
+const p1 = new Ryan(150, false);
+const p2 = new Ryan(650, true);
+const ball = new Ball();
+
+// --- AI 電腦邏輯 ---
+function updateAI() {
+    if (!vsAI || gameOver) return;
+
+    const targetX = ball.x;
+    const distanceX = targetX - p2.x;
+
+    if (ball.x > CANVAS_WIDTH * 0.35) {
+        if (Math.abs(distanceX) > 10) {
+            p2.vx = distanceX > 0 ? p2.speed * 0.85 : -p2.speed * 0.85;
+        } else {
+            p2.vx = 0;
+        }
+
+        if (ball.y < GROUND_Y - 80 && ball.y > GROUND_Y - 200 && Math.abs(distanceX) < 40) {
+            if (p2.isGrounded) {
+                p2.vy = p2.jumpForce;
+                sound.playJump();
+            }
+        }
+    } else {
+        const homeX = 650;
+        if (Math.abs(p2.x - homeX) > 10) {
+            p2.vx = p2.x < homeX ? p2.speed * 0.5 : -p2.speed * 0.5;
+        } else {
+            p2.vx = 0;
+        }
+    }
+}
+
+// --- 碰撞檢測：萊恩與球 ---
+function checkBallRyanCollision(p) {
+    const dx = ball.x - p.x;
+    const dy = ball.y - (p.y - p.radius);
+    const dist = Math.hypot(dx, dy);
+
+    if (dist < ball.radius + p.radius) {
+        let angle = Math.atan2(dy, dx);
+        
+        if (angle > -0.2) angle = -0.5;
+        
+        let power = 9.5;
+        let isSmash = false;
+
+        if (!p.isGrounded && keys[p.isP2 ? 'ArrowDown' : 's']) {
+            power = 14;
+            angle = p.isP2 ? Math.PI * 0.75 : Math.PI * 0.25;
+            isSmash = true;
+        }
+
+        ball.vx = Math.cos(angle) * power + p.vx * 0.3;
+        ball.vy = Math.sin(angle) * power;
+
+        const overlap = (ball.radius + p.radius) - dist;
+        ball.x += Math.cos(angle) * overlap;
+        ball.y += Math.sin(angle) * overlap;
+
+        ball.isSmash = isSmash;
+        sound.playHit(isSmash);
+    }
+}
+
+// --- 主遊戲迴圈 ---
+function gameLoop() {
+    handleInput();
+    updateAI();
+
+    if (!gameOver) {
+        p1.update();
+        p2.update();
+        ball.update();
+
+        checkBallRyanCollision(p1);
+        checkBallRyanCollision(p2);
+        checkScoring();
+    }
+
+    // 渲染
+    drawScene();
+    p1.draw();
+    p2.draw();
+    ball.draw();
+
+    // 獲勝結算畫面
+    if (gameOver) {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.65)';
+        ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 36px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(winnerText, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 - 20);
+
+        ctx.font = '20px sans-serif';
+        ctx.fillStyle = '#ffeb3b';
+        ctx.fillText('點擊「重新開始」再戰一局！', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 30);
+    }
+
+    requestAnimationFrame(gameLoop);
+}
+
+// 開始遊戲
+window.onload = () => {
+    gameLoop();
+};
+</script>
+</body>
+</html>
