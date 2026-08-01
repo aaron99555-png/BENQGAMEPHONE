@@ -5,9 +5,313 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>萊恩打排球 Ryan Volleyball</title>
     <style>
-/* ... existing code ... --> */
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            background: #1e1e2f;
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 12px 12px 0 0;
+        }
+
+        .score-board {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .score {
+            padding: 4px 16px;
+            background: #333;
+            border-radius: 8px;
+            border: 2px solid #555;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .score.p1 { color: #ffeb3b; border-color: #fbc02d; }
+        .score.p2 { color: #4fc3f7; border-color: #0288d1; }
+
+        .btn-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        button {
+            background: #ff9800;
+            border: none;
+            color: #fff;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 0 #e65100;
+        }
+
+        button:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #e65100;
+        }
+
+        button.secondary {
+            background: #7c4dff;
+            box-shadow: 0 4px 0 #512da8;
+        }
+        button.secondary:active {
+            box-shadow: 0 2px 0 #512da8;
+        }
+
+        canvas {
+            background: #87ceeb;
+            width: 100%;
+            height: auto;
+            max-height: 480px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            display: block;
+        }
+
+        /* 觸控按鈕區塊 */
+        .controls-container {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background: #111;
+            border-radius: 0 0 12px 12px;
+        }
+
+        .touch-group {
+            display: grid;
+            grid-template-columns: repeat(3, 50px);
+            grid-template-rows: repeat(2, 50px);
+            gap: 6px;
+        }
+
+        .t-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            user-select: none;
+        }
+
+        .t-btn:active {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .btn-up { grid-column: 2; grid-row: 1; }
+        .btn-left { grid-column: 1; grid-row: 2; }
+        .btn-down { grid-column: 2; grid-row: 2; }
+        .btn-right { grid-column: 3; grid-row: 2; }
+
+        @media (min-width: 768px) {
+            .controls-container {
+                display: none; /* 電腦版隱藏觸控按紐 */
+            }
+        }
+
+        .instructions {
+            margin-top: 10px;
+            font-size: 13px;
+            color: #aaa;
+            text-align: center;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <header>
+        <div class="score-board">
+            <span class="score p1" id="p1-score">0</span>
+            <span style="font-size: 16px; color: #aaa;">VS</span>
+            <span class="score p2" id="p2-score">0</span>
+        </div>
+        <div class="btn-group">
+            <button id="mode-btn" class="secondary">模式: 單人 vs AI</button>
+            <button id="restart-btn">重新開始</button>
+        </div>
+    </header>
+
+    <canvas id="gameCanvas" width="800" height="450"></canvas>
+
+    <!-- 螢幕觸控按紐 (行動裝置友善) -->
+    <div class="controls-container">
+        <!-- P1 左側控制項 -->
+        <div class="touch-group">
+            <div class="t-btn btn-up" id="t-w">▲</div>
+            <div class="t-btn btn-left" id="t-a">◄</div>
+            <div class="t-btn btn-down" id="t-s">▼</div>
+            <div class="t-btn btn-right" id="t-d">►</div>
+        </div>
+        <div style="text-align: center; font-size: 12px; color: #888; display: flex; align-items: center;">
+            觸控區
+        </div>
+        <!-- P2 右側控制項 (雙人模式時可用) -->
+        <div class="touch-group">
+            <div class="t-btn btn-up" id="t-up">▲</div>
+            <div class="t-btn btn-left" id="t-left">◄</div>
+            <div class="t-btn btn-down" id="t-down">▼</div>
+            <div class="t-btn btn-right" id="t-right">►</div>
+        </div>
+    </div>
+
+    <!-- 開場畫面遮罩 -->
+    <div id="start-screen" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(30, 30, 47, 0.95); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100; border-radius: 12px;">
+        <h1 style="color: #f59e0b; font-size: 48px; margin-bottom: 10px; text-shadow: 2px 2px 0 #d97706, 4px 4px 0 #000;">萊恩打排球</h1>
+        <p style="color: #fff; font-size: 18px; margin-bottom: 30px;">股市必殺技大亂鬥版</p>
+        <button id="start-game-btn" style="font-size: 24px; padding: 15px 40px; border-radius: 50px; background: linear-gradient(180deg, #ff9800, #f57c00); box-shadow: 0 6px 0 #e65100, 0 10px 20px rgba(0,0,0,0.5);">點擊開始遊戲</button>
+    </div>
+</div>
+
+<div class="instructions">
+    <b>鍵盤操作說明：</b><br>
+    【玩家1 (左)】 WASD 移動與跳躍/扣殺 &nbsp;|&nbsp; 
+    【玩家2 (右)】 方向鍵 移動與跳躍/扣殺<br>
+    跳躍中按下「下」發動 <b>股市必殺技扣殺</b>！第一位達到 <b>15 分</b> 的玩家獲勝！
+</div>
+
+<script>
+// --- 音效合成器 (Web Audio API) ---
+class SoundController {
+    constructor() {
+        this.ctx = null;
+    }
+
+    init() {
+        if (!this.ctx) {
+            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+    }
+
+    playJump() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(400, this.ctx.currentTime + 0.15);
+
+        gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.15);
+
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.15);
+    }
+
+    playHit(isSmash = false) {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.type = isSmash ? 'square' : 'triangle';
+        const startFreq = isSmash ? 600 : 300;
+        const endFreq = isSmash ? 150 : 100;
+
+        osc.frequency.setValueAtTime(startFreq, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(endFreq, this.ctx.currentTime + 0.12);
+
+        gain.gain.setValueAtTime(isSmash ? 0.5 : 0.3, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.12);
+
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.12);
+    }
+
+    playScore() {
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        [400, 600, 800].forEach((freq, idx) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+
+            gain.gain.setValueAtTime(0.2, now + idx * 0.08);
+            gain.gain.linearRampToValueAtTime(0.01, now + idx * 0.08 + 0.08);
+
+            osc.start(now + idx * 0.08);
+            osc.stop(now + idx * 0.08 + 0.08);
+        });
+    }
+}
+
+const sound = new SoundController();
+
+// --- 遊戲核心變數 ---
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+const CANVAS_WIDTH = 800;
+const CANVAS_HEIGHT = 450;
+const GROUND_Y = 380;
+const NET_X = CANVAS_WIDTH / 2;
+const NET_HEIGHT = 130;
+const NET_WIDTH = 12;
+
+let gameState = 'start'; // 'start', 'playing', 'gameover'
+let vsAI = true;
+let scoreP1 = 0;
+let scoreP2 = 0;
+// 移除 let gameOver = false;
+let winnerText = "";
+let floatingTexts = []; // 新增：浮動文字陣列
+
 // 按鍵狀態記錄
-const keys = {};
+let keys = {};
+
+// 視窗失焦時清空按鍵，防止人物自走
+window.addEventListener('blur', () => {
+    keys = {};
+});
 
 // --- 角色物件 (萊恩 Ryan) ---
 class Ryan {
@@ -142,11 +446,65 @@ class Ball {
         this.vx = 0;
         this.vy = 0;
         this.isSmash = false;
+        
+        // 必殺技相關狀態
+        this.skillEffect = null;
+        this.skillTimer = 0;
+        this.dir = 1; 
+    }
+
+    applySkill(skill, dir) {
+        this.skillEffect = skill;
+        this.skillTimer = 0;
+        this.dir = dir;
+        this.isSmash = true;
     }
 
     update() {
-        // 重力加速度
-        this.vy += 0.28;
+        // 股市必殺技物理特效 (調降整體速度)
+        if (this.skillEffect) {
+            this.skillTimer++;
+            switch(this.skillEffect) {
+                case '持股漲停': // 無視重力強勢向上噴出
+                    this.vx = this.dir * 6; // 從 8 降至 6
+                    this.vy = -14; // 從 -18 降至 -14
+                    if (this.skillTimer > 10) this.skillEffect = null;
+                    break;
+                case '無量跌停': // 騙過網後瞬間垂直下墜
+                    if (this.skillTimer < 15) {
+                        this.vx = this.dir * 9; // 從 12 降至 9
+                        this.vy = -4; // 從 -5 降至 -4
+                    } else {
+                        this.vx = 0;
+                        this.vy = 22; // 從 28 降至 22
+                        this.skillEffect = null;
+                    }
+                    break;
+                case '橫盤整理': // 滯空平移一段時間
+                    this.vy = 0;
+                    this.vx = this.dir * 7; // 從 9 降至 7
+                    if (this.skillTimer > 35) this.skillEffect = null;
+                    break;
+                case '回後買上漲': // 先往反方向退，再急速暴衝
+                    if (this.skillTimer < 15) {
+                        this.vx = -this.dir * 3; // 從 -4 降至 -3
+                        this.vy = -2;
+                    } else if (this.skillTimer === 15) {
+                        this.vx = this.dir * 18; // 從 25 降至 18
+                        this.vy = -6; // 從 -8 降至 -6
+                    }
+                    if (this.skillTimer > 25) this.skillEffect = null;
+                    break;
+                case '帶量突破': // 極高速的暴力直線球
+                    this.vx = this.dir * 20; // 從 28 降至 20
+                    this.vy = 4; // 從 5 降至 4
+                    if (this.skillTimer > 15) this.skillEffect = null;
+                    break;
+            }
+        } else {
+            // 一般重力加速度
+            this.vy += 0.22; // 從 0.28 降至 0.22 讓球感覺輕一點/慢一點
+        }
 
         this.x += this.vx;
         this.y += this.vy;
@@ -154,17 +512,20 @@ class Ball {
         // 邊界牆壁彈跳 (左右)
         if (this.x - this.radius < 0) {
             this.x = this.radius;
-            this.vx = -this.vx * 0.85;
+            this.vx = Math.abs(this.vx) * 0.85;
+            this.skillEffect = null; // 撞牆取消特效
         }
         if (this.x + this.radius > CANVAS_WIDTH) {
             this.x = CANVAS_WIDTH - this.radius;
-            this.vx = -this.vx * 0.85;
+            this.vx = -Math.abs(this.vx) * 0.85;
+            this.skillEffect = null; // 撞牆取消特效
         }
 
         // 天花板
         if (this.y - this.radius < 0) {
             this.y = this.radius;
-            this.vy = -this.vy * 0.8;
+            this.vy = Math.abs(this.vy) * 0.8;
+            this.skillEffect = null; // 撞牆取消特效
         }
 
         // 網子碰撞
@@ -174,6 +535,7 @@ class Ball {
 
         if (this.x + this.radius > netLeft && this.x - this.radius < netRight) {
             if (this.y + this.radius > netTop) {
+                this.skillEffect = null; // 撞網取消特效
                 // 撞到網頂
                 if (this.y < netTop + 10 && this.vy > 0) {
                     this.y = netTop - this.radius;
@@ -195,10 +557,18 @@ class Ball {
         ctx.save();
         ctx.translate(this.x, this.y);
 
-        // 扣殺尾跡效果
+        // 扣殺尾跡與特效
         if (this.isSmash) {
-            ctx.shadowColor = '#ff3d00';
-            ctx.shadowBlur = 15;
+            ctx.shadowColor = this.skillEffect ? '#ff0000' : '#ff3d00';
+            ctx.shadowBlur = this.skillEffect ? 25 : 15;
+            
+            // 若為必殺技，畫出殘影或光暈放大
+            if (this.skillEffect) {
+                ctx.beginPath();
+                ctx.arc(0, 0, this.radius + 6, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255, 200, 0, 0.4)';
+                ctx.fill();
+            }
         }
 
         // 經典黃藍排球紋理
@@ -235,7 +605,7 @@ const ball = new Ball();
 
 // --- AI 電腦邏輯 ---
 function updateAI() {
-    if (!vsAI || gameOver) return;
+    if (!vsAI || gameState !== 'playing') return;
 
     const targetX = ball.x;
     const distanceX = targetX - p2.x;
@@ -247,12 +617,21 @@ function updateAI() {
             p2.vx = 0;
         }
 
-        if (ball.y < GROUND_Y - 80 && ball.y > GROUND_Y - 200 && Math.abs(distanceX) < 40) {
+        // 調低 AI 跳躍判斷的高度要求，適應較慢的球速
+        if (ball.y < GROUND_Y - 60 && ball.y > GROUND_Y - 220 && Math.abs(distanceX) < 40) {
             if (p2.isGrounded) {
                 p2.vy = p2.jumpForce;
                 sound.playJump();
             }
         }
+        
+        // 嘗試施放必殺技 (AI 自動按 ↓)
+        if (!p2.isGrounded && ball.y < p2.y - p2.radius && Math.abs(distanceX) < 30) {
+            keys['ArrowDown'] = true;
+        } else {
+            keys['ArrowDown'] = false;
+        }
+        
     } else {
         const homeX = 650;
         if (Math.abs(p2.x - homeX) > 10) {
@@ -260,8 +639,111 @@ function updateAI() {
         } else {
             p2.vx = 0;
         }
+        keys['ArrowDown'] = false;
     }
 }
+
+// --- 輸入控制 ---
+function handleInput() {
+    sound.init(); // 觸發 Web Audio API 解鎖
+
+    // P1 (WASD)
+    p1.vx = 0;
+    if (keys['a'] || keys['A']) p1.vx = -p1.speed;
+    if (keys['d'] || keys['D']) p1.vx = p1.speed;
+    if ((keys['w'] || keys['W']) && p1.isGrounded) {
+        p1.vy = p1.jumpForce;
+        sound.playJump();
+    }
+
+    // P2 (方向鍵) - 僅在非 AI 模式時由玩家控制
+    if (!vsAI) {
+        p2.vx = 0;
+        if (keys['ArrowLeft']) p2.vx = -p2.speed;
+        if (keys['ArrowRight']) p2.vx = p2.speed;
+        if (keys['ArrowUp'] && p2.isGrounded) {
+            p2.vy = p2.jumpForce;
+            sound.playJump();
+        }
+    }
+}
+
+// 事件監聽 (鍵盤)
+window.addEventListener('keydown', e => { keys[e.key] = true; });
+window.addEventListener('keyup', e => { keys[e.key] = false; });
+
+// 觸控按鈕綁定函數
+function setupTouchBtn(btnId, keyName) {
+    const btn = document.getElementById(btnId);
+    if (!btn) return;
+    btn.addEventListener('touchstart', (e) => { e.preventDefault(); keys[keyName] = true; });
+    btn.addEventListener('touchend', (e) => { e.preventDefault(); keys[keyName] = false; });
+    btn.addEventListener('touchcancel', (e) => { e.preventDefault(); keys[keyName] = false; }); // 加入 touchcancel
+    btn.addEventListener('mousedown', () => { keys[keyName] = true; });
+    btn.addEventListener('mouseup', () => { keys[keyName] = false; });
+    btn.addEventListener('mouseleave', () => { keys[keyName] = false; }); // 加入 mouseleave
+}
+
+// 註冊 touch 事件
+setupTouchBtn('t-w', 'w');
+setupTouchBtn('t-a', 'a');
+setupTouchBtn('t-s', 's');
+setupTouchBtn('t-d', 'd');
+setupTouchBtn('t-up', 'ArrowUp');
+setupTouchBtn('t-left', 'ArrowLeft');
+setupTouchBtn('t-down', 'ArrowDown');
+setupTouchBtn('t-right', 'ArrowRight');
+
+// --- 得分檢查 ---
+function checkScoring() {
+    if (ball.y + ball.radius >= GROUND_Y) {
+        sound.playScore();
+        if (ball.x < NET_X) {
+            scoreP2++;
+            document.getElementById('p2-score').innerText = scoreP2;
+            checkWinner();
+            ball.reset(1); 
+        } else {
+            scoreP1++;
+            document.getElementById('p1-score').innerText = scoreP1;
+            checkWinner();
+            ball.reset(2); 
+        }
+        p1.reset();
+        p2.reset();
+    }
+}
+
+function checkWinner() {
+    if (scoreP1 >= 15 || scoreP2 >= 15) {
+        gameState = 'gameover';
+        keys = {}; // 遊戲結束清空按鍵
+        winnerText = scoreP1 >= 15 ? "🎉 玩家 1 (左) 獲得勝利！" : (vsAI ? "🤖 電腦 AI 獲得勝利！" : "🎉 玩家 2 (右) 獲得勝利！");
+    }
+}
+
+function resetGame() {
+    scoreP1 = 0;
+    scoreP2 = 0;
+    gameState = 'playing';
+    keys = {}; // 重置時清空按鍵
+    floatingTexts = [];
+    document.getElementById('p1-score').innerText = "0";
+    document.getElementById('p2-score').innerText = "0";
+    p1.reset();
+    p2.reset();
+    ball.reset(1);
+}
+
+// 模式切換按鈕
+const modeBtn = document.getElementById('mode-btn');
+modeBtn.addEventListener('click', () => {
+    vsAI = !vsAI;
+    modeBtn.innerText = vsAI ? "模式: 單人 vs AI" : "模式: 雙人對戰";
+    resetGame();
+});
+document.getElementById('restart-btn').addEventListener('click', resetGame);
+
 
 // --- 碰撞檢測：萊恩與球 ---
 function checkBallRyanCollision(p) {
@@ -277,30 +759,85 @@ function checkBallRyanCollision(p) {
         let power = 9.5;
         let isSmash = false;
 
+        // 調整扣殺判定與力量
         if (!p.isGrounded && keys[p.isP2 ? 'ArrowDown' : 's']) {
-            power = 14;
+            power = 12; // 從 14 降至 12
             angle = p.isP2 ? Math.PI * 0.75 : Math.PI * 0.25;
             isSmash = true;
         }
 
-        ball.vx = Math.cos(angle) * power + p.vx * 0.3;
+        // 調降角色速度對球的影響
+        ball.vx = Math.cos(angle) * power + p.vx * 0.2; 
         ball.vy = Math.sin(angle) * power;
 
         const overlap = (ball.radius + p.radius) - dist;
         ball.x += Math.cos(angle) * overlap;
         ball.y += Math.sin(angle) * overlap;
 
-        ball.isSmash = isSmash;
+        if (isSmash) {
+            // 隨機觸發股市必殺技
+            const skills = ['持股漲停', '無量跌停', '橫盤整理', '回後買上漲', '帶量突破'];
+            const skill = skills[Math.floor(Math.random() * skills.length)];
+            ball.applySkill(skill, p.isP2 ? -1 : 1);
+            
+            // 產生浮動文字
+            floatingTexts.push({
+                text: '必殺技: ' + skill,
+                x: p.x,
+                y: p.y - 80,
+                life: 90,
+                color: p.isP2 ? '#ef4444' : '#3b82f6' // 右邊紅色，左邊藍色
+            });
+        } else {
+            ball.isSmash = false;
+            ball.skillEffect = null;
+        }
+
         sound.playHit(isSmash);
+    }
+}
+
+// --- 繪製場景 ---
+function drawScene() {
+    ctx.fillStyle = '#87ceeb';
+    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+    ctx.beginPath();
+    ctx.arc(700, 70, 40, 0, Math.PI * 2);
+    ctx.fillStyle = '#ffeb3b';
+    ctx.fill();
+
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+    ctx.beginPath();
+    ctx.arc(150, 80, 25, 0, Math.PI * 2);
+    ctx.arc(175, 70, 30, 0, Math.PI * 2);
+    ctx.arc(200, 80, 25, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#e0cda3';
+    ctx.fillRect(0, GROUND_Y, CANVAS_WIDTH, CANVAS_HEIGHT - GROUND_Y);
+    ctx.fillStyle = '#c2b186';
+    ctx.fillRect(0, GROUND_Y, CANVAS_WIDTH, 8); 
+
+    const netTop = GROUND_Y - NET_HEIGHT;
+    ctx.fillStyle = '#eeeeee';
+    ctx.fillRect(NET_X - NET_WIDTH/2, netTop, NET_WIDTH, NET_HEIGHT);
+    ctx.strokeStyle = '#cccccc';
+    ctx.lineWidth = 1;
+    for (let y = netTop; y < GROUND_Y; y += 12) {
+        ctx.beginPath();
+        ctx.moveTo(NET_X - NET_WIDTH/2, y);
+        ctx.lineTo(NET_X + NET_WIDTH/2, y);
+        ctx.stroke();
     }
 }
 
 // --- 主遊戲迴圈 ---
 function gameLoop() {
-    handleInput();
-    updateAI();
+    if (gameState === 'playing') {
+        handleInput();
+        updateAI();
 
-    if (!gameOver) {
         p1.update();
         p2.update();
         ball.update();
@@ -308,6 +845,9 @@ function gameLoop() {
         checkBallRyanCollision(p1);
         checkBallRyanCollision(p2);
         checkScoring();
+    } else {
+        // 非遊玩狀態（開場或結束）不更新實體，但清空按鍵避免殘留
+        keys = {};
     }
 
     // 渲染
@@ -316,8 +856,26 @@ function gameLoop() {
     p2.draw();
     ball.draw();
 
+    // 繪製必殺技特效文字
+    for (let i = floatingTexts.length - 1; i >= 0; i--) {
+        let ft = floatingTexts[i];
+        ctx.save();
+        ctx.font = '900 24px "Microsoft JhengHei", sans-serif';
+        ctx.fillStyle = ft.color;
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 4;
+        ctx.textAlign = 'center';
+        ctx.strokeText(ft.text, ft.x, ft.y);
+        ctx.fillText(ft.text, ft.x, ft.y);
+        ctx.restore();
+        
+        ft.y -= 1.2; // 向上飄
+        ft.life--;
+        if (ft.life <= 0) floatingTexts.splice(i, 1);
+    }
+
     // 獲勝結算畫面
-    if (gameOver) {
+    if (gameState === 'gameover') {
         ctx.fillStyle = 'rgba(0, 0, 0, 0.65)';
         ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
@@ -334,7 +892,15 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
 }
 
-// 開始遊戲
+// 開始遊戲按鈕邏輯
+document.getElementById('start-game-btn').addEventListener('click', () => {
+    document.getElementById('start-screen').style.display = 'none';
+    sound.init(); // 啟動音效
+    resetGame();
+});
+
+
+// 啟動迴圈
 window.onload = () => {
     gameLoop();
 };
