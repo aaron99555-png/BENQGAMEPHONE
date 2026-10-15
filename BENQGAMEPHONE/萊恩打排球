@@ -1,909 +1,968 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>萊恩打排球 Ryan Volleyball</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            user-select: none;
-            -webkit-user-select: none;
-            touch-action: manipulation;
-        }
-        body {
-            margin: 0;
-            padding: 0;
-            background: #1e1e2f;
-            color: #fff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            overflow: hidden;
-        }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>飆股菁英太鼓達人 - 太鼓風升級版</title>
+<style>
+  :root{
+    --red:#ef4444;
+    --deep-red:#c81e1e;
+    --orange:#fb923c;
+    --yellow:#facc15;
+    --cream:#fff7ed;
+    --blue:#38bdf8;
+    --navy:#1e3a8a;
+    --green:#22c55e;
+    --teal:#0f766e;
+    --dark:#1f2937;
+    --ink:#111827;
+    --white:#ffffff;
+    --shadow:0 14px 30px rgba(0,0,0,.22);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{
+    margin:0;padding:0;
+    font-family:system-ui,-apple-system,"Segoe UI","Noto Sans TC",sans-serif;
+    color:#fff;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(255,255,255,.08), transparent 18%),
+      radial-gradient(circle at 80% 0%, rgba(255,255,255,.08), transparent 18%),
+      linear-gradient(180deg, #1d4ed8 0%, #1e3a8a 45%, #7c2d12 100%);
+    min-height:100vh;
+  }
+  body::before{
+    content:"";
+    position:fixed;inset:0;
+    background:
+      repeating-linear-gradient(45deg, rgba(255,255,255,.03) 0 10px, transparent 10px 20px),
+      repeating-linear-gradient(-45deg, rgba(255,255,255,.02) 0 10px, transparent 10px 20px);
+    pointer-events:none;
+  }
+  .app{max-width:540px;margin:0 auto;min-height:100vh;padding:10px 10px 24px;position:relative;z-index:1}
+  .hidden{display:none!important}
 
-        #game-container {
-            position: relative;
-            width: 100%;
-            max-width: 800px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+  .festival-banner{
+    background:linear-gradient(180deg,#fef3c7,#fde68a);
+    color:#7c2d12;
+    border:4px solid #b45309;
+    border-radius:26px;
+    box-shadow:var(--shadow);
+    padding:14px 14px 16px;
+    text-align:center;
+    position:relative;
+    overflow:hidden;
+  }
+  .festival-banner::before,
+  .festival-banner::after{
+    content:"";
+    position:absolute;top:0;bottom:0;width:20px;
+    background:repeating-linear-gradient(
+      180deg,
+      #dc2626 0 10px,
+      #f8fafc 10px 20px
+    );
+  }
+  .festival-banner::before{left:0}
+  .festival-banner::after{right:0}
+  .title-main{
+    font-size:30px;font-weight:1000;line-height:1.05;letter-spacing:1px;
+    text-shadow:2px 2px 0 rgba(255,255,255,.3);
+    margin-top:2px;
+  }
+  .title-sub{
+    margin-top:6px;
+    color:#78350f;
+    font-size:13px;font-weight:700;
+  }
+  .mascot-line{
+    font-size:28px;margin-bottom:6px
+  }
 
-        header {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 20px;
-            background: rgba(0, 0, 0, 0.4);
-            border-radius: 12px 12px 0 0;
-        }
+  .card{
+    margin-top:12px;
+    background:rgba(255,255,255,.14);
+    backdrop-filter:blur(8px);
+    border:1px solid rgba(255,255,255,.16);
+    border-radius:24px;
+    padding:14px;
+    box-shadow:var(--shadow);
+  }
 
-        .score-board {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            font-size: 24px;
-            font-weight: bold;
-        }
+  .mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+  .mode-btn{
+    border:0;border-radius:22px;padding:18px 10px;color:#fff;cursor:pointer;
+    font-size:20px;font-weight:1000;line-height:1.25;
+    box-shadow:inset 0 -6px 0 rgba(0,0,0,.16), var(--shadow);
+  }
+  .easy{background:linear-gradient(180deg,#38bdf8,#0284c7)}
+  .hard{background:linear-gradient(180deg,#fb7185,#e11d48)}
+  .mode-note{font-size:12px;font-weight:700;opacity:.95;margin-top:4px}
+  .tips{
+    margin-top:12px;
+    text-align:center;
+    color:#e5e7eb;
+    font-size:13px;line-height:1.65;
+  }
 
-        .score {
-            padding: 4px 16px;
-            background: #333;
-            border-radius: 8px;
-            border: 2px solid #555;
-            min-width: 60px;
-            text-align: center;
-        }
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;
+    margin-bottom:8px;
+  }
+  .back-btn,.small-btn{
+    border:0;cursor:pointer;font-weight:900;border-radius:999px;padding:10px 14px;
+    box-shadow:var(--shadow);
+  }
+  .back-btn{background:#fff;color:#b91c1c}
+  .small-btn{background:#fef3c7;color:#92400e}
+  .pill{
+    background:rgba(255,255,255,.16);
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:999px;
+    padding:8px 12px;
+    font-size:13px;font-weight:800;
+    box-shadow:var(--shadow);
+  }
 
-        .score.p1 { color: #ffeb3b; border-color: #fbc02d; }
-        .score.p2 { color: #4fc3f7; border-color: #0288d1; }
+  .level-row{
+    display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:10px
+  }
+  .level-dot{
+    text-align:center;padding:8px 2px;border-radius:14px;font-size:12px;font-weight:1000;
+    background:rgba(255,255,255,.14);color:#cbd5e1;border:1px solid rgba(255,255,255,.15)
+  }
+  .level-dot.done{background:#22c55e;color:#fff}
+  .level-dot.active{background:#facc15;color:#7c2d12}
 
-        .btn-group {
-            display: flex;
-            gap: 8px;
-        }
+  .hud{
+    display:grid;grid-template-columns:1.1fr .9fr;gap:10px;margin-bottom:10px;
+  }
+  .soul-box,.info-box{
+    background:rgba(255,255,255,.14);
+    border-radius:20px;padding:12px;border:1px solid rgba(255,255,255,.15);
+    box-shadow:var(--shadow);
+  }
+  .section-title{
+    font-size:12px;font-weight:1000;color:#fef3c7;margin-bottom:8px;letter-spacing:.5px
+  }
+  .soul-wrap{
+    display:flex;align-items:center;gap:10px
+  }
+  .soul-face{
+    width:50px;height:50px;border-radius:50%;
+    background:radial-gradient(circle at 35% 35%, #fff, #fef3c7 35%, #fca5a5 36%, #ef4444 80%);
+    border:4px solid #fff;
+    position:relative;flex:0 0 auto;
+  }
+  .soul-face::before,.soul-face::after{
+    content:"";position:absolute;top:16px;width:6px;height:6px;border-radius:50%;background:#111827;
+  }
+  .soul-face::before{left:13px}
+  .soul-face::after{right:13px}
+  .soul-smile{
+    position:absolute;left:50%;top:26px;transform:translateX(-50%);
+    width:18px;height:9px;border:3px solid #111827;border-top:none;border-radius:0 0 18px 18px;
+  }
+  .gauge{
+    flex:1;height:22px;background:rgba(17,24,39,.4);
+    border-radius:999px;overflow:hidden;border:2px solid rgba(255,255,255,.35)
+  }
+  .gauge-fill{
+    height:100%;width:0%;
+    background:linear-gradient(90deg,#f97316,#facc15,#22c55e);
+    transition:width .2s ease;
+  }
+  .gauge-text{margin-top:8px;font-size:13px;font-weight:900;color:#fff}
+  .info-grid{
+    display:grid;grid-template-columns:1fr 1fr;gap:8px
+  }
+  .info-item{
+    background:rgba(17,24,39,.34);border-radius:14px;padding:9px 8px;text-align:center
+  }
+  .info-item .k{font-size:11px;color:#e2e8f0;font-weight:800}
+  .info-item .v{font-size:19px;font-weight:1000;margin-top:3px}
 
-        button {
-            background: #ff9800;
-            border: none;
-            color: #fff;
-            padding: 8px 16px;
-            font-size: 14px;
-            font-weight: bold;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 4px 0 #e65100;
-        }
+  .stage-shell{
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03)),
+      linear-gradient(180deg, #0f172a, #1f2937);
+    border-radius:28px;
+    padding:10px;
+    border:2px solid rgba(255,255,255,.18);
+    box-shadow:var(--shadow);
+  }
+  .stage-header{
+    display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap
+  }
+  .stage-title{
+    font-size:18px;font-weight:1000;color:#fef3c7
+  }
+  .judge-badge{
+    background:#fef3c7;color:#7c2d12;border-radius:999px;padding:8px 12px;font-weight:1000;font-size:13px
+  }
+  .canvas-wrap{
+    position:relative;border-radius:22px;overflow:hidden;border:3px solid #fff;
+    background:linear-gradient(180deg,#1d4ed8 0%, #1e40af 55%, #b45309 100%);
+  }
+  canvas{
+    width:100%;height:auto;display:block;touch-action:none;
+    background:
+      radial-gradient(circle at 20% 10%, rgba(255,255,255,.12), transparent 22%),
+      radial-gradient(circle at 80% 5%, rgba(255,255,255,.1), transparent 20%),
+      linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,0)),
+      linear-gradient(180deg,#2563eb 0%,#1d4ed8 52%, #9a3412 100%);
+  }
+  .countdown-overlay{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font-size:88px;font-weight:1000;color:#fff7ed;
+    background:rgba(17,24,39,.42);
+    text-shadow:0 8px 24px rgba(0,0,0,.35);
+    z-index:4;
+  }
 
-        button:active {
-            transform: translateY(2px);
-            box-shadow: 0 2px 0 #e65100;
-        }
+  .btn-row{display:grid;gap:8px;margin-top:12px}
+  .btn-row.easy-mode{grid-template-columns:repeat(3,1fr)}
+  .btn-row.hard-mode{grid-template-columns:repeat(5,1fr)}
+  .hit-btn{
+    border:0;border-radius:18px;padding:13px 4px;color:#fff;font-weight:1000;
+    font-size:15px;min-height:64px;cursor:pointer;
+    box-shadow:inset 0 -5px 0 rgba(0,0,0,.15), var(--shadow);
+  }
+  .hit-btn:active,.hit-btn.active{transform:translateY(2px) scale(.98)}
+  .c0{background:linear-gradient(180deg,#f87171,#dc2626)}
+  .c1{background:linear-gradient(180deg,#fb923c,#ea580c)}
+  .c2{background:linear-gradient(180deg,#94a3b8,#64748b)}
+  .c3{background:linear-gradient(180deg,#4ade80,#16a34a)}
+  .c4{background:linear-gradient(180deg,#22c55e,#15803d)}
 
-        button.secondary {
-            background: #7c4dff;
-            box-shadow: 0 4px 0 #512da8;
-        }
-        button.secondary:active {
-            box-shadow: 0 2px 0 #512da8;
-        }
+  .btn-help{
+    margin-top:10px;text-align:center;font-size:12px;line-height:1.6;color:#f8fafc
+  }
+  .keycap{
+    display:inline-block;
+    min-width:28px;
+    padding:3px 7px;
+    margin:0 2px;
+    border-radius:7px;
+    background:#f8fafc;
+    color:#111827;
+    border:2px solid #cbd5e1;
+    box-shadow:0 3px 0 #94a3b8;
+    font-weight:1000;
+    line-height:1.2;
+  }
+  .pc-tip{
+    margin-top:8px;
+    padding:8px 10px;
+    border-radius:14px;
+    background:rgba(17,24,39,.34);
+    color:#fef3c7;
+    font-weight:800;
+  }
 
-        canvas {
-            background: #87ceeb;
-            width: 100%;
-            height: auto;
-            max-height: 480px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-            display: block;
-        }
-
-        /* 觸控按鈕區塊 */
-        .controls-container {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            padding: 10px;
-            background: #111;
-            border-radius: 0 0 12px 12px;
-        }
-
-        .touch-group {
-            display: grid;
-            grid-template-columns: repeat(3, 50px);
-            grid-template-rows: repeat(2, 50px);
-            gap: 6px;
-        }
-
-        .t-btn {
-            background: rgba(255, 255, 255, 0.15);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 18px;
-            font-weight: bold;
-            color: white;
-            user-select: none;
-        }
-
-        .t-btn:active {
-            background: rgba(255, 255, 255, 0.4);
-        }
-
-        .btn-up { grid-column: 2; grid-row: 1; }
-        .btn-left { grid-column: 1; grid-row: 2; }
-        .btn-down { grid-column: 2; grid-row: 2; }
-        .btn-right { grid-column: 3; grid-row: 2; }
-
-        @media (min-width: 768px) {
-            .controls-container {
-                display: none; /* 電腦版隱藏觸控按紐 */
-            }
-        }
-
-        .instructions {
-            margin-top: 10px;
-            font-size: 13px;
-            color: #aaa;
-            text-align: center;
-            line-height: 1.5;
-        }
-    </style>
+  .result-box{
+    text-align:center
+  }
+  .result-big{
+    font-size:60px;font-weight:1000;color:#fde68a;line-height:1
+  }
+  .result-title{
+    font-size:30px;font-weight:1000;margin-top:6px
+  }
+  .result-sub{
+    margin-top:6px;color:#e5e7eb;font-size:14px;line-height:1.6
+  }
+  .result-grid{
+    display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px
+  }
+  .result-stat{
+    background:rgba(17,24,39,.28);border-radius:18px;padding:12px
+  }
+  .result-stat .n{font-size:22px;font-weight:1000}
+  .result-stat .l{font-size:12px;color:#e5e7eb}
+  .primary,.secondary{
+    width:100%;border:0;border-radius:18px;padding:14px 12px;font-size:16px;font-weight:1000;cursor:pointer;
+    margin-top:10px;box-shadow:var(--shadow);
+  }
+  .primary{background:#facc15;color:#7c2d12}
+  .secondary{background:#fff;color:#1e3a8a}
+</style>
 </head>
 <body>
+<div class="app">
 
-<div id="game-container">
-    <header>
-        <div class="score-board">
-            <span class="score p1" id="p1-score">0</span>
-            <span style="font-size: 16px; color: #aaa;">VS</span>
-            <span class="score p2" id="p2-score">0</span>
-        </div>
-        <div class="btn-group">
-            <button id="mode-btn" class="secondary">模式: 單人 vs AI</button>
-            <button id="restart-btn">重新開始</button>
-        </div>
-    </header>
-
-    <canvas id="gameCanvas" width="800" height="450"></canvas>
-
-    <!-- 螢幕觸控按紐 (行動裝置友善) -->
-    <div class="controls-container">
-        <!-- P1 左側控制項 -->
-        <div class="touch-group">
-            <div class="t-btn btn-up" id="t-w">▲</div>
-            <div class="t-btn btn-left" id="t-a">◄</div>
-            <div class="t-btn btn-down" id="t-s">▼</div>
-            <div class="t-btn btn-right" id="t-d">►</div>
-        </div>
-        <div style="text-align: center; font-size: 12px; color: #888; display: flex; align-items: center;">
-            觸控區
-        </div>
-        <!-- P2 右側控制項 (雙人模式時可用) -->
-        <div class="touch-group">
-            <div class="t-btn btn-up" id="t-up">▲</div>
-            <div class="t-btn btn-left" id="t-left">◄</div>
-            <div class="t-btn btn-down" id="t-down">▼</div>
-            <div class="t-btn btn-right" id="t-right">►</div>
-        </div>
+  <section id="home">
+    <div class="festival-banner">
+      <div class="mascot-line">🏮 🥁 📈 🥁 🏮</div>
+      <div class="title-main">飆股菁英太鼓達人</div>
+      <div class="title-sub">股票主題 × 太鼓節奏風手機遊戲</div>
     </div>
 
-    <!-- 開場畫面遮罩 -->
-    <div id="start-screen" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(30, 30, 47, 0.95); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100; border-radius: 12px;">
-        <h1 style="color: #f59e0b; font-size: 48px; margin-bottom: 10px; text-shadow: 2px 2px 0 #d97706, 4px 4px 0 #000;">萊恩打排球</h1>
-        <p style="color: #fff; font-size: 18px; margin-bottom: 30px;">股市必殺技大亂鬥版</p>
-        <button id="start-game-btn" style="font-size: 24px; padding: 15px 40px; border-radius: 50px; background: linear-gradient(180deg, #ff9800, #f57c00); box-shadow: 0 6px 0 #e65100, 0 10px 20px rgba(0,0,0,0.5);">點擊開始遊戲</button>
+    <div class="card">
+      <div style="text-align:center;font-size:19px;font-weight:1000;">請選擇挑戰模式</div>
+      <div class="mode-grid">
+        <button class="mode-btn easy" onclick="startMode('easy')">
+          簡易版
+          <div class="mode-note">漲停／平盤／跌停</div>
+        </button>
+        <button class="mode-btn hard" onclick="startMode('hard')">
+          困難版
+          <div class="mode-note">漲停／緩漲／平盤／緩跌／跌停</div>
+        </button>
+      </div>
+      <div class="tips">
+        每種模式共有 <b>5 個關卡</b>。<br>
+        鼓點會由上往下掉，到金色判定線時按下正確按鈕。<br>
+        70% 以上命中率即可過關，關卡越高速度越快。
+      </div>
     </div>
-</div>
+  </section>
 
-<div class="instructions">
-    <b>鍵盤操作說明：</b><br>
-    【玩家1 (左)】 WASD 移動與跳躍/扣殺 &nbsp;|&nbsp; 
-    【玩家2 (右)】 方向鍵 移動與跳躍/扣殺<br>
-    跳躍中按下「下」發動 <b>股市必殺技扣殺</b>！第一位達到 <b>15 分</b> 的玩家獲勝！
+  <section id="game" class="hidden">
+    <div class="topbar">
+      <button class="back-btn" onclick="goHome()">← 返回主選單</button>
+      <div class="pill" id="modePill">簡易版</div>
+      <div class="pill">總分：<span id="scoreText">0</span></div>
+      <div class="pill">Combo：<span id="comboText">0</span></div>
+    </div>
+
+    <div class="level-row" id="levelRow"></div>
+
+    <div class="hud">
+      <div class="soul-box">
+        <div class="section-title">魂量條 / PASS GAUGE</div>
+        <div class="soul-wrap">
+          <div class="soul-face"><div class="soul-smile"></div></div>
+          <div style="flex:1">
+            <div class="gauge"><div class="gauge-fill" id="gaugeFill"></div></div>
+            <div class="gauge-text" id="gaugeText">0% / 過關需求 70%</div>
+          </div>
+        </div>
+      </div>
+      <div class="info-box">
+        <div class="section-title">本關資訊</div>
+        <div class="info-grid">
+          <div class="info-item"><div class="k">關卡</div><div class="v" id="levelText">1</div></div>
+          <div class="info-item"><div class="k">進度</div><div class="v" id="progressText">0/20</div></div>
+          <div class="info-item"><div class="k">命中</div><div class="v" id="hitText">0</div></div>
+          <div class="info-item"><div class="k">判定</div><div class="v" id="judgeText">READY</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stage-shell">
+      <div class="stage-header">
+        <div class="stage-title">太鼓舞台</div>
+        <div class="judge-badge">Perfect / Good / Miss</div>
+      </div>
+      <div class="canvas-wrap">
+        <canvas id="canvas" width="500" height="860"></canvas>
+        <div class="countdown-overlay hidden" id="countdown">3</div>
+      </div>
+
+      <div class="btn-row easy-mode" id="buttonRow"></div>
+      <div class="btn-help">
+        <div class="pc-tip" style="margin-bottom:8px">已加長鼓點跑道與反應時間，越靠近金色判定線再按即可。</div>
+        手機：直接點下方按鈕<br>
+        電腦鍵盤：
+        <div class="pc-tip" id="pcTip">
+          簡易版
+          <span class="keycap">A</span>
+          <span class="keycap">S</span>
+          <span class="keycap">D</span>
+          或
+          <span class="keycap">1</span>
+          <span class="keycap">2</span>
+          <span class="keycap">3</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="result" class="hidden">
+    <div class="festival-banner result-box">
+      <div class="mascot-line" id="resultIcon">🏆 🎉</div>
+      <div class="result-title" id="resultTitle">過關！</div>
+      <div class="result-sub" id="resultSub">你完成了第 1 關</div>
+    </div>
+
+    <div class="card result-box">
+      <div class="result-big" id="resultScore">0</div>
+      <div style="color:#e5e7eb">目前總分</div>
+
+      <div class="result-grid">
+        <div class="result-stat"><div class="n" id="accText">0%</div><div class="l">命中率</div></div>
+        <div class="result-stat"><div class="n" id="bestComboText">0</div><div class="l">最高 Combo</div></div>
+      </div>
+
+      <button class="primary" id="nextBtn" onclick="nextLevel()">下一關</button>
+      <button class="secondary" onclick="restartMode()">重新挑戰本模式</button>
+      <button class="secondary" onclick="goHome()">回主選單</button>
+    </div>
+  </section>
+
 </div>
 
 <script>
-// --- 音效合成器 (Web Audio API) ---
-class SoundController {
-    constructor() {
-        this.ctx = null;
-    }
-
-    init() {
-        if (!this.ctx) {
-            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-        }
-    }
-
-    playJump() {
-        if (!this.ctx) return;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(150, this.ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(400, this.ctx.currentTime + 0.15);
-
-        gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.15);
-
-        osc.start();
-        osc.stop(this.ctx.currentTime + 0.15);
-    }
-
-    playHit(isSmash = false) {
-        if (!this.ctx) return;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-
-        osc.type = isSmash ? 'square' : 'triangle';
-        const startFreq = isSmash ? 600 : 300;
-        const endFreq = isSmash ? 150 : 100;
-
-        osc.frequency.setValueAtTime(startFreq, this.ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(endFreq, this.ctx.currentTime + 0.12);
-
-        gain.gain.setValueAtTime(isSmash ? 0.5 : 0.3, this.ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.12);
-
-        osc.start();
-        osc.stop(this.ctx.currentTime + 0.12);
-    }
-
-    playScore() {
-        if (!this.ctx) return;
-        const now = this.ctx.currentTime;
-        [400, 600, 800].forEach((freq, idx) => {
-            const osc = this.ctx.createOscillator();
-            const gain = this.ctx.createGain();
-            osc.connect(gain);
-            gain.connect(this.ctx.destination);
-
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(freq, now + idx * 0.08);
-
-            gain.gain.setValueAtTime(0.2, now + idx * 0.08);
-            gain.gain.linearRampToValueAtTime(0.01, now + idx * 0.08 + 0.08);
-
-            osc.start(now + idx * 0.08);
-            osc.stop(now + idx * 0.08 + 0.08);
-        });
-    }
-}
-
-const sound = new SoundController();
-
-// --- 遊戲核心變數 ---
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
-
-const CANVAS_WIDTH = 800;
-const CANVAS_HEIGHT = 450;
-const GROUND_Y = 380;
-const NET_X = CANVAS_WIDTH / 2;
-const NET_HEIGHT = 130;
-const NET_WIDTH = 12;
-
-let gameState = 'start'; // 'start', 'playing', 'gameover'
-let vsAI = true;
-let scoreP1 = 0;
-let scoreP2 = 0;
-// 移除 let gameOver = false;
-let winnerText = "";
-let floatingTexts = []; // 新增：浮動文字陣列
-
-// 按鍵狀態記錄
-let keys = {};
-
-// 視窗失焦時清空按鍵，防止人物自走
-window.addEventListener('blur', () => {
-    keys = {};
-});
-
-// --- 角色物件 (萊恩 Ryan) ---
-class Ryan {
-    constructor(x, isP2 = false) {
-        this.startX = x;
-        this.x = x;
-        this.y = GROUND_Y;
-        this.vx = 0;
-        this.vy = 0;
-        this.radius = 32;
-        this.isP2 = isP2;
-        this.isGrounded = false;
-        this.color = '#f59e0b'; // 萊恩招牌橘黃色
-        this.speed = 6.5;
-        this.jumpForce = -12.5;
-        this.state = 'idle';
-    }
-
-    reset() {
-        this.x = this.startX;
-        this.y = GROUND_Y;
-        this.vx = 0;
-        this.vy = 0;
-        this.isGrounded = true;
-    }
-
-    update() {
-        // 重力
-        this.vy += 0.55;
-        this.x += this.vx;
-        this.y += this.vy;
-
-        // 地面碰撞
-        if (this.y >= GROUND_Y) {
-            this.y = GROUND_Y;
-            this.vy = 0;
-            this.isGrounded = true;
-        } else {
-            this.isGrounded = false;
-        }
-
-        // 邊界與網子碰撞鎖定
-        const minX = this.isP2 ? NET_X + NET_WIDTH/2 + this.radius : this.radius;
-        const maxX = this.isP2 ? CANVAS_WIDTH - this.radius : NET_X - NET_WIDTH/2 - this.radius;
-
-        if (this.x < minX) this.x = minX;
-        if (this.x > maxX) this.x = maxX;
-    }
-
-    draw() {
-        ctx.save();
-        ctx.translate(this.x, this.y - this.radius);
-        if (this.isP2) ctx.scale(-1, 1); // 玩家2反轉面向
-
-        // 1. 耳朵 (左 & 右圓耳)
-        ctx.fillStyle = this.color;
-        ctx.strokeStyle = '#d97706';
-        ctx.lineWidth = 2.5;
-
-        // 左耳
-        ctx.beginPath();
-        ctx.arc(-20, -22, 10, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.stroke();
-
-        // 右耳
-        ctx.beginPath();
-        ctx.arc(20, -22, 10, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.stroke();
-
-        // 2. 萊恩大頭主體
-        ctx.beginPath();
-        ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
-        ctx.fillStyle = this.color;
-        ctx.fill();
-        ctx.stroke();
-
-        // 3. 萊恩最具特色的「招牌一字平眉」
-        ctx.strokeStyle = '#1e293b';
-        ctx.lineWidth = 4;
-        ctx.lineCap = 'round';
-
-        // 左眉
-        ctx.beginPath();
-        ctx.moveTo(-22, -12);
-        ctx.lineTo(-6, -12);
-        ctx.stroke();
-
-        // 右眉
-        ctx.beginPath();
-        ctx.moveTo(6, -12);
-        ctx.lineTo(22, -12);
-        ctx.stroke();
-
-        // 4. 眼睛 (圓滾滾無表情小黑眼)
-        ctx.fillStyle = '#1e293b';
-        ctx.beginPath();
-        ctx.arc(-13, -3, 3.5, 0, Math.PI * 2);
-        ctx.arc(13, -3, 3.5, 0, Math.PI * 2);
-        ctx.fill();
-
-        // 5. 嘴鼻區域 (白色雙球嘴包 + 黑色小鼻子)
-        // 白色嘴包
-        ctx.fillStyle = '#ffffff';
-        ctx.beginPath();
-        ctx.arc(-4, 7, 5, 0, Math.PI * 2);
-        ctx.arc(4, 7, 5, 0, Math.PI * 2);
-        ctx.fill();
-
-        // 黑色小鼻子
-        ctx.fillStyle = '#1e293b';
-        ctx.beginPath();
-        ctx.arc(0, 4.5, 3, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.restore();
-    }
-}
-
-// --- 排球物件 ---
-class Ball {
-    constructor() {
-        this.radius = 18;
-        this.reset(1);
-    }
-
-    reset(servingPlayer = 1) {
-        // 發球位置
-        this.x = servingPlayer === 1 ? 200 : 600;
-        this.y = 120;
-        this.vx = 0;
-        this.vy = 0;
-        this.isSmash = false;
-        
-        // 必殺技相關狀態
-        this.skillEffect = null;
-        this.skillTimer = 0;
-        this.dir = 1; 
-    }
-
-    applySkill(skill, dir) {
-        this.skillEffect = skill;
-        this.skillTimer = 0;
-        this.dir = dir;
-        this.isSmash = true;
-    }
-
-    update() {
-        // 股市必殺技物理特效 (調降整體速度)
-        if (this.skillEffect) {
-            this.skillTimer++;
-            switch(this.skillEffect) {
-                case '持股漲停': // 無視重力強勢向上噴出
-                    this.vx = this.dir * 6; // 從 8 降至 6
-                    this.vy = -14; // 從 -18 降至 -14
-                    if (this.skillTimer > 10) this.skillEffect = null;
-                    break;
-                case '無量跌停': // 騙過網後瞬間垂直下墜
-                    if (this.skillTimer < 15) {
-                        this.vx = this.dir * 9; // 從 12 降至 9
-                        this.vy = -4; // 從 -5 降至 -4
-                    } else {
-                        this.vx = 0;
-                        this.vy = 22; // 從 28 降至 22
-                        this.skillEffect = null;
-                    }
-                    break;
-                case '橫盤整理': // 滯空平移一段時間
-                    this.vy = 0;
-                    this.vx = this.dir * 7; // 從 9 降至 7
-                    if (this.skillTimer > 35) this.skillEffect = null;
-                    break;
-                case '回後買上漲': // 先往反方向退，再急速暴衝
-                    if (this.skillTimer < 15) {
-                        this.vx = -this.dir * 3; // 從 -4 降至 -3
-                        this.vy = -2;
-                    } else if (this.skillTimer === 15) {
-                        this.vx = this.dir * 18; // 從 25 降至 18
-                        this.vy = -6; // 從 -8 降至 -6
-                    }
-                    if (this.skillTimer > 25) this.skillEffect = null;
-                    break;
-                case '帶量突破': // 極高速的暴力直線球
-                    this.vx = this.dir * 20; // 從 28 降至 20
-                    this.vy = 4; // 從 5 降至 4
-                    if (this.skillTimer > 15) this.skillEffect = null;
-                    break;
-            }
-        } else {
-            // 一般重力加速度
-            this.vy += 0.22; // 從 0.28 降至 0.22 讓球感覺輕一點/慢一點
-        }
-
-        this.x += this.vx;
-        this.y += this.vy;
-
-        // 邊界牆壁彈跳 (左右)
-        if (this.x - this.radius < 0) {
-            this.x = this.radius;
-            this.vx = Math.abs(this.vx) * 0.85;
-            this.skillEffect = null; // 撞牆取消特效
-        }
-        if (this.x + this.radius > CANVAS_WIDTH) {
-            this.x = CANVAS_WIDTH - this.radius;
-            this.vx = -Math.abs(this.vx) * 0.85;
-            this.skillEffect = null; // 撞牆取消特效
-        }
-
-        // 天花板
-        if (this.y - this.radius < 0) {
-            this.y = this.radius;
-            this.vy = Math.abs(this.vy) * 0.8;
-            this.skillEffect = null; // 撞牆取消特效
-        }
-
-        // 網子碰撞
-        const netTop = GROUND_Y - NET_HEIGHT;
-        const netLeft = NET_X - NET_WIDTH/2;
-        const netRight = NET_X + NET_WIDTH/2;
-
-        if (this.x + this.radius > netLeft && this.x - this.radius < netRight) {
-            if (this.y + this.radius > netTop) {
-                this.skillEffect = null; // 撞網取消特效
-                // 撞到網頂
-                if (this.y < netTop + 10 && this.vy > 0) {
-                    this.y = netTop - this.radius;
-                    this.vy = -this.vy * 0.7;
-                } else { // 撞到網子側邊
-                    if (this.x < NET_X) {
-                        this.x = netLeft - this.radius;
-                        this.vx = -Math.abs(this.vx) * 0.8;
-                    } else {
-                        this.x = netRight + this.radius;
-                        this.vx = Math.abs(this.vx) * 0.8;
-                    }
-                }
-            }
-        }
-    }
-
-    draw() {
-        ctx.save();
-        ctx.translate(this.x, this.y);
-
-        // 扣殺尾跡與特效
-        if (this.isSmash) {
-            ctx.shadowColor = this.skillEffect ? '#ff0000' : '#ff3d00';
-            ctx.shadowBlur = this.skillEffect ? 25 : 15;
-            
-            // 若為必殺技，畫出殘影或光暈放大
-            if (this.skillEffect) {
-                ctx.beginPath();
-                ctx.arc(0, 0, this.radius + 6, 0, Math.PI * 2);
-                ctx.fillStyle = 'rgba(255, 200, 0, 0.4)';
-                ctx.fill();
-            }
-        }
-
-        // 經典黃藍排球紋理
-        ctx.beginPath();
-        ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
-        ctx.fillStyle = '#fbbf24';
-        ctx.fill();
-
-        ctx.beginPath();
-        ctx.arc(0, 0, this.radius, -Math.PI * 0.35, Math.PI * 0.35);
-        ctx.fillStyle = '#2563eb';
-        ctx.fill();
-
-        ctx.beginPath();
-        ctx.arc(0, 0, this.radius, Math.PI * 0.65, Math.PI * 1.35);
-        ctx.fillStyle = '#2563eb';
-        ctx.fill();
-
-        // 內圈條紋線條
-        ctx.beginPath();
-        ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = '#1e293b';
-        ctx.stroke();
-
-        ctx.restore();
-    }
-}
-
-// 實體化
-const p1 = new Ryan(150, false);
-const p2 = new Ryan(650, true);
-const ball = new Ball();
-
-// --- AI 電腦邏輯 ---
-function updateAI() {
-    if (!vsAI || gameState !== 'playing') return;
-
-    const targetX = ball.x;
-    const distanceX = targetX - p2.x;
-
-    if (ball.x > CANVAS_WIDTH * 0.35) {
-        if (Math.abs(distanceX) > 10) {
-            p2.vx = distanceX > 0 ? p2.speed * 0.85 : -p2.speed * 0.85;
-        } else {
-            p2.vx = 0;
-        }
-
-        // 調低 AI 跳躍判斷的高度要求，適應較慢的球速
-        if (ball.y < GROUND_Y - 60 && ball.y > GROUND_Y - 220 && Math.abs(distanceX) < 40) {
-            if (p2.isGrounded) {
-                p2.vy = p2.jumpForce;
-                sound.playJump();
-            }
-        }
-        
-        // 嘗試施放必殺技 (AI 自動按 ↓)
-        if (!p2.isGrounded && ball.y < p2.y - p2.radius && Math.abs(distanceX) < 30) {
-            keys['ArrowDown'] = true;
-        } else {
-            keys['ArrowDown'] = false;
-        }
-        
-    } else {
-        const homeX = 650;
-        if (Math.abs(p2.x - homeX) > 10) {
-            p2.vx = p2.x < homeX ? p2.speed * 0.5 : -p2.speed * 0.5;
-        } else {
-            p2.vx = 0;
-        }
-        keys['ArrowDown'] = false;
-    }
-}
-
-// --- 輸入控制 ---
-function handleInput() {
-    sound.init(); // 觸發 Web Audio API 解鎖
-
-    // P1 (WASD)
-    p1.vx = 0;
-    if (keys['a'] || keys['A']) p1.vx = -p1.speed;
-    if (keys['d'] || keys['D']) p1.vx = p1.speed;
-    if ((keys['w'] || keys['W']) && p1.isGrounded) {
-        p1.vy = p1.jumpForce;
-        sound.playJump();
-    }
-
-    // P2 (方向鍵) - 僅在非 AI 模式時由玩家控制
-    if (!vsAI) {
-        p2.vx = 0;
-        if (keys['ArrowLeft']) p2.vx = -p2.speed;
-        if (keys['ArrowRight']) p2.vx = p2.speed;
-        if (keys['ArrowUp'] && p2.isGrounded) {
-            p2.vy = p2.jumpForce;
-            sound.playJump();
-        }
-    }
-}
-
-// 事件監聽 (鍵盤)
-window.addEventListener('keydown', e => { keys[e.key] = true; });
-window.addEventListener('keyup', e => { keys[e.key] = false; });
-
-// 觸控按鈕綁定函數
-function setupTouchBtn(btnId, keyName) {
-    const btn = document.getElementById(btnId);
-    if (!btn) return;
-    btn.addEventListener('touchstart', (e) => { e.preventDefault(); keys[keyName] = true; });
-    btn.addEventListener('touchend', (e) => { e.preventDefault(); keys[keyName] = false; });
-    btn.addEventListener('touchcancel', (e) => { e.preventDefault(); keys[keyName] = false; }); // 加入 touchcancel
-    btn.addEventListener('mousedown', () => { keys[keyName] = true; });
-    btn.addEventListener('mouseup', () => { keys[keyName] = false; });
-    btn.addEventListener('mouseleave', () => { keys[keyName] = false; }); // 加入 mouseleave
-}
-
-// 註冊 touch 事件
-setupTouchBtn('t-w', 'w');
-setupTouchBtn('t-a', 'a');
-setupTouchBtn('t-s', 's');
-setupTouchBtn('t-d', 'd');
-setupTouchBtn('t-up', 'ArrowUp');
-setupTouchBtn('t-left', 'ArrowLeft');
-setupTouchBtn('t-down', 'ArrowDown');
-setupTouchBtn('t-right', 'ArrowRight');
-
-// --- 得分檢查 ---
-function checkScoring() {
-    if (ball.y + ball.radius >= GROUND_Y) {
-        sound.playScore();
-        if (ball.x < NET_X) {
-            scoreP2++;
-            document.getElementById('p2-score').innerText = scoreP2;
-            checkWinner();
-            ball.reset(1); 
-        } else {
-            scoreP1++;
-            document.getElementById('p1-score').innerText = scoreP1;
-            checkWinner();
-            ball.reset(2); 
-        }
-        p1.reset();
-        p2.reset();
-    }
-}
-
-function checkWinner() {
-    if (scoreP1 >= 15 || scoreP2 >= 15) {
-        gameState = 'gameover';
-        keys = {}; // 遊戲結束清空按鍵
-        winnerText = scoreP1 >= 15 ? "🎉 玩家 1 (左) 獲得勝利！" : (vsAI ? "🤖 電腦 AI 獲得勝利！" : "🎉 玩家 2 (右) 獲得勝利！");
-    }
-}
-
-function resetGame() {
-    scoreP1 = 0;
-    scoreP2 = 0;
-    gameState = 'playing';
-    keys = {}; // 重置時清空按鍵
-    floatingTexts = [];
-    document.getElementById('p1-score').innerText = "0";
-    document.getElementById('p2-score').innerText = "0";
-    p1.reset();
-    p2.reset();
-    ball.reset(1);
-}
-
-// 模式切換按鈕
-const modeBtn = document.getElementById('mode-btn');
-modeBtn.addEventListener('click', () => {
-    vsAI = !vsAI;
-    modeBtn.innerText = vsAI ? "模式: 單人 vs AI" : "模式: 雙人對戰";
-    resetGame();
-});
-document.getElementById('restart-btn').addEventListener('click', resetGame);
-
-
-// --- 碰撞檢測：萊恩與球 ---
-function checkBallRyanCollision(p) {
-    const dx = ball.x - p.x;
-    const dy = ball.y - (p.y - p.radius);
-    const dist = Math.hypot(dx, dy);
-
-    if (dist < ball.radius + p.radius) {
-        let angle = Math.atan2(dy, dx);
-        
-        if (angle > -0.2) angle = -0.5;
-        
-        let power = 9.5;
-        let isSmash = false;
-
-        // 調整扣殺判定與力量
-        if (!p.isGrounded && keys[p.isP2 ? 'ArrowDown' : 's']) {
-            power = 12; // 從 14 降至 12
-            angle = p.isP2 ? Math.PI * 0.75 : Math.PI * 0.25;
-            isSmash = true;
-        }
-
-        // 調降角色速度對球的影響
-        ball.vx = Math.cos(angle) * power + p.vx * 0.2; 
-        ball.vy = Math.sin(angle) * power;
-
-        const overlap = (ball.radius + p.radius) - dist;
-        ball.x += Math.cos(angle) * overlap;
-        ball.y += Math.sin(angle) * overlap;
-
-        if (isSmash) {
-            // 隨機觸發股市必殺技
-            const skills = ['持股漲停', '無量跌停', '橫盤整理', '回後買上漲', '帶量突破'];
-            const skill = skills[Math.floor(Math.random() * skills.length)];
-            ball.applySkill(skill, p.isP2 ? -1 : 1);
-            
-            // 產生浮動文字
-            floatingTexts.push({
-                text: '必殺技: ' + skill,
-                x: p.x,
-                y: p.y - 80,
-                life: 90,
-                color: p.isP2 ? '#ef4444' : '#3b82f6' // 右邊紅色，左邊藍色
-            });
-        } else {
-            ball.isSmash = false;
-            ball.skillEffect = null;
-        }
-
-        sound.playHit(isSmash);
-    }
-}
-
-// --- 繪製場景 ---
-function drawScene() {
-    ctx.fillStyle = '#87ceeb';
-    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-
-    ctx.beginPath();
-    ctx.arc(700, 70, 40, 0, Math.PI * 2);
-    ctx.fillStyle = '#ffeb3b';
-    ctx.fill();
-
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-    ctx.beginPath();
-    ctx.arc(150, 80, 25, 0, Math.PI * 2);
-    ctx.arc(175, 70, 30, 0, Math.PI * 2);
-    ctx.arc(200, 80, 25, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.fillStyle = '#e0cda3';
-    ctx.fillRect(0, GROUND_Y, CANVAS_WIDTH, CANVAS_HEIGHT - GROUND_Y);
-    ctx.fillStyle = '#c2b186';
-    ctx.fillRect(0, GROUND_Y, CANVAS_WIDTH, 8); 
-
-    const netTop = GROUND_Y - NET_HEIGHT;
-    ctx.fillStyle = '#eeeeee';
-    ctx.fillRect(NET_X - NET_WIDTH/2, netTop, NET_WIDTH, NET_HEIGHT);
-    ctx.strokeStyle = '#cccccc';
-    ctx.lineWidth = 1;
-    for (let y = netTop; y < GROUND_Y; y += 12) {
-        ctx.beginPath();
-        ctx.moveTo(NET_X - NET_WIDTH/2, y);
-        ctx.lineTo(NET_X + NET_WIDTH/2, y);
-        ctx.stroke();
-    }
-}
-
-// --- 主遊戲迴圈 ---
-function gameLoop() {
-    if (gameState === 'playing') {
-        handleInput();
-        updateAI();
-
-        p1.update();
-        p2.update();
-        ball.update();
-
-        checkBallRyanCollision(p1);
-        checkBallRyanCollision(p2);
-        checkScoring();
-    } else {
-        // 非遊玩狀態（開場或結束）不更新實體，但清空按鍵避免殘留
-        keys = {};
-    }
-
-    // 渲染
-    drawScene();
-    p1.draw();
-    p2.draw();
-    ball.draw();
-
-    // 繪製必殺技特效文字
-    for (let i = floatingTexts.length - 1; i >= 0; i--) {
-        let ft = floatingTexts[i];
-        ctx.save();
-        ctx.font = '900 24px "Microsoft JhengHei", sans-serif';
-        ctx.fillStyle = ft.color;
-        ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = 4;
-        ctx.textAlign = 'center';
-        ctx.strokeText(ft.text, ft.x, ft.y);
-        ctx.fillText(ft.text, ft.x, ft.y);
-        ctx.restore();
-        
-        ft.y -= 1.2; // 向上飄
-        ft.life--;
-        if (ft.life <= 0) floatingTexts.splice(i, 1);
-    }
-
-    // 獲勝結算畫面
-    if (gameState === 'gameover') {
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.65)';
-        ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-
-        ctx.fillStyle = '#fff';
-        ctx.font = 'bold 36px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(winnerText, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 - 20);
-
-        ctx.font = '20px sans-serif';
-        ctx.fillStyle = '#ffeb3b';
-        ctx.fillText('點擊「重新開始」再戰一局！', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 30);
-    }
-
-    requestAnimationFrame(gameLoop);
-}
-
-// 開始遊戲按鈕邏輯
-document.getElementById('start-game-btn').addEventListener('click', () => {
-    document.getElementById('start-screen').style.display = 'none';
-    sound.init(); // 啟動音效
-    resetGame();
-});
-
-
-// 啟動迴圈
-window.onload = () => {
-    gameLoop();
+const MODE_DATA = {
+  easy: ['漲停','平盤','跌停'],
+  hard: ['漲停','緩漲','平盤','緩跌','跌停']
 };
+const COLORS = ['#ef4444','#f97316','#94a3b8','#22c55e','#15803d'];
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const countdownEl = document.getElementById('countdown');
+const buttonRow = document.getElementById('buttonRow');
+
+let audioCtx = null;
+
+const game = {
+  mode:'easy',
+  level:1,
+  totalLevels:5,
+  totalScore:0,
+  combo:0,
+  bestCombo:0,
+  running:false,
+  laneNames:[],
+  laneCount:3,
+  notes:[],
+  spawnPlan:[],
+  spawnIndex:0,
+  hit:0,
+  perfect:0,
+  good:0,
+  miss:0,
+  totalNotes:20,
+  noteSpeed:4.0,
+  judgeLabel:'READY',
+  judgeUntil:0,
+  startTime:0,
+  prevTime:0,
+  frameId:0
+};
+
+function startMode(mode){
+  game.mode = mode;
+  game.level = 1;
+  game.totalScore = 0;
+  game.bestCombo = 0;
+  document.getElementById('home').classList.add('hidden');
+  document.getElementById('result').classList.add('hidden');
+  document.getElementById('game').classList.remove('hidden');
+  document.getElementById('modePill').textContent = mode === 'easy' ? '簡易版' : '困難版';
+  setupLevel();
+}
+
+function setupLevel(){
+  stopLoop();
+  game.combo = 0;
+  game.hit = 0;
+  game.perfect = 0;
+  game.good = 0;
+  game.miss = 0;
+  game.judgeLabel = 'READY';
+  game.judgeUntil = 0;
+  game.notes = [];
+  game.spawnPlan = [];
+  game.spawnIndex = 0;
+  game.laneNames = MODE_DATA[game.mode];
+  game.laneCount = game.laneNames.length;
+  game.totalNotes = 20 + (game.level - 1) * 2;
+  game.noteSpeed = (game.mode === 'easy' ? 2.8 : 3.3) + (game.level - 1) * 0.40;
+  buildButtons();
+  buildLevelRow();
+  buildSpawnPlan();
+  updateHUD();
+  runCountdown(() => startLoop());
+}
+
+function buildButtons(){
+  buttonRow.innerHTML = '';
+  buttonRow.className = 'btn-row ' + (game.mode === 'easy' ? 'easy-mode' : 'hard-mode');
+  const pcTip = document.getElementById('pcTip');
+  if(pcTip){
+    if(game.mode === 'easy'){
+      pcTip.innerHTML = '簡易版 <span class="keycap">A</span><span class="keycap">S</span><span class="keycap">D</span> 或 <span class="keycap">1</span><span class="keycap">2</span><span class="keycap">3</span>';
+    }else{
+      pcTip.innerHTML = '困難版 <span class="keycap">A</span><span class="keycap">S</span><span class="keycap">D</span><span class="keycap">F</span><span class="keycap">G</span> 或 <span class="keycap">1</span><span class="keycap">2</span><span class="keycap">3</span><span class="keycap">4</span><span class="keycap">5</span>';
+    }
+  }
+  const letterKeys = game.mode === 'easy' ? ['A','S','D'] : ['A','S','D','F','G'];
+  game.laneNames.forEach((label, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'hit-btn c' + idx;
+    btn.innerHTML = label + '<br><span style="font-size:11px;opacity:.9">[' + letterKeys[idx] + ' / ' + (idx+1) + ']</span>';
+    btn.addEventListener('pointerdown', (e)=>{
+      e.preventDefault();
+      btn.classList.add('active');
+      setTimeout(()=>btn.classList.remove('active'), 120);
+      hitLane(idx);
+    });
+    buttonRow.appendChild(btn);
+  });
+}
+
+function buildLevelRow(){
+  const row = document.getElementById('levelRow');
+  row.innerHTML = '';
+  for(let i=1;i<=5;i++){
+    const d = document.createElement('div');
+    d.className = 'level-dot' + (i < game.level ? ' done' : i === game.level ? ' active' : '');
+    d.textContent = '第' + i + '關';
+    row.appendChild(d);
+  }
+  document.getElementById('levelText').textContent = game.level;
+}
+
+function buildSpawnPlan(){
+  let t = 600;
+  let lastLane = -1;
+  const minGap = game.mode === 'easy' ? 620 : 480;
+  const maxGap = game.mode === 'easy' ? 920 : 720;
+
+  for(let i=0;i<game.totalNotes;i++){
+    let lane = Math.floor(Math.random() * game.laneCount);
+    if(lane === lastLane && Math.random() < 0.45){
+      lane = (lane + 1 + Math.floor(Math.random() * (game.laneCount - 1))) % game.laneCount;
+    }
+    lastLane = lane;
+
+    game.spawnPlan.push({time:t, lane});
+
+    if(game.mode === 'hard' && game.level >= 3 && Math.random() < 0.14 && i < game.totalNotes - 1){
+      let lane2 = (lane + 1 + Math.floor(Math.random() * (game.laneCount - 1))) % game.laneCount;
+      t += 160;
+      game.spawnPlan.push({time:t, lane:lane2});
+      i++;
+      lastLane = lane2;
+    }
+    t += rand(minGap, maxGap) - game.level * 18;
+  }
+  game.totalNotes = game.spawnPlan.length;
+}
+
+function runCountdown(done){
+  countdownEl.classList.remove('hidden');
+  const seq = ['3','2','1','GO!'];
+  let i = 0;
+  countdownEl.textContent = seq[i];
+  playBeep(520, 0.08);
+
+  const timer = setInterval(()=>{
+    i++;
+    if(i >= seq.length){
+      clearInterval(timer);
+      countdownEl.classList.add('hidden');
+      done();
+      return;
+    }
+    countdownEl.textContent = seq[i];
+    playBeep(i < 3 ? 520 + i*80 : 860, 0.08);
+  }, 700);
+}
+
+function startLoop(){
+  game.running = true;
+  game.startTime = performance.now();
+  game.prevTime = game.startTime;
+  requestAnimationFrame(loop);
+}
+
+function stopLoop(){
+  game.running = false;
+  if(game.frameId) cancelAnimationFrame(game.frameId);
+}
+
+function loop(now){
+  if(!game.running) return;
+  const elapsed = now - game.startTime;
+  const delta = now - game.prevTime;
+  game.prevTime = now;
+
+  spawnNotes(elapsed);
+  updateNotes(delta);
+  render();
+  updateJudgeFade(now);
+  updateHUD();
+
+  if(isFinished()){
+    finishLevel();
+    return;
+  }
+  game.frameId = requestAnimationFrame(loop);
+}
+
+function spawnNotes(elapsed){
+  while(game.spawnIndex < game.spawnPlan.length && elapsed >= game.spawnPlan[game.spawnIndex].time){
+    const p = game.spawnPlan[game.spawnIndex];
+    game.notes.push({
+      lane:p.lane,
+      y:-40,
+      hit:false,
+      judged:false
+    });
+    game.spawnIndex++;
+  }
+}
+
+function updateNotes(delta){
+  const speedPx = game.noteSpeed * (delta / 16.6667) * 3.1;
+  const judgeY = canvas.height - 135;
+  for(const n of game.notes){
+    if(n.hit || n.judged) continue;
+    n.y += speedPx;
+    if(n.y > judgeY + 70){
+      n.judged = true;
+      game.miss++;
+      game.combo = 0;
+      showJudge('MISS');
+      playBeep(210, 0.05);
+    }
+  }
+}
+
+function hitLane(laneIndex){
+  if(!game.running) return;
+  const judgeY = canvas.height - 135;
+  let target = null;
+  let bestDist = Infinity;
+
+  for(const n of game.notes){
+    if(n.lane !== laneIndex || n.hit || n.judged) continue;
+    const dist = Math.abs(n.y - judgeY);
+    if(dist < bestDist){
+      bestDist = dist;
+      target = n;
+    }
+  }
+
+  if(!target){
+    game.combo = 0;
+    showJudge('MISS');
+    playBeep(210, 0.05);
+    return;
+  }
+
+  if(bestDist <= 24){
+    target.hit = true;
+    target.judged = true;
+    game.perfect++;
+    game.hit++;
+    game.combo++;
+    game.totalScore += 140 + game.level * 16 + Math.min(game.combo, 20) * 4;
+    game.bestCombo = Math.max(game.bestCombo, game.combo);
+    showJudge('PERFECT');
+    playBeep(760, 0.05);
+  } else if(bestDist <= 44){
+    target.hit = true;
+    target.judged = true;
+    game.good++;
+    game.hit++;
+    game.combo++;
+    game.totalScore += 90 + game.level * 12 + Math.min(game.combo, 20) * 3;
+    game.bestCombo = Math.max(game.bestCombo, game.combo);
+    showJudge('GOOD');
+    playBeep(560, 0.05);
+  } else {
+    game.combo = 0;
+    showJudge('MISS');
+    playBeep(210, 0.05);
+  }
+}
+
+function showJudge(label){
+  game.judgeLabel = label;
+  game.judgeUntil = performance.now() + 520;
+}
+
+function updateJudgeFade(now){
+  if(now > game.judgeUntil && game.judgeLabel !== 'READY'){
+    game.judgeLabel = '...';
+  }
+}
+
+function render(){
+  const w = canvas.width;
+  const h = canvas.height;
+  const laneW = w / game.laneCount;
+  const judgeY = h - 135;
+
+  ctx.clearRect(0,0,w,h);
+
+  const bg = ctx.createLinearGradient(0,0,0,h);
+  bg.addColorStop(0,'#1d4ed8');
+  bg.addColorStop(.55,'#2563eb');
+  bg.addColorStop(1,'#9a3412');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0,0,w,h);
+
+  for(let y=60;y<h;y+=80){
+    ctx.strokeStyle='rgba(255,255,255,.08)';
+    ctx.beginPath();
+    ctx.moveTo(0,y);
+    ctx.lineTo(w,y);
+    ctx.stroke();
+  }
+
+  for(let i=0;i<game.laneCount;i++){
+    ctx.fillStyle = i % 2 === 0 ? 'rgba(255,255,255,.04)' : 'rgba(255,255,255,.02)';
+    ctx.fillRect(i*laneW,0,laneW,h);
+    ctx.strokeStyle='rgba(255,255,255,.16)';
+    ctx.beginPath();
+    ctx.moveTo(i*laneW,0);
+    ctx.lineTo(i*laneW,h);
+    ctx.stroke();
+  }
+  ctx.beginPath();
+  ctx.moveTo(w,0);
+  ctx.lineTo(w,h);
+  ctx.strokeStyle='rgba(255,255,255,.16)';
+  ctx.stroke();
+
+  ctx.fillStyle='rgba(250,204,21,.18)';
+  ctx.fillRect(0,judgeY-24,w,48);
+
+  ctx.strokeStyle='#fef08a';
+  ctx.lineWidth=5;
+  ctx.beginPath();
+  ctx.moveTo(0,judgeY);
+  ctx.lineTo(w,judgeY);
+  ctx.stroke();
+
+  for(const n of game.notes){
+    if(n.hit || n.judged) continue;
+    const x = n.lane * laneW + laneW/2;
+    drawDrumNote(x, n.y, laneW * 0.30, COLORS[n.lane]);
+  }
+
+  drawJudgeDrum(w/2, judgeY + 8);
+
+  ctx.fillStyle='rgba(17,24,39,.5)';
+  ctx.fillRect(0,h-72,w,72);
+
+  ctx.font='bold 16px sans-serif';
+  ctx.fillStyle='rgba(255,255,255,.95)';
+  ctx.textAlign='center';
+  for(let i=0;i<game.laneCount;i++){
+    ctx.fillText(game.laneNames[i], i*laneW + laneW/2, h-30);
+  }
+
+  ctx.font='bold 34px sans-serif';
+  ctx.fillStyle = game.judgeLabel === 'PERFECT' ? '#fde047' : game.judgeLabel === 'GOOD' ? '#86efac' : game.judgeLabel === 'MISS' ? '#fca5a5' : '#ffffff';
+  ctx.fillText(game.judgeLabel, w/2, 54);
+
+  ctx.font='bold 18px sans-serif';
+  ctx.fillStyle='rgba(255,255,255,.95)';
+  ctx.fillText('♪ STOCK TAIKO STAGE ♪', w/2, 86);
+}
+
+function drawDrumNote(x, y, r, color){
+  ctx.save();
+  ctx.beginPath();
+  ctx.fillStyle=color;
+  ctx.arc(x,y,r,0,Math.PI*2);
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.lineWidth=5;
+  ctx.strokeStyle='#fff';
+  ctx.arc(x,y,r,0,Math.PI*2);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.fillStyle='rgba(255,255,255,.3)';
+  ctx.arc(x-r*0.22,y-r*0.22,r*0.45,0,Math.PI*2);
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.fillStyle='#fff8';
+  ctx.arc(x+r*0.12,y+r*0.10,r*0.18,0,Math.PI*2);
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawJudgeDrum(x,y){
+  ctx.save();
+  ctx.beginPath();
+  ctx.fillStyle='#ef4444';
+  ctx.arc(x,y,56,0,Math.PI*2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.fillStyle='#fef3c7';
+  ctx.arc(x,y,42,0,Math.PI*2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.strokeStyle='#fff';
+  ctx.lineWidth=6;
+  ctx.arc(x,y,56,0,Math.PI*2);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.fillStyle='#111827';
+  ctx.arc(x-14,y-6,4,0,Math.PI*2);
+  ctx.arc(x+14,y-6,4,0,Math.PI*2);
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.strokeStyle='#111827';
+  ctx.lineWidth=4;
+  ctx.arc(x,y+6,14,0,Math.PI);
+  ctx.stroke();
+  ctx.restore();
+}
+
+function gaugePercent(){
+  return Math.round((game.hit / game.totalNotes) * 100);
+}
+
+function updateHUD(){
+  document.getElementById('scoreText').textContent = game.totalScore;
+  document.getElementById('comboText').textContent = game.combo;
+  document.getElementById('progressText').textContent = (game.hit + game.miss) + '/' + game.totalNotes;
+  document.getElementById('hitText').textContent = game.hit;
+  document.getElementById('judgeText').textContent = game.judgeLabel;
+  const pct = gaugePercent();
+  document.getElementById('gaugeFill').style.width = pct + '%';
+  document.getElementById('gaugeText').textContent = pct + '% / 過關需求 70%';
+}
+
+function isFinished(){
+  return (game.hit + game.miss) >= game.totalNotes && game.notes.every(n => n.hit || n.judged);
+}
+
+function finishLevel(){
+  stopLoop();
+  const acc = gaugePercent();
+  const passed = acc >= 70;
+
+  document.getElementById('game').classList.add('hidden');
+  document.getElementById('result').classList.remove('hidden');
+  document.getElementById('resultScore').textContent = game.totalScore;
+  document.getElementById('accText').textContent = acc + '%';
+  document.getElementById('bestComboText').textContent = game.bestCombo;
+
+  const title = document.getElementById('resultTitle');
+  const sub = document.getElementById('resultSub');
+  const icon = document.getElementById('resultIcon');
+  const nextBtn = document.getElementById('nextBtn');
+
+  if(passed && game.level === game.totalLevels){
+    title.textContent = '全關卡制霸！';
+    sub.textContent = '恭喜你完成 5 個關卡，成為飆股菁英太鼓達人！';
+    icon.textContent = '👑 🥁 👑';
+    nextBtn.textContent = '重新挑戰';
+    nextBtn.dataset.passed = '1';
+  } else if(passed){
+    title.textContent = '過關成功！';
+    sub.textContent = '第 ' + game.level + ' 關完成，準備前往下一關。';
+    icon.textContent = '🏆 🎉';
+    nextBtn.textContent = '下一關';
+    nextBtn.dataset.passed = '1';
+  } else {
+    title.textContent = '挑戰失敗';
+    sub.textContent = '命中率需達 70% 才能過關，再試一次吧！';
+    icon.textContent = '🥁 💦';
+    nextBtn.textContent = '重打本關';
+    nextBtn.dataset.passed = '0';
+  }
+}
+
+function nextLevel(){
+  const passed = document.getElementById('nextBtn').dataset.passed === '1';
+  if(passed){
+    if(game.level < game.totalLevels){
+      game.level++;
+      document.getElementById('result').classList.add('hidden');
+      document.getElementById('game').classList.remove('hidden');
+      setupLevel();
+    } else {
+      startMode(game.mode);
+    }
+  } else {
+    document.getElementById('result').classList.add('hidden');
+    document.getElementById('game').classList.remove('hidden');
+    setupLevel();
+  }
+}
+
+function restartMode(){
+  game.level = 1;
+  game.totalScore = 0;
+  game.bestCombo = 0;
+  document.getElementById('result').classList.add('hidden');
+  document.getElementById('game').classList.remove('hidden');
+  setupLevel();
+}
+
+function goHome(){
+  stopLoop();
+  document.getElementById('game').classList.add('hidden');
+  document.getElementById('result').classList.add('hidden');
+  document.getElementById('home').classList.remove('hidden');
+}
+
+function rand(min,max){
+  return Math.floor(Math.random()*(max-min+1))+min;
+}
+
+function playBeep(freq, duration){
+  try{
+    if(!audioCtx){
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+    gain.gain.value = 0.04;
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+    osc.stop(audioCtx.currentTime + duration);
+  }catch(e){}
+}
+
+function triggerKeyboardLane(idx){
+  if(idx < 0 || idx >= game.laneCount) return;
+  const btns = buttonRow.querySelectorAll('.hit-btn');
+  const btn = btns[idx];
+  if(btn){
+    btn.classList.add('active');
+    setTimeout(()=>btn.classList.remove('active'),120);
+  }
+  hitLane(idx);
+}
+
+window.addEventListener('keydown', (e)=>{
+  if(document.getElementById('game').classList.contains('hidden')) return;
+  if(e.repeat) return;
+
+  const key = e.key.toLowerCase();
+
+  let idx = -1;
+  if(game.mode === 'easy'){
+    const map = {
+      'a':0, 's':1, 'd':2,
+      '1':0, '2':1, '3':2,
+      'arrowleft':0, 'arrowdown':1, 'arrowright':2
+    };
+    if(key in map) idx = map[key];
+  } else {
+    const map = {
+      'a':0, 's':1, 'd':2, 'f':3, 'g':4,
+      '1':0, '2':1, '3':2, '4':3, '5':4
+    };
+    if(key in map) idx = map[key];
+  }
+
+  if(idx >= 0){
+    e.preventDefault();
+    triggerKeyboardLane(idx);
+  }
+});
 </script>
 </body>
 </html>
