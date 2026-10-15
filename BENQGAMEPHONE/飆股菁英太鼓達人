@@ -23,6 +23,8 @@
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{
     margin:0;padding:0;
+    width:100%;
+    min-height:100%;
     font-family:system-ui,-apple-system,"Segoe UI","Noto Sans TC",sans-serif;
     color:#fff;
     background:
@@ -39,7 +41,7 @@
       repeating-linear-gradient(-45deg, rgba(255,255,255,.02) 0 10px, transparent 10px 20px);
     pointer-events:none;
   }
-  .app{max-width:540px;margin:0 auto;min-height:100vh;padding:10px 10px 24px;position:relative;z-index:1}
+  .app{max-width:540px;margin:0 auto;height:100dvh;min-height:100vh;padding:6px 8px 8px;position:relative;z-index:1;overflow:hidden}
   .hidden{display:none!important}
 
   .festival-banner{
@@ -106,11 +108,11 @@
   }
 
   .topbar{
-    display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;
-    margin-bottom:8px;
+    display:flex;align-items:center;justify-content:space-between;gap:5px;flex-wrap:nowrap;
+    margin-bottom:5px;
   }
   .back-btn,.small-btn{
-    border:0;cursor:pointer;font-weight:900;border-radius:999px;padding:10px 14px;
+    border:0;cursor:pointer;font-weight:900;border-radius:999px;padding:6px 9px;font-size:11px;
     box-shadow:var(--shadow);
   }
   .back-btn{background:#fff;color:#b91c1c}
@@ -119,52 +121,52 @@
     background:rgba(255,255,255,.16);
     border:1px solid rgba(255,255,255,.18);
     border-radius:999px;
-    padding:8px 12px;
-    font-size:13px;font-weight:800;
+    padding:5px 8px;
+    font-size:11px;font-weight:800;
     box-shadow:var(--shadow);
   }
 
   .level-row{
-    display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:10px
+    display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-bottom:5px
   }
   .level-dot{
-    text-align:center;padding:8px 2px;border-radius:14px;font-size:12px;font-weight:1000;
+    text-align:center;padding:5px 2px;border-radius:10px;font-size:10px;font-weight:1000;
     background:rgba(255,255,255,.14);color:#cbd5e1;border:1px solid rgba(255,255,255,.15)
   }
   .level-dot.done{background:#22c55e;color:#fff}
   .level-dot.active{background:#facc15;color:#7c2d12}
 
   .hud{
-    display:grid;grid-template-columns:1.1fr .9fr;gap:10px;margin-bottom:10px;
+    display:grid;grid-template-columns:1.05fr .95fr;gap:6px;margin-bottom:5px;
   }
   .soul-box,.info-box{
     background:rgba(255,255,255,.14);
-    border-radius:20px;padding:12px;border:1px solid rgba(255,255,255,.15);
+    border-radius:14px;padding:7px;border:1px solid rgba(255,255,255,.15);
     box-shadow:var(--shadow);
   }
   .section-title{
-    font-size:12px;font-weight:1000;color:#fef3c7;margin-bottom:8px;letter-spacing:.5px
+    font-size:9px;font-weight:1000;color:#fef3c7;margin-bottom:4px;letter-spacing:.3px
   }
   .soul-wrap{
     display:flex;align-items:center;gap:10px
   }
   .soul-face{
-    width:50px;height:50px;border-radius:50%;
+    width:34px;height:34px;border-radius:50%;
     background:radial-gradient(circle at 35% 35%, #fff, #fef3c7 35%, #fca5a5 36%, #ef4444 80%);
     border:4px solid #fff;
     position:relative;flex:0 0 auto;
   }
   .soul-face::before,.soul-face::after{
-    content:"";position:absolute;top:16px;width:6px;height:6px;border-radius:50%;background:#111827;
+    content:"";position:absolute;top:10px;width:4px;height:4px;border-radius:50%;background:#111827;
   }
-  .soul-face::before{left:13px}
-  .soul-face::after{right:13px}
+  .soul-face::before{left:9px}
+  .soul-face::after{right:9px}
   .soul-smile{
-    position:absolute;left:50%;top:26px;transform:translateX(-50%);
-    width:18px;height:9px;border:3px solid #111827;border-top:none;border-radius:0 0 18px 18px;
+    position:absolute;left:50%;top:17px;transform:translateX(-50%);
+    width:12px;height:6px;border:2px solid #111827;border-top:none;border-radius:0 0 18px 18px;
   }
   .gauge{
-    flex:1;height:22px;background:rgba(17,24,39,.4);
+    flex:1;height:14px;background:rgba(17,24,39,.4);
     border-radius:999px;overflow:hidden;border:2px solid rgba(255,255,255,.35)
   }
   .gauge-fill{
@@ -172,40 +174,46 @@
     background:linear-gradient(90deg,#f97316,#facc15,#22c55e);
     transition:width .2s ease;
   }
-  .gauge-text{margin-top:8px;font-size:13px;font-weight:900;color:#fff}
+  .gauge-text{margin-top:4px;font-size:9px;font-weight:900;color:#fff}
   .info-grid{
     display:grid;grid-template-columns:1fr 1fr;gap:8px
   }
   .info-item{
-    background:rgba(17,24,39,.34);border-radius:14px;padding:9px 8px;text-align:center
+    background:rgba(17,24,39,.34);border-radius:10px;padding:5px 4px;text-align:center
   }
-  .info-item .k{font-size:11px;color:#e2e8f0;font-weight:800}
-  .info-item .v{font-size:19px;font-weight:1000;margin-top:3px}
+  .info-item .k{font-size:8px;color:#e2e8f0;font-weight:800}
+  .info-item .v{font-size:13px;font-weight:1000;margin-top:1px}
 
+  #game{
+    height:100%;
+    overflow:hidden;
+  }
   .stage-shell{
     background:
       linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03)),
       linear-gradient(180deg, #0f172a, #1f2937);
-    border-radius:28px;
-    padding:10px;
+    border-radius:18px;
+    padding:6px;
     border:2px solid rgba(255,255,255,.18);
     box-shadow:var(--shadow);
   }
   .stage-header{
-    display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap
+    display:flex;justify-content:space-between;align-items:center;gap:5px;margin-bottom:4px;flex-wrap:nowrap
   }
   .stage-title{
-    font-size:18px;font-weight:1000;color:#fef3c7
+    font-size:12px;font-weight:1000;color:#fef3c7
   }
   .judge-badge{
-    background:#fef3c7;color:#7c2d12;border-radius:999px;padding:8px 12px;font-weight:1000;font-size:13px
+    background:#fef3c7;color:#7c2d12;border-radius:999px;padding:4px 7px;font-weight:1000;font-size:9px
   }
   .canvas-wrap{
-    position:relative;border-radius:22px;overflow:hidden;border:3px solid #fff;
+    position:relative;border-radius:16px;overflow:hidden;border:2px solid #fff;
+    height:calc(100dvh - 250px);
+    min-height:420px;
     background:linear-gradient(180deg,#1d4ed8 0%, #1e40af 55%, #b45309 100%);
   }
   canvas{
-    width:100%;height:auto;display:block;touch-action:none;
+    width:100%;height:100%;display:block;touch-action:none;
     background:
       radial-gradient(circle at 20% 10%, rgba(255,255,255,.12), transparent 22%),
       radial-gradient(circle at 80% 5%, rgba(255,255,255,.1), transparent 20%),
@@ -220,12 +228,12 @@
     z-index:4;
   }
 
-  .btn-row{display:grid;gap:8px;margin-top:12px}
+  .btn-row{display:grid;gap:6px;margin-top:6px}
   .btn-row.easy-mode{grid-template-columns:repeat(3,1fr)}
   .btn-row.hard-mode{grid-template-columns:repeat(5,1fr)}
   .hit-btn{
-    border:0;border-radius:18px;padding:13px 4px;color:#fff;font-weight:1000;
-    font-size:15px;min-height:64px;cursor:pointer;
+    border:0;border-radius:14px;padding:8px 3px;color:#fff;font-weight:1000;
+    font-size:12px;min-height:44px;cursor:pointer;
     box-shadow:inset 0 -5px 0 rgba(0,0,0,.15), var(--shadow);
   }
   .hit-btn:active,.hit-btn.active{transform:translateY(2px) scale(.98)}
@@ -236,7 +244,7 @@
   .c4{background:linear-gradient(180deg,#22c55e,#15803d)}
 
   .btn-help{
-    margin-top:10px;text-align:center;font-size:12px;line-height:1.6;color:#f8fafc
+    margin-top:5px;text-align:center;font-size:9px;line-height:1.35;color:#f8fafc
   }
   .keycap{
     display:inline-block;
@@ -252,8 +260,8 @@
     line-height:1.2;
   }
   .pc-tip{
-    margin-top:8px;
-    padding:8px 10px;
+    margin-top:4px;
+    padding:4px 6px;
     border-radius:14px;
     background:rgba(17,24,39,.34);
     color:#fef3c7;
@@ -286,6 +294,25 @@
   }
   .primary{background:#facc15;color:#7c2d12}
   .secondary{background:#fff;color:#1e3a8a}
+
+  .lane-flash{
+    position:absolute;
+    top:0;
+    bottom:0;
+    pointer-events:none;
+    opacity:0;
+    z-index:2;
+    background:rgba(255,255,255,.28);
+    box-shadow:inset 0 0 30px rgba(255,255,255,.55);
+  }
+  .lane-flash.show{
+    animation:laneFlash .16s ease-out;
+  }
+  @keyframes laneFlash{
+    0%{opacity:.95}
+    100%{opacity:0}
+  }
+
 </style>
 </head>
 <body>
@@ -357,12 +384,13 @@
       </div>
       <div class="canvas-wrap">
         <canvas id="canvas" width="500" height="860"></canvas>
+        <div id="laneFlashLayer"></div>
         <div class="countdown-overlay hidden" id="countdown">3</div>
       </div>
 
       <div class="btn-row easy-mode" id="buttonRow"></div>
       <div class="btn-help">
-        <div class="pc-tip" style="margin-bottom:8px">已加長鼓點跑道與反應時間，越靠近金色判定線再按即可。</div>
+        <div class="pc-tip" style="margin-bottom:8px">已加長鼓點跑道與反應時間，並加入鼓聲、鼓面彈跳與擊中爆點特效。</div>
         手機：直接點下方按鈕<br>
         電腦鍵盤：
         <div class="pc-tip" id="pcTip">
@@ -440,8 +468,20 @@ const game = {
   judgeUntil:0,
   startTime:0,
   prevTime:0,
-  frameId:0
+  frameId:0,
+  hitEffects:[],
+  drumPulse:0,
+  screenShake:0
 };
+
+function setGameViewport(active){
+  if(active){
+    document.body.style.overflow = 'hidden';
+    window.scrollTo(0,0);
+  }else{
+    document.body.style.overflow = '';
+  }
+}
 
 function startMode(mode){
   game.mode = mode;
@@ -452,6 +492,7 @@ function startMode(mode){
   document.getElementById('result').classList.add('hidden');
   document.getElementById('game').classList.remove('hidden');
   document.getElementById('modePill').textContent = mode === 'easy' ? '簡易版' : '困難版';
+  setGameViewport(true);
   setupLevel();
 }
 
@@ -464,6 +505,9 @@ function setupLevel(){
   game.miss = 0;
   game.judgeLabel = 'READY';
   game.judgeUntil = 0;
+  game.hitEffects = [];
+  game.drumPulse = 0;
+  game.screenShake = 0;
   game.notes = [];
   game.spawnPlan = [];
   game.spawnIndex = 0;
@@ -472,10 +516,39 @@ function setupLevel(){
   game.totalNotes = 20 + (game.level - 1) * 2;
   game.noteSpeed = (game.mode === 'easy' ? 2.8 : 3.3) + (game.level - 1) * 0.40;
   buildButtons();
+  buildLaneFlashes();
   buildLevelRow();
   buildSpawnPlan();
   updateHUD();
   runCountdown(() => startLoop());
+}
+
+function buildLaneFlashes(){
+  const layer = document.getElementById('laneFlashLayer');
+  layer.innerHTML = '';
+  layer.style.position = 'absolute';
+  layer.style.inset = '0';
+  layer.style.pointerEvents = 'none';
+  layer.style.zIndex = '2';
+
+  for(let i=0;i<game.laneCount;i++){
+    const flash = document.createElement('div');
+    flash.className = 'lane-flash';
+    flash.dataset.idx = i;
+    flash.style.left = (i * 100 / game.laneCount) + '%';
+    flash.style.width = (100 / game.laneCount) + '%';
+    layer.appendChild(flash);
+  }
+}
+
+function flashLane(idx){
+  const layer = document.getElementById('laneFlashLayer');
+  if(!layer) return;
+  const el = layer.querySelector('[data-idx="' + idx + '"]');
+  if(!el) return;
+  el.classList.remove('show');
+  void el.offsetWidth;
+  el.classList.add('show');
 }
 
 function buildButtons(){
@@ -498,6 +571,7 @@ function buildButtons(){
       e.preventDefault();
       btn.classList.add('active');
       setTimeout(()=>btn.classList.remove('active'), 120);
+      flashLane(idx);
       hitLane(idx);
     });
     buttonRow.appendChild(btn);
@@ -583,6 +657,7 @@ function loop(now){
 
   spawnNotes(elapsed);
   updateNotes(delta);
+  updateEffects(delta);
   render();
   updateJudgeFade(now);
   updateHUD();
@@ -593,6 +668,106 @@ function loop(now){
   }
   game.frameId = requestAnimationFrame(loop);
 }
+
+
+function addHitEffect(laneIndex, kind){
+  game.hitEffects.push({
+    lane: laneIndex,
+    kind,
+    age: 0,
+    maxAge: kind === 'PERFECT' ? 260 : 220
+  });
+  if(game.hitEffects.length > 24){
+    game.hitEffects.shift();
+  }
+  game.drumPulse = kind === 'PERFECT' ? 1.0 : kind === 'GOOD' ? 0.72 : 0.38;
+  game.screenShake = kind === 'PERFECT' ? 6 : kind === 'GOOD' ? 3.8 : 2.2;
+}
+
+function updateEffects(delta){
+  game.hitEffects = game.hitEffects.filter(e => {
+    e.age += delta;
+    return e.age < e.maxAge;
+  });
+  game.drumPulse = Math.max(0, game.drumPulse - delta * 0.0062);
+  game.screenShake = Math.max(0, game.screenShake - delta * 0.05);
+}
+
+function playTaikoHit(kind='GOOD'){
+  try{
+    if(!audioCtx){
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    const now = audioCtx.currentTime;
+
+    // low drum body
+    const body = audioCtx.createOscillator();
+    const bodyGain = audioCtx.createGain();
+    body.type = 'sine';
+    body.frequency.setValueAtTime(kind === 'PERFECT' ? 160 : 145, now);
+    body.frequency.exponentialRampToValueAtTime(62, now + 0.09);
+    bodyGain.gain.setValueAtTime(kind === 'PERFECT' ? 0.11 : 0.085, now);
+    bodyGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
+    body.connect(bodyGain);
+    bodyGain.connect(audioCtx.destination);
+    body.start(now);
+    body.stop(now + 0.13);
+
+    // attack click / skin snap
+    const click = audioCtx.createOscillator();
+    const clickGain = audioCtx.createGain();
+    click.type = 'triangle';
+    click.frequency.setValueAtTime(kind === 'PERFECT' ? 430 : 350, now);
+    click.frequency.exponentialRampToValueAtTime(180, now + 0.03);
+    clickGain.gain.setValueAtTime(0.032, now);
+    clickGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.045);
+    click.connect(clickGain);
+    clickGain.connect(audioCtx.destination);
+    click.start(now);
+    click.stop(now + 0.05);
+
+    // tiny noise burst for stick impact
+    const buffer = audioCtx.createBuffer(1, Math.floor(audioCtx.sampleRate * 0.03), audioCtx.sampleRate);
+    const data = buffer.getChannelData(0)
+    for(let i=0;i<data.length;i++){
+      data[i] = (Math.random()*2-1) * (1 - i/data.length);
+    }
+    const noise = audioCtx.createBufferSource();
+    noise.buffer = buffer;
+    const noiseFilter = audioCtx.createBiquadFilter();
+    noiseFilter.type = 'bandpass';
+    noiseFilter.frequency.value = 1000;
+    noiseFilter.Q.value = 0.8;
+    const noiseGain = audioCtx.createGain();
+    noiseGain.gain.setValueAtTime(kind === 'PERFECT' ? 0.02 : 0.015, now);
+    noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.03);
+    noise.connect(noiseFilter);
+    noiseFilter.connect(noiseGain);
+    noiseGain.connect(audioCtx.destination);
+    noise.start(now);
+  }catch(e){}
+}
+
+function playMissSound(){
+  try{
+    if(!audioCtx){
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    const now = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(120, now);
+    osc.frequency.exponentialRampToValueAtTime(70, now + 0.08);
+    gain.gain.setValueAtTime(0.03, now);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.08);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + 0.09);
+  }catch(e){}
+}
+
 
 function spawnNotes(elapsed){
   while(game.spawnIndex < game.spawnPlan.length && elapsed >= game.spawnPlan[game.spawnIndex].time){
@@ -618,7 +793,8 @@ function updateNotes(delta){
       game.miss++;
       game.combo = 0;
       showJudge('MISS');
-      playBeep(210, 0.05);
+      addHitEffect(n.lane, 'MISS');
+      playMissSound();
     }
   }
 }
@@ -641,7 +817,8 @@ function hitLane(laneIndex){
   if(!target){
     game.combo = 0;
     showJudge('MISS');
-    playBeep(210, 0.05);
+    addHitEffect(laneIndex, 'MISS');
+    playMissSound();
     return;
   }
 
@@ -654,7 +831,8 @@ function hitLane(laneIndex){
     game.totalScore += 140 + game.level * 16 + Math.min(game.combo, 20) * 4;
     game.bestCombo = Math.max(game.bestCombo, game.combo);
     showJudge('PERFECT');
-    playBeep(760, 0.05);
+    addHitEffect(laneIndex, 'PERFECT');
+    playTaikoHit('PERFECT');
   } else if(bestDist <= 44){
     target.hit = true;
     target.judged = true;
@@ -664,11 +842,13 @@ function hitLane(laneIndex){
     game.totalScore += 90 + game.level * 12 + Math.min(game.combo, 20) * 3;
     game.bestCombo = Math.max(game.bestCombo, game.combo);
     showJudge('GOOD');
-    playBeep(560, 0.05);
+    addHitEffect(laneIndex, 'GOOD');
+    playTaikoHit('GOOD');
   } else {
     game.combo = 0;
     showJudge('MISS');
-    playBeep(210, 0.05);
+    addHitEffect(laneIndex, 'MISS');
+    playMissSound();
   }
 }
 
@@ -690,6 +870,13 @@ function render(){
   const judgeY = h - 135;
 
   ctx.clearRect(0,0,w,h);
+
+  ctx.save();
+  if(game.screenShake > 0){
+    const sx = (Math.random() - 0.5) * game.screenShake;
+    const sy = (Math.random() - 0.5) * game.screenShake * 0.6;
+    ctx.translate(sx, sy);
+  }
 
   const bg = ctx.createLinearGradient(0,0,0,h);
   bg.addColorStop(0,'#1d4ed8');
@@ -737,6 +924,7 @@ function render(){
     drawDrumNote(x, n.y, laneW * 0.30, COLORS[n.lane]);
   }
 
+  drawHitEffects(laneW, judgeY);
   drawJudgeDrum(w/2, judgeY + 8);
 
   ctx.fillStyle='rgba(17,24,39,.5)';
@@ -756,6 +944,7 @@ function render(){
   ctx.font='bold 18px sans-serif';
   ctx.fillStyle='rgba(255,255,255,.95)';
   ctx.fillText('♪ STOCK TAIKO STAGE ♪', w/2, 86);
+  ctx.restore();
 }
 
 function drawDrumNote(x, y, r, color){
@@ -783,8 +972,56 @@ function drawDrumNote(x, y, r, color){
   ctx.restore();
 }
 
+
+function drawHitEffects(laneW, judgeY){
+  for(const e of game.hitEffects){
+    const x = e.lane * laneW + laneW / 2;
+    const t = e.age / e.maxAge;
+    const alpha = 1 - t;
+
+    ctx.save();
+    ctx.globalAlpha = alpha;
+
+    const ringColor = e.kind === 'PERFECT' ? '#fde047' : e.kind === 'GOOD' ? '#86efac' : '#fecaca';
+
+    // impact ring
+    ctx.beginPath();
+    ctx.strokeStyle = ringColor;
+    ctx.lineWidth = e.kind === 'PERFECT' ? 5 : 4;
+    ctx.arc(x, judgeY, 18 + t * 42, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // center flash
+    ctx.beginPath();
+    ctx.fillStyle = e.kind === 'MISS' ? 'rgba(254,202,202,.38)' : 'rgba(255,255,255,.42)';
+    ctx.arc(x, judgeY, Math.max(6, 22 - t * 16), 0, Math.PI * 2);
+    ctx.fill();
+
+    // star burst lines
+    const burst = e.kind === 'PERFECT' ? 8 : 6;
+    for(let i=0;i<burst;i++){
+      const ang = (Math.PI * 2 / burst) * i;
+      const r1 = 16 + t * 18;
+      const r2 = 28 + t * 28;
+      ctx.beginPath();
+      ctx.moveTo(x + Math.cos(ang) * r1, judgeY + Math.sin(ang) * r1);
+      ctx.lineTo(x + Math.cos(ang) * r2, judgeY + Math.sin(ang) * r2);
+      ctx.strokeStyle = ringColor;
+      ctx.lineWidth = 3;
+      ctx.stroke();
+    }
+
+    ctx.restore();
+  }
+}
+
+
 function drawJudgeDrum(x,y){
   ctx.save();
+  const pulse = 1 + game.drumPulse * 0.12;
+  ctx.translate(x, y);
+  ctx.scale(pulse, pulse);
+  ctx.translate(-x, -y);
   ctx.beginPath();
   ctx.fillStyle='#ef4444';
   ctx.arc(x,y,56,0,Math.PI*2);
@@ -898,6 +1135,7 @@ function restartMode(){
 
 function goHome(){
   stopLoop();
+  setGameViewport(false);
   document.getElementById('game').classList.add('hidden');
   document.getElementById('result').classList.add('hidden');
   document.getElementById('home').classList.remove('hidden');
@@ -933,6 +1171,7 @@ function triggerKeyboardLane(idx){
     btn.classList.add('active');
     setTimeout(()=>btn.classList.remove('active'),120);
   }
+  flashLane(idx);
   hitLane(idx);
 }
 
