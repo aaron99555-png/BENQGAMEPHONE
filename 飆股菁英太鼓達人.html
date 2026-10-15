@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>飆股菁英太鼓達人 - 太鼓風升級版</title>
+<style>
+  :root{
+    --red:#ef4444;
+    --deep-red:#c81e1e;
+    --orange:#fb923c;
+    --yellow:#facc15;
+    --cream:#fff7ed;
+    --blue:#38bdf8;
+    --navy:#1e3a8a;
+    --green:#22c55e;
+    --teal:#0f766e;
+    --dark:#1f2937;
+    --ink:#111827;
+    --white:#ffffff;
+    --shadow:0 14px 30px rgba(0,0,0,.22);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{
+    margin:0;padding:0;
+    font-family:system-ui,-apple-system,"Segoe UI","Noto Sans TC",sans-serif;
+    color:#fff;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(255,255,255,.08), transparent 18%),
+      radial-gradient(circle at 80% 0%, rgba(255,255,255,.08), transparent 18%),
+      linear-gradient(180deg, #1d4ed8 0%, #1e3a8a 45%, #7c2d12 100%);
+    min-height:100vh;
+  }
+  body::before{
+    content:"";
+    position:fixed;inset:0;
+    background:
+      repeating-linear-gradient(45deg, rgba(255,255,255,.03) 0 10px, transparent 10px 20px),
+      repeating-linear-gradient(-45deg, rgba(255,255,255,.02) 0 10px, transparent 10px 20px);
+    pointer-events:none;
+  }
+  .app{max-width:540px;margin:0 auto;min-height:100vh;padding:10px 10px 24px;position:relative;z-index:1}
+  .hidden{display:none!important}
+
+  .festival-banner{
+    background:linear-gradient(180deg,#fef3c7,#fde68a);
+    color:#7c2d12;
+    border:4px solid #b45309;
+    border-radius:26px;
+    box-shadow:var(--shadow);
+    padding:14px 14px 16px;
+    text-align:center;
+    position:relative;
+    overflow:hidden;
+  }
+  .festival-banner::before,
+  .festival-banner::after{
+    content:"";
+    position:absolute;top:0;bottom:0;width:20px;
+    background:repeating-linear-gradient(
+      180deg,
+      #dc2626 0 10px,
+      #f8fafc 10px 20px
+    );
+  }
+  .festival-banner::before{left:0}
+  .festival-banner::after{right:0}
+  .title-main{
+    font-size:30px;font-weight:1000;line-height:1.05;letter-spacing:1px;
+    text-shadow:2px 2px 0 rgba(255,255,255,.3);
+    margin-top:2px;
+  }
+  .title-sub{
+    margin-top:6px;
+    color:#78350f;
+    font-size:13px;font-weight:700;
+  }
+  .mascot-line{
+    font-size:28px;margin-bottom:6px
+  }
+
+  .card{
+    margin-top:12px;
+    background:rgba(255,255,255,.14);
+    backdrop-filter:blur(8px);
+    border:1px solid rgba(255,255,255,.16);
+    border-radius:24px;
+    padding:14px;
+    box-shadow:var(--shadow);
+  }
+
+  .mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+  .mode-btn{
+    border:0;border-radius:22px;padding:18px 10px;color:#fff;cursor:pointer;
+    font-size:20px;font-weight:1000;line-height:1.25;
+    box-shadow:inset 0 -6px 0 rgba(0,0,0,.16), var(--shadow);
+  }
+  .easy{background:linear-gradient(180deg,#38bdf8,#0284c7)}
+  .hard{background:linear-gradient(180deg,#fb7185,#e11d48)}
+  .mode-note{font-size:12px;font-weight:700;opacity:.95;margin-top:4px}
+  .tips{
+    margin-top:12px;
+    text-align:center;
+    color:#e5e7eb;
+    font-size:13px;line-height:1.65;
+  }
+
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;
+    margin-bottom:8px;
+  }
+  .back-btn,.small-btn{
+    border:0;cursor:pointer;font-weight:900;border-radius:999px;padding:10px 14px;
+    box-shadow:var(--shadow);
+  }
+  .back-btn{background:#fff;color:#b91c1c}
+  .small-btn{background:#fef3c7;color:#92400e}
+  .pill{
+    background:rgba(255,255,255,.16);
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:999px;
+    padding:8px 12px;
+    font-size:13px;font-weight:800;
+    box-shadow:var(--shadow);
+  }
+
+  .level-row{
+    display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:10px
+  }
+  .level-dot{
+    text-align:center;padding:8px 2px;border-radius:14px;font-size:12px;font-weight:1000;
+    background:rgba(255,255,255,.14);color:#cbd5e1;border:1px solid rgba(255,255,255,.15)
+  }
+  .level-dot.done{background:#22c55e;color:#fff}
+  .level-dot.active{background:#facc15;color:#7c2d12}
+
+  .hud{
+    display:grid;grid-template-columns:1.1fr .9fr;gap:10px;margin-bottom:10px;
+  }
+  .soul-box,.info-box{
+    background:rgba(255,255,255,.14);
+    border-radius:20px;padding:12px;border:1px solid rgba(255,255,255,.15);
+    box-shadow:var(--shadow);
+  }
+  .section-title{
+    font-size:12px;font-weight:1000;color:#fef3c7;margin-bottom:8px;letter-spacing:.5px
+  }
+  .soul-wrap{
+    display:flex;align-items:center;gap:10px
+  }
+  .soul-face{
+    width:50px;height:50px;border-radius:50%;
+    background:radial-gradient(circle at 35% 35%, #fff, #fef3c7 35%, #fca5a5 36%, #ef4444 80%);
+    border:4px solid #fff;
+    position:relative;flex:0 0 auto;
+  }
+  .soul-face::before,.soul-face::after{
+    content:"";position:absolute;top:16px;width:6px;height:6px;border-radius:50%;background:#111827;
+  }
+  .soul-face::before{left:13px}
+  .soul-face::after{right:13px}
+  .soul-smile{
+    position:absolute;left:50%;top:26px;transform:translateX(-50%);
+    width:18px;height:9px;border:3px solid #111827;border-top:none;border-radius:0 0 18px 18px;
+  }
+  .gauge{
+    flex:1;height:22px;background:rgba(17,24,39,.4);
+    border-radius:999px;overflow:hidden;border:2px solid rgba(255,255,255,.35)
+  }
+  .gauge-fill{
+    height:100%;width:0%;
+    background:linear-gradient(90deg,#f97316,#facc15,#22c55e);
+    transition:width .2s ease;
+  }
+  .gauge-text{margin-top:8px;font-size:13px;font-weight:900;color:#fff}
+  .info-grid{
+    display:grid;grid-template-columns:1fr 1fr;gap:8px
+  }
+  .info-item{
+    background:rgba(17,24,39,.34);border-radius:14px;padding:9px 8px;text-align:center
+  }
+  .info-item .k{font-size:11px;color:#e2e8f0;font-weight:800}
+  .info-item .v{font-size:19px;font-weight:1000;margin-top:3px}
+
+  .stage-shell{
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03)),
+      linear-gradient(180deg, #0f172a, #1f2937);
+    border-radius:28px;
+    padding:10px;
+    border:2px solid rgba(255,255,255,.18);
+    box-shadow:var(--shadow);
+  }
+  .stage-header{
+    display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap
+  }
+  .stage-title{
+    font-size:18px;font-weight:1000;color:#fef3c7
+  }
+  .judge-badge{
+    background:#fef3c7;color:#7c2d12;border-radius:999px;padding:8px 12px;font-weight:1000;font-size:13px
+  }
+  .canvas-wrap{
+    position:relative;border-radius:22px;overflow:hidden;border:3px solid #fff;
+    background:linear-gradient(180deg,#1d4ed8 0%, #1e40af 55%, #b45309 100%);
+  }
+  canvas{
+    width:100%;height:auto;display:block;touch-action:none;
+    background:
+      radial-gradient(circle at 20% 10%, rgba(255,255,255,.12), transparent 22%),
+      radial-gradient(circle at 80% 5%, rgba(255,255,255,.1), transparent 20%),
+      linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,0)),
+      linear-gradient(180deg,#2563eb 0%,#1d4ed8 52%, #9a3412 100%);
+  }
+  .countdown-overlay{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font-size:88px;font-weight:1000;color:#fff7ed;
+    background:rgba(17,24,39,.42);
+    text-shadow:0 8px 24px rgba(0,0,0,.35);
+    z-index:4;
+  }
+
+  .btn-row{display:grid;gap:8px;margin-top:12px}
+  .btn-row.easy-mode{grid-template-columns:repeat(3,1fr)}
+  .btn-row.hard-mode{grid-template-columns:repeat(5,1fr)}
+  .hit-btn{
+    border:0;border-radius:18px;padding:13px 4px;color:#fff;font-weight:1000;
+    font-size:15px;min-height:64px;cursor:pointer;
+    box-shadow:inset 0 -5px 0 rgba(0,0,0,.15), var(--shadow);
+  }
+  .hit-btn:active,.hit-btn.active{transform:translateY(2px) scale(.98)}
+  .c0{background:linear-gradient(180deg,#f87171,#dc2626)}
+  .c1{background:linear-gradient(180deg,#fb923c,#ea580c)}
+  .c2{background:linear-gradient(180deg,#94a3b8,#64748b)}
+  .c3{background:linear-gradient(180deg,#4ade80,#16a34a)}
+  .c4{background:linear-gradient(180deg,#22c55e,#15803d)}
+
+  .btn-help{
+    margin-top:10px;text-align:center;font-size:12px;line-height:1.6;color:#f8fafc
+  }
+  .keycap{
+    display:inline-block;
+    min-width:28px;
+    padding:3px 7px;
+    margin:0 2px;
+    border-radius:7px;
+    background:#f8fafc;
+    color:#111827;
+    border:2px solid #cbd5e1;
+    box-shadow:0 3px 0 #94a3b8;
+    font-weight:1000;
+    line-height:1.2;
+  }
+  .pc-tip{
+    margin-top:8px;
+    padding:8px 10px;
+    border-radius:14px;
+    background:rgba(17,24,39,.34);
+    color:#fef3c7;
+    font-weight:800;
+  }
+
+  .result-box{
+    text-align:center
+  }
+  .result-big{
+    font-size:60px;font-weight:1000;color:#fde68a;line-height:1
+  }
+  .result-title{
+    font-size:30px;font-weight:1000;margin-top:6px
+  }
+  .result-sub{
+    margin-top:6px;color:#e5e7eb;font-size:14px;line-height:1.6
+  }
+  .result-grid{
+    display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px
+  }
+  .result-stat{
+    background:rgba(17,24,39,.28);border-radius:18px;padding:12px
+  }
+  .result-stat .n{font-size:22px;font-weight:1000}
+  .result-stat .l{font-size:12px;color:#e5e7eb}
+  .primary,.secondary{
+    width:100%;border:0;border-radius:18px;padding:14px 12px;font-size:16px;font-weight:1000;cursor:pointer;
+    margin-top:10px;box-shadow:var(--shadow);
+  }
+  .primary{background:#facc15;color:#7c2d12}
+  .secondary{background:#fff;color:#1e3a8a}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <section id="home">
+    <div class="festival-banner">
+      <div class="mascot-line">🏮 🥁 📈 🥁 🏮</div>
+      <div class="title-main">飆股菁英太鼓達人</div>
+      <div class="title-sub">股票主題 × 太鼓節奏風手機遊戲</div>
+    </div>
+
+    <div class="card">
+      <div style="text-align:center;font-size:19px;font-weight:1000;">請選擇挑戰模式</div>
+      <div class="mode-grid">
+        <button class="mode-btn easy" onclick="startMode('easy')">
+          簡易版
+          <div class="mode-note">漲停／平盤／跌停</div>
+        </button>
+        <button class="mode-btn hard" onclick="startMode('hard')">
+          困難版
+          <div class="mode-note">漲停／緩漲／平盤／緩跌／跌停</div>
+        </button>
+      </div>
+      <div class="tips">
+        每種模式共有 <b>5 個關卡</b>。<br>
+        鼓點會由上往下掉，到金色判定線時按下正確按鈕。<br>
+        70% 以上命中率即可過關，關卡越高速度越快。
+      </div>
+    </div>
+  </section>
+
+  <section id="game" class="hidden">
+    <div class="topbar">
+      <button class="back-btn" onclick="goHome()">← 返回主選單</button>
+      <div class="pill" id="modePill">簡易版</div>
+      <div class="pill">總分：<span id="scoreText">0</span></div>
+      <div class="pill">Combo：<span id="comboText">0</span></div>
+    </div>
+
+    <div class="level-row" id="levelRow"></div>
+
+    <div class="hud">
+      <div class="soul-box">
+        <div class="section-title">魂量條 / PASS GAUGE</div>
+        <div class="soul-wrap">
+          <div class="soul-face"><div class="soul-smile"></div></div>
+          <div style="flex:1">
+            <div class="gauge"><div class="gauge-fill" id="gaugeFill"></div></div>
+            <div class="gauge-text" id="gaugeText">0% / 過關需求 70%</div>
+          </div>
+        </div>
+      </div>
+      <div class="info-box">
+        <div class="section-title">本關資訊</div>
+        <div class="info-grid">
+          <div class="info-item"><div class="k">關卡</div><div class="v" id="levelText">1</div></div>
+          <div class="info-item"><div class="k">進度</div><div class="v" id="progressText">0/20</div></div>
+          <div class="info-item"><div class="k">命中</div><div class="v" id="hitText">0</div></div>
+          <div class="info-item"><div class="k">判定</div><div class="v" id="judgeText">READY</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stage-shell">
+      <div class="stage-header">
+        <div class="stage-title">太鼓舞台</div>
+        <div class="judge-badge">Perfect / Good / Miss</div>
+      </div>
+      <div class="canvas-wrap">
+        <canvas id="canvas" width="500" height="860"></canvas>
+        <div class="countdown-overlay hidden" id="countdown">3</div>
+      </div>
+
+      <div class="btn-row easy-mode" id="buttonRow"></div>
+      <div class="btn-help">
+        <div class="pc-tip" style="margin-bottom:8px">已加長鼓點跑道與反應時間，越靠近金色判定線再按即可。</div>
+        手機：直接點下方按鈕<br>
+        電腦鍵盤：
+        <div class="pc-tip" id="pcTip">
+          簡易版
+          <span class="keycap">A</span>
+          <span class="keycap">S</span>
+          <span class="keycap">D</span>
+          或
+          <span class="keycap">1</span>
+          <span class="keycap">2</span>
+          <span class="keycap">3</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="result" class="hidden">
+    <div class="festival-banner result-box">
+      <div class="mascot-line" id="resultIcon">🏆 🎉</div>
+      <div class="result-title" id="resultTitle">過關！</div>
+      <div class="result-sub" id="resultSub">你完成了第 1 關</div>
+    </div>
+
+    <div class="card result-box">
+      <div class="result-big" id="resultScore">0</div>
+      <div style="color:#e5e7eb">目前總分</div>
+
+      <div class="result-grid">
+        <div class="result-stat"><div class="n" id="accText">0%</div><div class="l">命中率</div></div>
+        <div class="result-stat"><div class="n" id="bestComboText">0</div><div class="l">最高 Combo</div></div>
+      </div>
+
+      <button class="primary" id="nextBtn" onclick="nextLevel()">下一關</button>
+      <button class="secondary" onclick="restartMode()">重新挑戰本模式</button>
+      <button class="secondary" onclick="goHome()">回主選單</button>
+    </div>
+  </section>
+
+</div>
+
+<script>
+const MODE_DATA = {
+  easy: ['漲停','平盤','跌停'],
+  hard: ['漲停','緩漲','平盤','緩跌','跌停']
+};
+const COLORS = ['#ef4444','#f97316','#94a3b8','#22c55e','#15803d'];
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const countdownEl = document.getElementById('countdown');
+const buttonRow = document.getElementById('buttonRow');
+
+let audioCtx = null;
+
+const game = {
+  mode:'easy',
+  level:1,
+  totalLevels:5,
+  totalScore:0,
+  combo:0,
+  bestCombo:0,
+  running:false,
+  laneNames:[],
+  laneCount:3,
+  notes:[],
+  spawnPlan:[],
+  spawnIndex:0,
+  hit:0,
+  perfect:0,
+  good:0,
+  miss:0,
+  totalNotes:20,
+  noteSpeed:4.0,
+  judgeLabel:'READY',
+  judgeUntil:0,
+  startTime:0,
+  prevTime:0,
+  frameId:0
+};
+
+function startMode(mode){
+  game.mode = mode;
+  game.level = 1;
+  game.totalScore = 0;
+  game.bestCombo = 0;
+  document.getElementById('home').classList.add('hidden');
+  document.getElementById('result').classList.add('hidden');
+  document.getElementById('game').classList.remove('hidden');
+  document.getElementById('modePill').textContent = mode === 'easy' ? '簡易版' : '困難版';
+  setupLevel();
+}
+
+function setupLevel(){
+  stopLoop();
+  game.combo = 0;
+  game.hit = 0;
+  game.perfect = 0;
+  game.good = 0;
+  game.miss = 0;
+  game.judgeLabel = 'READY';
+  game.judgeUntil = 0;
+  game.notes = [];
+  game.spawnPlan = [];
+  game.spawnIndex = 0;
+  game.laneNames = MODE_DATA[game.mode];
+  game.laneCount = game.laneNames.length;
+  game.totalNotes = 20 + (game.level - 1) * 2;
+  game.noteSpeed = (game.mode === 'easy' ? 2.8 : 3.3) + (game.level - 1) * 0.40;
+  buildButtons();
+  buildLevelRow();
+  buildSpawnPlan();
+  updateHUD();
+  runCountdown(() => startLoop());
+}
+
+function buildButtons(){
+  buttonRow.innerHTML = '';
+  buttonRow.className = 'btn-row ' + (game.mode === 'easy' ? 'easy-mode' : 'hard-mode');
+  const pcTip = document.getElementById('pcTip');
+  if(pcTip){
+    if(game.mode === 'easy'){
+      pcTip.innerHTML = '簡易版 <span class="keycap">A</span><span class="keycap">S</span><span class="keycap">D</span> 或 <span class="keycap">1</span><span class="keycap">2</span><span class="keycap">3</span>';
+    }else{
+      pcTip.innerHTML = '困難版 <span class="keycap">A</span><span class="keycap">S</span><span class="keycap">D</span><span class="keycap">F</span><span class="keycap">G</span> 或 <span class="keycap">1</span><span class="keycap">2</span><span class="keycap">3</span><span class="keycap">4</span><span class="keycap">5</span>';
+    }
+  }
+  const letterKeys = game.mode === 'easy' ? ['A','S','D'] : ['A','S','D','F','G'];
+  game.laneNames.forEach((label, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'hit-btn c' + idx;
+    btn.innerHTML = label + '<br><span style="font-size:11px;opacity:.9">[' + letterKeys[idx] + ' / ' + (idx+1) + ']</span>';
+    btn.addEventListener('pointerdown', (e)=>{
+      e.preventDefault();
+      btn.classList.add('active');
+      setTimeout(()=>btn.classList.remove('active'), 120);
+      hitLane(idx);
+    });
+    buttonRow.appendChild(btn);
+  });
+}
+
+function buildLevelRow(){
+  const row = document.getElementById('levelRow');
+  row.innerHTML = '';
+  for(let i=1;i<=5;i++){
+    const d = document.createElement('div');
+    d.className = 'level-dot' + (i < game.level ? ' done' : i === game.level ? ' active' : '');
+    d.textContent = '第' + i + '關';
+    row.appendChild(d);
+  }
+  document.getElementById('levelText').textContent = game.level;
+}
+
+function buildSpawnPlan(){
+  let t = 600;
+  let lastLane = -1;
+  const minGap = game.mode === 'easy' ? 620 : 480;
+  const maxGap = game.mode === 'easy' ? 920 : 720;
+
+  for(let i=0;i<game.totalNotes;i++){
+    let lane = Math.floor(Math.random() * game.laneCount);
+    if(lane === lastLane && Math.random() < 0.45){
+      lane = (lane + 1 + Math.floor(Math.random() * (game.laneCount - 1))) % game.laneCount;
+    }
+    lastLane = lane;
+
+    game.spawnPlan.push({time:t, lane});
+
+    if(game.mode === 'hard' && game.level >= 3 && Math.random() < 0.14 && i < game.totalNotes - 1){
+      let lane2 = (lane + 1 + Math.floor(Math.random() * (game.laneCount - 1))) % game.laneCount;
+      t += 160;
+      game.spawnPlan.push({time:t, lane:lane2});
+      i++;
+      lastLane = lane2;
+    }
+    t += rand(minGap, maxGap) - game.level * 18;
+  }
+  game.totalNotes = game.spawnPlan.length;
+}
+
+function runCountdown(done){
+  countdownEl.classList.remove('hidden');
+  const seq = ['3','2','1','GO!'];
+  let i = 0;
+  countdownEl.textContent = seq[i];
+  playBeep(520, 0.08);
+
+  const timer = setInterval(()=>{
+    i++;
+    if(i >= seq.length){
+      clearInterval(timer);
+      countdownEl.classList.add('hidden');
+      done();
+      return;
+    }
+    countdownEl.textContent = seq[i];
+    playBeep(i < 3 ? 520 + i*80 : 860, 0.08);
+  }, 700);
+}
+
+function startLoop(){
+  game.running = true;
+  game.startTime = performance.now();
+  game.prevTime = game.startTime;
+  requestAnimationFrame(loop);
+}
+
+function stopLoop(){
+  game.running = false;
+  if(game.frameId) cancelAnimationFrame(game.frameId);
+}
+
+function loop(now){
+  if(!game.running) return;
+  const elapsed = now - game.startTime;
+  const delta = now - game.prevTime;
+  game.prevTime = now;
+
+  spawnNotes(elapsed);
+  updateNotes(delta);
+  render();
+  updateJudgeFade(now);
+  updateHUD();
+
+  if(isFinished()){
+    finishLevel();
+    return;
+  }
+  game.frameId = requestAnimationFrame(loop);
+}
+
+function spawnNotes(elapsed){
+  while(game.spawnIndex < game.spawnPlan.length && elapsed >= game.spawnPlan[game.spawnIndex].time){
+    const p = game.spawnPlan[game.spawnIndex];
+    game.notes.push({
+      lane:p.lane,
+      y:-40,
+      hit:false,
+      judged:false
+    });
+    game.spawnIndex++;
+  }
+}
+
+function updateNotes(delta){
+  const speedPx = game.noteSpeed * (delta / 16.6667) * 3.1;
+  const judgeY = canvas.height - 135;
+  for(const n of game.notes){
+    if(n.hit || n.judged) continue;
+    n.y += speedPx;
+    if(n.y > judgeY + 70){
+      n.judged = true;
+      game.miss++;
+      game.combo = 0;
+      showJudge('MISS');
+      playBeep(210, 0.05);
+    }
+  }
+}
+
+function hitLane(laneIndex){
+  if(!game.running) return;
+  const judgeY = canvas.height - 135;
+  let target = null;
+  let bestDist = Infinity;
+
+  for(const n of game.notes){
+    if(n.lane !== laneIndex || n.hit || n.judged) continue;
+    const dist = Math.abs(n.y - judgeY);
+    if(dist < bestDist){
+      bestDist = dist;
+      target = n;
+    }
+  }
+
+  if(!target){
+    game.combo = 0;
+    showJudge('MISS');
+    playBeep(210, 0.05);
+    return;
+  }
+
+  if(bestDist <= 24){
+    target.hit = true;
+    target.judged = true;
+    game.perfect++;
+    game.hit++;
+    game.combo++;
+    game.totalScore += 140 + game.level * 16 + Math.min(game.combo, 20) * 4;
+    game.bestCombo = Math.max(game.bestCombo, game.combo);
+    showJudge('PERFECT');
+    playBeep(760, 0.05);
+  } else if(bestDist <= 44){
+    target.hit = true;
+    target.judged = true;
+    game.good++;
+    game.hit++;
+    game.combo++;
+    game.totalScore += 90 + game.level * 12 + Math.min(game.combo, 20) * 3;
+    game.bestCombo = Math.max(game.bestCombo, game.combo);
+    showJudge('GOOD');
+    playBeep(560, 0.05);
+  } else {
+    game.combo = 0;
+    showJudge('MISS');
+    playBeep(210, 0.05);
+  }
+}
+
+function showJudge(label){
+  game.judgeLabel = label;
+  game.judgeUntil = performance.now() + 520;
+}
+
+function updateJudgeFade(now){
+  if(now > game.judgeUntil && game.judgeLabel !== 'READY'){
+    game.judgeLabel = '...';
+  }
+}
+
+function render(){
+  const w = canvas.width;
+  const h = canvas.height;
+  const laneW = w / game.laneCount;
+  const judgeY = h - 135;
+
+  ctx.clearRect(0,0,w,h);
+
+  const bg = ctx.createLinearGradient(0,0,0,h);
+  bg.addColorStop(0,'#1d4ed8');
+  bg.addColorStop(.55,'#2563eb');
+  bg.addColorStop(1,'#9a3412');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0,0,w,h);
+
+  for(let y=60;y<h;y+=80){
+    ctx.strokeStyle='rgba(255,255,255,.08)';
+    ctx.beginPath();
+    ctx.moveTo(0,y);
+    ctx.lineTo(w,y);
+    ctx.stroke();
+  }
+
+  for(let i=0;i<game.laneCount;i++){
+    ctx.fillStyle = i % 2 === 0 ? 'rgba(255,255,255,.04)' : 'rgba(255,255,255,.02)';
+    ctx.fillRect(i*laneW,0,laneW,h);
+    ctx.strokeStyle='rgba(255,255,255,.16)';
+    ctx.beginPath();
+    ctx.moveTo(i*laneW,0);
+    ctx.lineTo(i*laneW,h);
+    ctx.stroke();
+  }
+  ctx.beginPath();
+  ctx.moveTo(w,0);
+  ctx.lineTo(w,h);
+  ctx.strokeStyle='rgba(255,255,255,.16)';
+  ctx.stroke();
+
+  ctx.fillStyle='rgba(250,204,21,.18)';
+  ctx.fillRect(0,judgeY-24,w,48);
+
+  ctx.strokeStyle='#fef08a';
+  ctx.lineWidth=5;
+  ctx.beginPath();
+  ctx.moveTo(0,judgeY);
+  ctx.lineTo(w,judgeY);
+  ctx.stroke();
+
+  for(const n of game.notes){
+    if(n.hit || n.judged) continue;
+    const x = n.lane * laneW + laneW/2;
+    drawDrumNote(x, n.y, laneW * 0.30, COLORS[n.lane]);
+  }
+
+  drawJudgeDrum(w/2, judgeY + 8);
+
+  ctx.fillStyle='rgba(17,24,39,.5)';
+  ctx.fillRect(0,h-72,w,72);
+
+  ctx.font='bold 16px sans-serif';
+  ctx.fillStyle='rgba(255,255,255,.95)';
+  ctx.textAlign='center';
+  for(let i=0;i<game.laneCount;i++){
+    ctx.fillText(game.laneNames[i], i*laneW + laneW/2, h-30);
+  }
+
+  ctx.font='bold 34px sans-serif';
+  ctx.fillStyle = game.judgeLabel === 'PERFECT' ? '#fde047' : game.judgeLabel === 'GOOD' ? '#86efac' : game.judgeLabel === 'MISS' ? '#fca5a5' : '#ffffff';
+  ctx.fillText(game.judgeLabel, w/2, 54);
+
+  ctx.font='bold 18px sans-serif';
+  ctx.fillStyle='rgba(255,255,255,.95)';
+  ctx.fillText('♪ STOCK TAIKO STAGE ♪', w/2, 86);
+}
+
+function drawDrumNote(x, y, r, color){
+  ctx.save();
+  ctx.beginPath();
+  ctx.fillStyle=color;
+  ctx.arc(x,y,r,0,Math.PI*2);
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.lineWidth=5;
+  ctx.strokeStyle='#fff';
+  ctx.arc(x,y,r,0,Math.PI*2);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.fillStyle='rgba(255,255,255,.3)';
+  ctx.arc(x-r*0.22,y-r*0.22,r*0.45,0,Math.PI*2);
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.fillStyle='#fff8';
+  ctx.arc(x+r*0.12,y+r*0.10,r*0.18,0,Math.PI*2);
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawJudgeDrum(x,y){
+  ctx.save();
+  ctx.beginPath();
+  ctx.fillStyle='#ef4444';
+  ctx.arc(x,y,56,0,Math.PI*2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.fillStyle='#fef3c7';
+  ctx.arc(x,y,42,0,Math.PI*2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.strokeStyle='#fff';
+  ctx.lineWidth=6;
+  ctx.arc(x,y,56,0,Math.PI*2);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.fillStyle='#111827';
+  ctx.arc(x-14,y-6,4,0,Math.PI*2);
+  ctx.arc(x+14,y-6,4,0,Math.PI*2);
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.strokeStyle='#111827';
+  ctx.lineWidth=4;
+  ctx.arc(x,y+6,14,0,Math.PI);
+  ctx.stroke();
+  ctx.restore();
+}
+
+function gaugePercent(){
+  return Math.round((game.hit / game.totalNotes) * 100);
+}
+
+function updateHUD(){
+  document.getElementById('scoreText').textContent = game.totalScore;
+  document.getElementById('comboText').textContent = game.combo;
+  document.getElementById('progressText').textContent = (game.hit + game.miss) + '/' + game.totalNotes;
+  document.getElementById('hitText').textContent = game.hit;
+  document.getElementById('judgeText').textContent = game.judgeLabel;
+  const pct = gaugePercent();
+  document.getElementById('gaugeFill').style.width = pct + '%';
+  document.getElementById('gaugeText').textContent = pct + '% / 過關需求 70%';
+}
+
+function isFinished(){
+  return (game.hit + game.miss) >= game.totalNotes && game.notes.every(n => n.hit || n.judged);
+}
+
+function finishLevel(){
+  stopLoop();
+  const acc = gaugePercent();
+  const passed = acc >= 70;
+
+  document.getElementById('game').classList.add('hidden');
+  document.getElementById('result').classList.remove('hidden');
+  document.getElementById('resultScore').textContent = game.totalScore;
+  document.getElementById('accText').textContent = acc + '%';
+  document.getElementById('bestComboText').textContent = game.bestCombo;
+
+  const title = document.getElementById('resultTitle');
+  const sub = document.getElementById('resultSub');
+  const icon = document.getElementById('resultIcon');
+  const nextBtn = document.getElementById('nextBtn');
+
+  if(passed && game.level === game.totalLevels){
+    title.textContent = '全關卡制霸！';
+    sub.textContent = '恭喜你完成 5 個關卡，成為飆股菁英太鼓達人！';
+    icon.textContent = '👑 🥁 👑';
+    nextBtn.textContent = '重新挑戰';
+    nextBtn.dataset.passed = '1';
+  } else if(passed){
+    title.textContent = '過關成功！';
+    sub.textContent = '第 ' + game.level + ' 關完成，準備前往下一關。';
+    icon.textContent = '🏆 🎉';
+    nextBtn.textContent = '下一關';
+    nextBtn.dataset.passed = '1';
+  } else {
+    title.textContent = '挑戰失敗';
+    sub.textContent = '命中率需達 70% 才能過關，再試一次吧！';
+    icon.textContent = '🥁 💦';
+    nextBtn.textContent = '重打本關';
+    nextBtn.dataset.passed = '0';
+  }
+}
+
+function nextLevel(){
+  const passed = document.getElementById('nextBtn').dataset.passed === '1';
+  if(passed){
+    if(game.level < game.totalLevels){
+      game.level++;
+      document.getElementById('result').classList.add('hidden');
+      document.getElementById('game').classList.remove('hidden');
+      setupLevel();
+    } else {
+      startMode(game.mode);
+    }
+  } else {
+    document.getElementById('result').classList.add('hidden');
+    document.getElementById('game').classList.remove('hidden');
+    setupLevel();
+  }
+}
+
+function restartMode(){
+  game.level = 1;
+  game.totalScore = 0;
+  game.bestCombo = 0;
+  document.getElementById('result').classList.add('hidden');
+  document.getElementById('game').classList.remove('hidden');
+  setupLevel();
+}
+
+function goHome(){
+  stopLoop();
+  document.getElementById('game').classList.add('hidden');
+  document.getElementById('result').classList.add('hidden');
+  document.getElementById('home').classList.remove('hidden');
+}
+
+function rand(min,max){
+  return Math.floor(Math.random()*(max-min+1))+min;
+}
+
+function playBeep(freq, duration){
+  try{
+    if(!audioCtx){
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+    gain.gain.value = 0.04;
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+    osc.stop(audioCtx.currentTime + duration);
+  }catch(e){}
+}
+
+function triggerKeyboardLane(idx){
+  if(idx < 0 || idx >= game.laneCount) return;
+  const btns = buttonRow.querySelectorAll('.hit-btn');
+  const btn = btns[idx];
+  if(btn){
+    btn.classList.add('active');
+    setTimeout(()=>btn.classList.remove('active'),120);
+  }
+  hitLane(idx);
+}
+
+window.addEventListener('keydown', (e)=>{
+  if(document.getElementById('game').classList.contains('hidden')) return;
+  if(e.repeat) return;
+
+  const key = e.key.toLowerCase();
+
+  let idx = -1;
+  if(game.mode === 'easy'){
+    const map = {
+      'a':0, 's':1, 'd':2,
+      '1':0, '2':1, '3':2,
+      'arrowleft':0, 'arrowdown':1, 'arrowright':2
+    };
+    if(key in map) idx = map[key];
+  } else {
+    const map = {
+      'a':0, 's':1, 'd':2, 'f':3, 'g':4,
+      '1':0, '2':1, '3':2, '4':3, '5':4
+    };
+    if(key in map) idx = map[key];
+  }
+
+  if(idx >= 0){
+    e.preventDefault();
+    triggerKeyboardLane(idx);
+  }
+});
+</script>
+</body>
+</html>
